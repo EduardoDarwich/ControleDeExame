@@ -45,15 +45,18 @@ public class AdminService {
     @Autowired
     LogRepository logRepository;
 
+    //Metodo para criar um usuário administrador
     public Admin registeAdmin (AdminDTO data){
-
+        //Criptografando a senha passada pelo usuário
         String encryptedPassword = new BCryptPasswordEncoder().encode(data.password_key());
+        //Criando instância de um usuário com os dados recebidos
         Auth newAuth = new Auth();
         newAuth.setPassword_key(encryptedPassword);
         newAuth.setUsernameKey(data.cpf());
         newAuth.setRole(RoleEnum.ADMIN);
+        //Salvando os dados do usuário no banco de dados
         authRepository.save(newAuth);
-
+        //Try catch para possiveis erros
         try{
         Admin newAdmin = new Admin();
         newAdmin.setName(data.name());
@@ -62,11 +65,13 @@ public class AdminService {
         newAdmin.setCpf(data.cpf());
         newAdmin.setAuth_id(newAuth);
 
+        //Metodo para enviar emails
         //emailService.sendEmail("felipegomes007goga@gmail.com", "Novo usuario cadastrado", "Voce foi cadastrado com sucesso");
 
-
+        //Salvando um adiministrador ligado a au usuario
         return adminRepository.save(newAdmin);
         } catch (Exception e) {
+            //Deletando o usuário criado caso tenha problema na hora de manter os dados na tabela de adiministrador
             authRepository.delete(newAuth);
             e.printStackTrace();
             throw e;
@@ -215,7 +220,7 @@ public class AdminService {
         auth.setStatus(true);
 
     }
-
+    //Metodo para listar os logs de registro
     public List<LogDTO> getAllLog (){
 
         return logRepository.findAll().stream().map(LogDTO::new).toList();
