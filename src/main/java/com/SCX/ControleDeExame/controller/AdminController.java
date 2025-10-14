@@ -1,14 +1,12 @@
 package com.SCX.ControleDeExame.controller;
 
-import com.SCX.ControleDeExame.dataTransferObject.adminDTO.AdminDTO;
+import com.SCX.ControleDeExame.dataTransferObject.adminDTO.CreateAdminDTO;
+import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.service.AdminService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/admin")
 @RestController
@@ -18,8 +16,8 @@ public class AdminController {
     AdminService adminService;
 
     @PostMapping("/register")
-    public ResponseEntity registerAdmin (@RequestBody @Valid AdminDTO data){
-        adminService.registeAdmin(data);
+    public ResponseEntity registerAdmin (@RequestBody @Valid CreateAdminDTO data, @RequestHeader("Authorization") RequestTokenDTO token){
+        adminService.registerAdm(data,token);
         return  ResponseEntity.ok().build();
     }
 }

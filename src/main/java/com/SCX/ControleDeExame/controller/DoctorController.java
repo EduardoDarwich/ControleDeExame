@@ -1,7 +1,7 @@
 package com.SCX.ControleDeExame.controller;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
-import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorDTO;
+import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.CreateDoctorDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsDTO.GetByDoctorDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.ExamsRequestDTO;
 import com.SCX.ControleDeExame.domain.doctor.Doctor;
@@ -24,7 +24,7 @@ public class DoctorController {
     DoctorService doctorService;
 
     @PostMapping("/register")
-    public ResponseEntity register (@RequestBody @Valid DoctorDTO data){
+    public ResponseEntity register (@RequestBody @Valid CreateDoctorDTO data){
         Doctor doctor = doctorService.registerDoctor(data);
         return ResponseEntity.status(HttpStatus.CREATED).body(doctor);
     }
@@ -36,7 +36,7 @@ public class DoctorController {
     }
 
     @PostMapping("/update/{id}")
-    public ResponseEntity update (@PathVariable UUID id, @RequestBody @Valid DoctorDTO data){
+    public ResponseEntity update (@PathVariable UUID id, @RequestBody @Valid CreateDoctorDTO data){
         doctorService.updateDoctor(data, id);
         return ResponseEntity.ok().build();
     }

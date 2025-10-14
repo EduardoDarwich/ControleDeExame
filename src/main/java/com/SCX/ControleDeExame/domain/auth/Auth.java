@@ -1,16 +1,24 @@
 package com.SCX.ControleDeExame.domain.auth;
 
-import com.SCX.ControleDeExame.domain.roleEnum.RoleEnum;
+import com.SCX.ControleDeExame.domain.admin.Admin;
+import com.SCX.ControleDeExame.domain.clinic.Clinic;
+import com.SCX.ControleDeExame.domain.doctor.Doctor;
+import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
+import com.SCX.ControleDeExame.domain.patient.Patient;
+import com.SCX.ControleDeExame.domain.role.Role;
+import com.SCX.ControleDeExame.domain.role.RoleEnum;
+import com.SCX.ControleDeExame.domain.user_lab.UserLab;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 //Classe representando a tabela "auth"
 @Table(name = "auth")
@@ -22,39 +30,63 @@ import java.util.UUID;
 @EqualsAndHashCode(of = "id")
 public class Auth implements UserDetails {
 
+
+
     @Id
     @GeneratedValue
     private UUID id;
     @Column(name = "username_key")
     private String usernameKey;
     private String password_key;
-    private RoleEnum role;
     private String token;
-    private Boolean status;
+    private Boolean active;
     private Timestamp data_expiration_token;
     private Boolean token_status;
+    private Boolean locked;
+    @Column(name = "failed_attempts")
+    private int failedAttempts;
+    @Column(name = "lock_time")
+    private LocalDateTime lockTime;
 
-    public Auth (String usernameKey, String password_key, RoleEnum role, String token, Boolean status, Timestamp data_expiration_token, Boolean token_status){
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_role",
+            joinColumns = @JoinColumn(name = "id_user"),
+            inverseJoinColumns = @JoinColumn(name = "id_role")
+    )
+    private Set<Role> roles = new HashSet<>();
+
+    @OneToMany(mappedBy = "authId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserLab> userLabs = new ArrayList<>();
+
+
+    @ManyToMany(mappedBy = "users")
+    private List<Clinic> clinics = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "authId")
+    private List<Admin> admins = new ArrayList<>();
+
+    @OneToMany(mappedBy = "authId")
+    private List<Doctor> doctors = new ArrayList<>();
+
+    @OneToMany(mappedBy = "authId")
+    private List<Patient> patients = new ArrayList<>();
+
+    public Auth (String usernameKey, String password_key,  String token, Boolean active, Timestamp data_expiration_token, Boolean token_status){
         this.usernameKey = usernameKey;
         this.password_key = password_key;
-        this.role = role;
         this.token = token;
-        this.status = status;
+        this.active = active;
         this.data_expiration_token = data_expiration_token;
         this.token_status = token_status;
     }
+
 //Metodo do Spring security para configurar as permissões de cada role
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if(this.role == RoleEnum.ADMIN) {
-            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        } else if (this.role == RoleEnum.DOCTOR) {
-            return List.of(new SimpleGrantedAuthority("ROLE_DOCTOR"));
-        } else if (this.role == RoleEnum.LABORATORY) {
-            return List.of(new SimpleGrantedAuthority("ROLE_LABORATORY"));
-        } else if (this.role == RoleEnum.PATIENT) {
-            return List.of(new SimpleGrantedAuthority("ROLE_PATIENT"));
-        } else return List.of(new SimpleGrantedAuthority("ROLE_SECRETARY"));
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toList());
 
     }
 

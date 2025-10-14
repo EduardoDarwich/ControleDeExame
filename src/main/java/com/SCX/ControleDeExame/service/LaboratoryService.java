@@ -1,11 +1,20 @@
 package com.SCX.ControleDeExame.service;
 
-import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryDTO;
+import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
+import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLabUserDTO;
+import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLaboratoryDTO;
+import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryVerificDTO;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
-import com.SCX.ControleDeExame.domain.roleEnum.RoleEnum;
+import com.SCX.ControleDeExame.domain.patient.Patient;
+import com.SCX.ControleDeExame.domain.role.Role;
+import com.SCX.ControleDeExame.domain.user_lab.UserLab;
+import com.SCX.ControleDeExame.domain.user_lab.UserLabId;
+import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.repository.AuthRepository;
 import com.SCX.ControleDeExame.repository.LaboratoryRepository;
+import com.SCX.ControleDeExame.repository.RoleRepository;
+import com.SCX.ControleDeExame.repository.UserLabRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -22,31 +32,47 @@ public class LaboratoryService {
     LaboratoryRepository laboratoryRepository;
 
     @Autowired
+    TokenService tokenService;
+
+    @Autowired
     AuthRepository authRepository;
+    @Autowired
+    UserLabRepository userLabRepository;
 
-    public Laboratory registerLaboratory(LaboratoryDTO data) {
+    @Autowired
+    RoleRepository roleRepository;
 
-        String senhaTemp = UUID.randomUUID().toString().substring(0,8);
+
+    //Metodo para registrar um usuario administrador para o laboratorio
+    public UserLab registerUserAdminLab(CreateLabUserDTO data) {
+        Laboratory laboratory = laboratoryRepository.findByCnpj(data.cnpj());
+        Role laboratoryAdmin = roleRepository.findByName("LaboratoryAdmin");
+
+        String senhaTemp = UUID.randomUUID().toString().substring(0, 8);
         String token = UUID.randomUUID().toString();
-        Boolean status = false;
         Timestamp expirationToken = Timestamp.valueOf(LocalDateTime.now().plusDays(1));
-        Boolean token_status = true;
-
         String encryptedPassword = new BCryptPasswordEncoder().encode(senhaTemp);
-        Auth newAuth = new Auth(data.cnpj(), encryptedPassword, RoleEnum.LABORATORY, token, status, expirationToken, token_status);
+
+        Auth newAuth = new Auth();
+        newAuth.setUsernameKey(data.email());
+        newAuth.setPassword_key(encryptedPassword);
+        newAuth.setActive(false);
+        newAuth.setToken(token);
+        newAuth.setData_expiration_token(expirationToken);
+        newAuth.setToken_status(true);
+        newAuth.setLocked(false);
+        newAuth.getRoles().add(laboratoryAdmin);
         authRepository.save(newAuth);
 
+        UserLabId userLabId = new UserLabId(newAuth.getId(), laboratory.getId());
 
         try {
-            Laboratory newLaboratory = new Laboratory();
-            newLaboratory.setName(data.name());
-            newLaboratory.setCnpj(data.cnpj());
-            newLaboratory.setEmail(data.email());
-            newLaboratory.setAddress(data.address());
-            newLaboratory.setTelephone(data.telephone());
-            newLaboratory.setAuthId(newAuth);
-            return laboratoryRepository.save(newLaboratory);
-
+            UserLab userLab = new UserLab();
+            userLab.setId(userLabId);
+            userLab.setLaboratoryId(laboratory);
+            userLab.setAuthId(newAuth);
+            userLab.setEmail(data.email());
+            return userLabRepository.save(userLab);
         } catch (Exception e) {
             authRepository.delete(newAuth);
             e.printStackTrace();
@@ -54,6 +80,55 @@ public class LaboratoryService {
         }
 
     }
+    //Metodo para registrar um usuario comum do laboratório
+    public UserLab registerUserLab(CreateLabUserDTO data, RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        UserLab userLab = userLabRepository.findByAuthId_Id(UUID.fromString(id));
+        var idLab = userLab.getLaboratoryId().getId();
+        Laboratory laboratory = laboratoryRepository.findById(idLab).orElseThrow(() -> new  RuntimeException("Laboratorio nao encontrado"));
+
+        Role laboratoryUser = roleRepository.findByName("LaboratoryUser");
+
+        String senhaTemp = UUID.randomUUID().toString().substring(0, 8);
+        String token = UUID.randomUUID().toString();
+        Timestamp expirationToken = Timestamp.valueOf(LocalDateTime.now().plusDays(1));
+        String encryptedPassword = new BCryptPasswordEncoder().encode(senhaTemp);
+
+        Auth newAuth = new Auth();
+        newAuth.setUsernameKey(data.email());
+        newAuth.setPassword_key(encryptedPassword);
+        newAuth.setActive(false);
+        newAuth.setToken(token);
+        newAuth.setData_expiration_token(expirationToken);
+        newAuth.setToken_status(true);
+        newAuth.setLocked(false);
+        newAuth.getRoles().add(laboratoryUser);
+        authRepository.save(newAuth);
+
+        try {
+            UserLab newUserLab = new UserLab();
+            newUserLab.setLaboratoryId(laboratory);
+            newUserLab.setAuthId(newAuth);
+            newUserLab.setEmail(data.email());
+            return userLabRepository.save(userLab);
+        } catch (Exception e) {
+            authRepository.delete(newAuth);
+            e.printStackTrace();
+            throw e;
+        }
+
+    }
+
+    //Metodo para verificar se um laboratorio ja está cadastrado no sistema
+    public Laboratory labVerific(LaboratoryVerificDTO data) {
+        try {
+            return laboratoryRepository.findByCnpj(data.cnpj());
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
     public void deleteLaboratory(UUID uuid) {
 
         Laboratory laboratory = laboratoryRepository.findById(uuid).orElseThrow(() -> new EntityNotFoundException("Registro não encontrado"));

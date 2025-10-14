@@ -24,8 +24,11 @@ public class Doctor {
     private String crm;
     private String telephone;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "auth_id", nullable = false, unique = true)
     private Auth authId;
+
+   /* @OneToMany(mappedBy = "doctorId")
+    private Doctor doctor;*/
 
 }

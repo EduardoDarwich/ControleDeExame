@@ -7,5 +7,6 @@ import java.util.UUID;
 
 public interface DoctorRepository extends JpaRepository <Doctor, UUID> {
     Doctor findByAuthId_Id(UUID id);
+    Doctor findByCrm(String crm);
 
 }

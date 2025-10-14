@@ -1,11 +1,14 @@
 package com.SCX.ControleDeExame.domain.patient;
 
 import com.SCX.ControleDeExame.domain.auth.Auth;
+import com.SCX.ControleDeExame.domain.examsRequest.ExamsRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 //Classe representando a tabela "patient"
@@ -28,9 +31,11 @@ public class Patient {
     private String email;
     private String address;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "auth_id", nullable = false, unique = true)
-    private Auth auth_id;
+    private Auth authId;
 
+    @OneToMany(mappedBy = "patientId")
+    private List<ExamsRequest> examsRequests = new ArrayList<>();
 
 }

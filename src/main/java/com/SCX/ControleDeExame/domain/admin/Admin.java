@@ -1,13 +1,14 @@
 package com.SCX.ControleDeExame.domain.admin;
 
 import com.SCX.ControleDeExame.domain.auth.Auth;
+import com.SCX.ControleDeExame.domain.clinic.Clinic;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.UUID;
 
 //Classe representando a tabela "Admin"
-@Table(name = "adimin")
+@Table(name = "admin")
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,8 +25,12 @@ public class Admin {
     private String cpf;
     private String telephone;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "auth_id", nullable = false, unique = true)
-    private Auth auth_id;
+    private Auth authId;
+
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "clinic_id", nullable = false, unique = true)
+    private Clinic clinicId;
 
 }

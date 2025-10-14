@@ -1,10 +1,12 @@
 package com.SCX.ControleDeExame.domain.laboratory;
 
 import com.SCX.ControleDeExame.domain.auth.Auth;
+import com.SCX.ControleDeExame.domain.clinic.Clinic;
+import com.SCX.ControleDeExame.domain.user_lab.UserLab;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.UUID;
+import java.util.*;
 
 //Classe representando a tabela "laboratory"
 @Entity
@@ -20,12 +22,16 @@ public class Laboratory {
     @GeneratedValue
     private UUID id;
     private String name;
-    private String email;
     private String cnpj;
     private String address;
     private String telephone;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "auth_id", nullable = false, unique = true)
-    private Auth authId;
+    @OneToMany(mappedBy = "laboratoryId")
+    private List<UserLab> userLabs = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "laboratories")
+    private List<Clinic> clinic = new ArrayList<>();
+
+
+
 }

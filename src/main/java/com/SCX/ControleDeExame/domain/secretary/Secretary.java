@@ -1,6 +1,7 @@
 package com.SCX.ControleDeExame.domain.secretary;
 
 import com.SCX.ControleDeExame.domain.auth.Auth;
+import com.SCX.ControleDeExame.domain.clinic.Clinic;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,9 +24,12 @@ public class Secretary {
     private String email;
     private String cpf;
     private String telephone;
-    private String sector;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "auth_id", nullable = false, unique = true)
     private Auth authId;
+
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "clinic_id", nullable = false, unique = true)
+    private Clinic clinicId;
 }

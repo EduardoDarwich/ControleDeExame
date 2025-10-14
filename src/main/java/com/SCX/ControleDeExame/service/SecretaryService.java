@@ -32,7 +32,7 @@ public class SecretaryService {
         Secretary secretaryUpdate = secretaryRepository.findById(uuid).orElseThrow(() -> new EntityNotFoundException("paciente não encontrado"));
 
         secretaryUpdate.setTelephone(data.telephone());
-        secretaryUpdate.setSector(data.sector());
+
         return secretaryRepository.save(secretaryUpdate);
 
     }

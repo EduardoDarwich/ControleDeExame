@@ -1,16 +1,19 @@
 package com.SCX.ControleDeExame.service;
 
-import com.SCX.ControleDeExame.dataTransferObject.adminDTO.AdminDTO;
-import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryDTO;
-import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.GetLaboratoryCNPJDTO;
+import com.SCX.ControleDeExame.dataTransferObject.adminDTO.CreateAdminDTO;
+import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
+import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLaboratoryDTO;
 import com.SCX.ControleDeExame.dataTransferObject.logDTO.LogDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.RequestSecretaryEmailDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.SecretaryDTO;
 import com.SCX.ControleDeExame.domain.admin.Admin;
 import com.SCX.ControleDeExame.domain.auth.Auth;
+import com.SCX.ControleDeExame.domain.clinic.Clinic;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
-import com.SCX.ControleDeExame.domain.roleEnum.RoleEnum;
+import com.SCX.ControleDeExame.domain.role.Role;
 import com.SCX.ControleDeExame.domain.secretary.Secretary;
+import com.SCX.ControleDeExame.domain.user_lab.UserLab;
+import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 //@Service indica pro spring que essa class é uma Service
@@ -45,33 +49,59 @@ public class AdminService {
     @Autowired
     LogRepository logRepository;
 
-    //Metodo para criar um usuário administrador
-    public Admin registeAdmin (AdminDTO data){
-        //Criptografando a senha passada pelo usuário
-        String encryptedPassword = new BCryptPasswordEncoder().encode(data.password_key());
-        //Criando instância de um usuário com os dados recebidos
+    @Autowired
+    RoleRepository roleRepository;
+
+    @Autowired
+    TokenService tokenService;
+
+    @Autowired
+    ClinicRepository clinicRepository;
+
+
+    //Metodo para criar um usuário de adiministrador
+    public Admin registerAdm(CreateAdminDTO data, RequestTokenDTO dataT) {
+        //Criando instancias de usuario
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        var admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
+        Clinic clinic = clinicRepository.findById(admin.getClinicId().getId()).orElseThrow(() -> new RuntimeException("Clinica não encontrada"));
+
+        Role adminRole = roleRepository.findByName("Admin");
+
+        String senhaTemp = UUID.randomUUID().toString().substring(0, 8);
+        String token = UUID.randomUUID().toString();
+        Timestamp expirationToken = Timestamp.valueOf(LocalDateTime.now().plusDays(1));
+        String encryptedPassword = new BCryptPasswordEncoder().encode(senhaTemp);
+
         Auth newAuth = new Auth();
+        newAuth.setUsernameKey(data.email());
         newAuth.setPassword_key(encryptedPassword);
-        newAuth.setUsernameKey(data.cpf());
-        newAuth.setRole(RoleEnum.ADMIN);
-        //Salvando os dados do usuário no banco de dados
+        newAuth.setActive(false);
+        newAuth.setToken(token);
+        newAuth.setData_expiration_token(expirationToken);
+        newAuth.setToken_status(true);
+        newAuth.setLocked(false);
+        newAuth.getRoles().add(adminRole);
         authRepository.save(newAuth);
-        //Try catch para possiveis erros
-        try{
-        Admin newAdmin = new Admin();
-        newAdmin.setName(data.name());
-        newAdmin.setEmail(data.email());
-        newAdmin.setTelephone(data.telephone());
-        newAdmin.setCpf(data.cpf());
-        newAdmin.setAuth_id(newAuth);
 
-        //Metodo para enviar emails
-        //emailService.sendEmail("felipegomes007goga@gmail.com", "Novo usuario cadastrado", "Voce foi cadastrado com sucesso");
+        clinic.getUsers().add(newAuth);
+        clinicRepository.save(clinic);
 
-        //Salvando um adiministrador ligado a au usuario
-        return adminRepository.save(newAdmin);
+
+        try {
+
+            //Cadastrando dados de admin ao usuario novo;
+            Admin newAdmin = new Admin();
+            newAdmin.setName(data.name());
+            newAdmin.setEmail(data.email());
+            newAdmin.setTelephone(data.telephone());
+            newAdmin.setCpf(data.cpf());
+            newAdmin.setAuthId(newAuth);
+            newAdmin.setClinicId(clinic);
+            return adminRepository.save(newAdmin);
+
         } catch (Exception e) {
-            //Deletando o usuário criado caso tenha problema na hora de manter os dados na tabela de adiministrador
             authRepository.delete(newAuth);
             e.printStackTrace();
             throw e;
@@ -80,37 +110,63 @@ public class AdminService {
 
     }
 
-    //Metodo para cadastrar um usuário da secretaria
+    //Metodo para cadastrar um usuario ja existente como adiministrador
+    /*public Admin registerAdmInUser(CreateAdminDTO data, RequestTokenDTO dataT) {
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        var admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
+
+        Role adminRole = roleRepository.findByName("Admin");
+        Optional<Auth> userOPT = authRepository.findAuthByUsernameKey(data.email());
+
+        Auth user = userOPT.get();
+        user.getRoles().add(adminRole);
+        authRepository.save(user);
+
+        try {
+            //Cadastrando dados de admin a esse usuario;
+            Admin newAdmin = new Admin();
+            newAdmin.setName(data.name());
+            newAdmin.setEmail(data.email());
+            newAdmin.setTelephone(data.telephone());
+            newAdmin.setCpf(data.cpf());
+            newAdmin.setAuthId(user);
+            return adminRepository.save(newAdmin);
+
+        } catch (Exception e) {
+            //Removendo a role dele caso tenha problema no cadastro como admin
+            user.getRoles().remove(admin);
+            authRepository.save(user);
+            e.printStackTrace();
+            throw e;
+
+        }
+
+
+    }*/
+
+
     public Secretary registerSecretary(SecretaryDTO data) {
 
-        //Definindo a senha temporária de primeiro login
         String senhaTemp = UUID.randomUUID().toString().substring(0, 8);
-        //Definindo o Token de ativação
         String token = UUID.randomUUID().toString();
-        //Definindo Status padrões do usuário antes do primeiro login
         Boolean status = false;
         Timestamp expirationToken = Timestamp.valueOf(LocalDateTime.now().plusDays(1));
         Boolean token_status = true;
-        //Criptografando a senha temporária
         String encryptedPassword = new BCryptPasswordEncoder().encode(senhaTemp);
-        //Criando uma instância de usuário com os dados definidos
-        Auth newAuth = new Auth(data.cpf(), encryptedPassword, RoleEnum.SECRETARY, token, status, expirationToken, token_status);
-        //Salvando os dados da instância criada no banco de dados
+        Auth newAuth = new Auth(data.cpf(), encryptedPassword, token, status, expirationToken, token_status);
         authRepository.save(newAuth);
 
-        //Try catch para capturar possiveis erros
+
         try {
-            //Criando instância de secretaria com os dados recebidos
             Secretary newSecretary = new Secretary();
             newSecretary.setCpf(data.cpf());
             newSecretary.setName(data.name());
             newSecretary.setEmail(data.email());
             newSecretary.setAuthId(newAuth);
-            //Salvando os dados da instância criada no banco de dados
             return secretaryRepository.save(newSecretary);
 
         } catch (Exception e) {
-            //Caso a tentativa de salvar os dados no banco falhe ele apaga o usuario criado para evitar usuarios sem ninguem associado
             authRepository.delete(newAuth);
             e.printStackTrace();
             throw e;
@@ -118,38 +174,30 @@ public class AdminService {
 
     }
 
-    //Metodo para cadastrar um usuário do laboratório
-    public Laboratory registerLaboratory(LaboratoryDTO data) {
+    public Laboratory registerLaboratory(CreateLaboratoryDTO data) {
 
-        //Definindo a senha temporária de primeiro login
         String senhaTemp = UUID.randomUUID().toString().substring(0, 8);
-        //Definindo o Token de ativação
+
         String token = UUID.randomUUID().toString();
-        //Definindo Status padrões do usuário antes do primeiro login
+
         Boolean status = false;
         Timestamp expirationToken = Timestamp.valueOf(LocalDateTime.now().plusDays(1));
         Boolean token_status = true;
-        //Criptografando a senha temporária
+
         String encryptedPassword = new BCryptPasswordEncoder().encode(senhaTemp);
-        //Criando uma instância de usuário com os dados definidos
-        Auth newAuth = new Auth(data.cnpj(), encryptedPassword, RoleEnum.SECRETARY, token, status, expirationToken, token_status);
-        //Salvando os dados da instância criada no banco de dados
+
+        Auth newAuth = new Auth(data.cnpj(), encryptedPassword, token, status, expirationToken, token_status);
         authRepository.save(newAuth);
 
-        //Try catch para capturar possiveis erros
+
         try {
-            //Criando instância de laboratorio com os dados recebidos
             Laboratory newLaboratory = new Laboratory();
             newLaboratory.setName(data.name());
-            newLaboratory.setEmail(data.email());
             newLaboratory.setAddress(data.address());
             newLaboratory.setTelephone(data.telephone());
-            newLaboratory.setAuthId(newAuth);
-            //Salvando os dados da instância criada no banco de dados
             return laboratoryRepository.save(newLaboratory);
 
         } catch (Exception e) {
-            //Caso a tentativa de salvar os dados no banco falhe ele apaga o usuario criado para evitar usuarios sem ninguem associado
             authRepository.delete(newAuth);
             e.printStackTrace();
             throw e;
@@ -157,71 +205,46 @@ public class AdminService {
 
     }
 
-    //Metodo para atualizar dados de um usuário da secretaria
     public Secretary updateSecretary(SecretaryDTO data, UUID uuid) {
-        //Criando uma instância de secretaria com os dados recebidos do banco de dados
         Secretary secretaryUpdate = secretaryRepository.findById(uuid).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
-        //Atualizando os campos nescessários
         secretaryUpdate.setTelephone(data.telephone());
-        secretaryUpdate.setSector(data.sector());
-        //salvando a atualização no banco de dados
         return secretaryRepository.save(secretaryUpdate);
 
     }
 
-    //Metodo para desabilitar um usuario da secretaria sem precisar deletar sua conta
     public void disableSecretary(RequestSecretaryEmailDTO data) {
-        //Salvando os dados recebidos na variável email
         String email = data.Email();
-        //Realizando a busca da instância de secretaria por esse email e salvando essa instância na variavel
         Secretary secretary = secretaryRepository.findByEmail(email);
-        //Realizando a busca do usuário pelo id da instância de secertaria e savando essa instância na variável
         Auth auth = authRepository.findById(secretary.getAuthId().getId()).orElseThrow();
-        //Realizando as alterações no status do usuário
-        auth.setStatus(false);
+        auth.setActive(false);
 
     }
-
-    //Metodo para desabilitar um usuário do laboratório sem precisar deletar sua conta
+/*
     public void disableLaboratory(GetLaboratoryCNPJDTO data) {
-        //Salvando os dados recebidos na variável cnpj
         String cnpj = data.cnpj();
-        //Realizando a busca da instância de laboratório por esse cnpj e salvando essa instância na variavel
         Laboratory laboratory = laboratoryRepository.findByCnpj(cnpj);
-        //Realizando a busca do usuário pelo id da instância de laboratório e savando essa instância na variável
         Auth auth = authRepository.findById(laboratory.getAuthId().getId()).orElseThrow();
-        //Realizando alterações no status do usuário
-        auth.setStatus(false);
+        auth.setActive(false);
 
     }
 
-    //Metodo para habilitar um usuário do laboratório
     public void enableLaboratory(GetLaboratoryCNPJDTO data) {
-        //Salvando os dados recebidos na variável cnpj
         String cnpj = data.cnpj();
-        //Realizando a busca da innstância de laboratório por esse cnpj e salvando essa instância na variavel
         Laboratory laboratory = laboratoryRepository.findByCnpj(cnpj);
-        //Realizando a busca do usuário pelo id da instância de laboratório e savando essa instância na variável
         Auth auth = authRepository.findById(laboratory.getAuthId().getId()).orElseThrow();
-        //Realizando alterações no status do usuário
-        auth.setStatus(true);
+        auth.setActive(true);
 
     }
 
-    //Metodo para habilitar um usuário da secretaria
     public void enableSecretary(RequestSecretaryEmailDTO data) {
-        //Salvando os dados recebidos na variável email
         String email = data.Email();
-        //Realizando a busca da innstância de secretaria por esse cnpj e salvando essa instância na variavel
         Secretary secretary = secretaryRepository.findByEmail(email);
-        //Realizando a busca do usuário pelo id da instância de secretaria e savando essa instância na variável
         Auth auth = authRepository.findById(secretary.getAuthId().getId()).orElseThrow();
-        //Realizando alterações no status do usuário
-        auth.setStatus(true);
+        auth.setActive(true);
 
-    }
-    //Metodo para listar os logs de registro
-    public List<LogDTO> getAllLog (){
+    }*/
+
+    public List<LogDTO> getAllLog() {
 
         return logRepository.findAll().stream().map(LogDTO::new).toList();
     }

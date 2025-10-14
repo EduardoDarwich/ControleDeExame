@@ -31,10 +31,10 @@ public class SecurityConfiguration {
 
                         .requestMatchers("/**").permitAll() // apenas para teste, libera tudo
 
-                        .requestMatchers(HttpMethod.POST, "/patient/register").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/patient/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "admin/register").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/patient/GetAllPatient").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/patient/GetAllPatient").permitAll()
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

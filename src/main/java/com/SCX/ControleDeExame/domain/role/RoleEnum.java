@@ -1,4 +1,4 @@
-package com.SCX.ControleDeExame.domain.roleEnum;
+package com.SCX.ControleDeExame.domain.role;
 
 public enum RoleEnum {
     ADMIN("admin"),

@@ -1,7 +1,10 @@
+
 package com.SCX.ControleDeExame.controller;
 
-import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryDTO;
-import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
+import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
+import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLabUserDTO;
+import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLaboratoryDTO;
+import com.SCX.ControleDeExame.service.ClinicService;
 import com.SCX.ControleDeExame.service.LaboratoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +20,19 @@ public class LaboratoryController {
 
     @Autowired
     LaboratoryService laboratoryService;
+    @Autowired
+    ClinicService clinicService;
 
     @PostMapping("/register")
-    public ResponseEntity register (@RequestBody @Valid LaboratoryDTO data){
-        Laboratory laboratory = laboratoryService.registerLaboratory(data);
-        return ResponseEntity.status(HttpStatus.CREATED).body(laboratory);
+    public ResponseEntity register (@RequestBody @Valid CreateLaboratoryDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT){
+         clinicService.registerNewLaboratory(data, dataT);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/register/Adm")
+    public ResponseEntity registerAdm (@RequestBody @Valid CreateLabUserDTO data){
+        laboratoryService.registerUserAdminLab(data);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/delete/{id}")
