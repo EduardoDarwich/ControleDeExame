@@ -33,6 +33,7 @@ public class SecurityConfiguration {
 
                         .requestMatchers(HttpMethod.POST, "/patient/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/laboratory/register/User").hasRole("LaboratoryAdimin")
                         .requestMatchers(HttpMethod.POST, "admin/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/patient/GetAllPatient").permitAll()
                         .anyRequest().permitAll()

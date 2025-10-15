@@ -2,6 +2,7 @@
 package com.SCX.ControleDeExame.controller;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
+import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLabUserAdmDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLabUserDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLaboratoryDTO;
 import com.SCX.ControleDeExame.service.ClinicService;
@@ -30,9 +31,16 @@ public class LaboratoryController {
     }
 
     @PostMapping("/register/Adm")
-    public ResponseEntity registerAdm (@RequestBody @Valid CreateLabUserDTO data){
+    public ResponseEntity registerAdm (@RequestBody @Valid CreateLabUserAdmDTO data){
         laboratoryService.registerUserAdminLab(data);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("register/User")
+    public ResponseEntity registerUserLab (@RequestBody @Valid CreateLabUserDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT){
+        laboratoryService.registerUserLab(data, dataT);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+
     }
 
     @DeleteMapping("/delete/{id}")

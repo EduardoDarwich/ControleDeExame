@@ -1,12 +1,11 @@
 package com.SCX.ControleDeExame.service;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
+import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLabUserAdmDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLabUserDTO;
-import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLaboratoryDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryVerificDTO;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
-import com.SCX.ControleDeExame.domain.patient.Patient;
 import com.SCX.ControleDeExame.domain.role.Role;
 import com.SCX.ControleDeExame.domain.user_lab.UserLab;
 import com.SCX.ControleDeExame.domain.user_lab.UserLabId;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -44,7 +42,7 @@ public class LaboratoryService {
 
 
     //Metodo para registrar um usuario administrador para o laboratorio
-    public UserLab registerUserAdminLab(CreateLabUserDTO data) {
+    public UserLab registerUserAdminLab(CreateLabUserAdmDTO data) {
         Laboratory laboratory = laboratoryRepository.findByCnpj(data.cnpj());
         Role laboratoryAdmin = roleRepository.findByName("LaboratoryAdmin");
 
@@ -82,7 +80,7 @@ public class LaboratoryService {
     }
     //Metodo para registrar um usuario comum do laboratório
     public UserLab registerUserLab(CreateLabUserDTO data, RequestTokenDTO dataT){
-        var idC = dataT.toString().replace("RequestTokenDTO[Token=", "").replace("]", "");
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         UserLab userLab = userLabRepository.findByAuthId_Id(UUID.fromString(id));
         var idLab = userLab.getLaboratoryId().getId();
@@ -106,12 +104,15 @@ public class LaboratoryService {
         newAuth.getRoles().add(laboratoryUser);
         authRepository.save(newAuth);
 
+        UserLabId userLabId = new UserLabId(newAuth.getId(), laboratory.getId());
+
         try {
             UserLab newUserLab = new UserLab();
+            newUserLab.setId(userLabId);
             newUserLab.setLaboratoryId(laboratory);
             newUserLab.setAuthId(newAuth);
             newUserLab.setEmail(data.email());
-            return userLabRepository.save(userLab);
+            return userLabRepository.save(newUserLab);
         } catch (Exception e) {
             authRepository.delete(newAuth);
             e.printStackTrace();

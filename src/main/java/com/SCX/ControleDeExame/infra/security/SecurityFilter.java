@@ -31,7 +31,6 @@ public class SecurityFilter extends OncePerRequestFilter {
         var token = this.recoverToken(request);
         if(token != null){
             var id = tokenService.registerUser(token);
-            System.out.println(id + "asdasdasd");
             UserDetails auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("paciente não encontrado"));
 
             var authentication = new UsernamePasswordAuthenticationToken(auth, null, auth.getAuthorities());
