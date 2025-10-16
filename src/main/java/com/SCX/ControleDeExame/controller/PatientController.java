@@ -43,10 +43,6 @@ public class PatientController {
 
     }
 
-    @GetMapping("/GetPatientByEmail")
-    public ResponseEntity getByEmail(@RequestBody @Valid PatientDTO data){
-        return ResponseEntity.ok(patientService.getPatientByEmail(data));
-    }
 
     @GetMapping("/GetPatientById")
     public ResponseEntity getById(@RequestBody @Valid RequestTokenDTO data){

@@ -62,7 +62,7 @@ public class AdminService {
     //Metodo para criar um usuário de adiministrador
     public Admin registerAdm(CreateAdminDTO data, RequestTokenDTO dataT) {
         //Criando instancias de usuario
-        var idC = dataT.toString().replace("RequestTokenDTO[Token=", "").replace("]", "");
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         var admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
         Clinic clinic = clinicRepository.findById(admin.getClinicId().getId()).orElseThrow(() -> new RuntimeException("Clinica não encontrada"));
@@ -75,6 +75,7 @@ public class AdminService {
         String encryptedPassword = new BCryptPasswordEncoder().encode(senhaTemp);
 
         Auth newAuth = new Auth();
+        newAuth.setName(data.name());
         newAuth.setUsernameKey(data.email());
         newAuth.setPassword_key(encryptedPassword);
         newAuth.setActive(false);
@@ -88,13 +89,10 @@ public class AdminService {
         clinic.getUsers().add(newAuth);
         clinicRepository.save(clinic);
 
-
         try {
 
             //Cadastrando dados de admin ao usuario novo;
             Admin newAdmin = new Admin();
-            newAdmin.setName(data.name());
-            newAdmin.setEmail(data.email());
             newAdmin.setTelephone(data.telephone());
             newAdmin.setCpf(data.cpf());
             newAdmin.setAuthId(newAuth);
@@ -154,15 +152,13 @@ public class AdminService {
         Timestamp expirationToken = Timestamp.valueOf(LocalDateTime.now().plusDays(1));
         Boolean token_status = true;
         String encryptedPassword = new BCryptPasswordEncoder().encode(senhaTemp);
-        Auth newAuth = new Auth(data.cpf(), encryptedPassword, token, status, expirationToken, token_status);
+        Auth newAuth = new Auth(data.email(), data.name(), encryptedPassword, token, status, expirationToken, token_status);
         authRepository.save(newAuth);
 
 
         try {
             Secretary newSecretary = new Secretary();
             newSecretary.setCpf(data.cpf());
-            newSecretary.setName(data.name());
-            newSecretary.setEmail(data.email());
             newSecretary.setAuthId(newAuth);
             return secretaryRepository.save(newSecretary);
 
@@ -174,51 +170,11 @@ public class AdminService {
 
     }
 
-    public Laboratory registerLaboratory(CreateLaboratoryDTO data) {
-
-        String senhaTemp = UUID.randomUUID().toString().substring(0, 8);
-
-        String token = UUID.randomUUID().toString();
-
-        Boolean status = false;
-        Timestamp expirationToken = Timestamp.valueOf(LocalDateTime.now().plusDays(1));
-        Boolean token_status = true;
-
-        String encryptedPassword = new BCryptPasswordEncoder().encode(senhaTemp);
-
-        Auth newAuth = new Auth(data.cnpj(), encryptedPassword, token, status, expirationToken, token_status);
-        authRepository.save(newAuth);
 
 
-        try {
-            Laboratory newLaboratory = new Laboratory();
-            newLaboratory.setName(data.name());
-            newLaboratory.setAddress(data.address());
-            newLaboratory.setTelephone(data.telephone());
-            return laboratoryRepository.save(newLaboratory);
 
-        } catch (Exception e) {
-            authRepository.delete(newAuth);
-            e.printStackTrace();
-            throw e;
-        }
 
-    }
 
-    public Secretary updateSecretary(SecretaryDTO data, UUID uuid) {
-        Secretary secretaryUpdate = secretaryRepository.findById(uuid).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
-        secretaryUpdate.setTelephone(data.telephone());
-        return secretaryRepository.save(secretaryUpdate);
-
-    }
-
-    public void disableSecretary(RequestSecretaryEmailDTO data) {
-        String email = data.Email();
-        Secretary secretary = secretaryRepository.findByEmail(email);
-        Auth auth = authRepository.findById(secretary.getAuthId().getId()).orElseThrow();
-        auth.setActive(false);
-
-    }
 /*
     public void disableLaboratory(GetLaboratoryCNPJDTO data) {
         String cnpj = data.cnpj();

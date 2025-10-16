@@ -50,7 +50,7 @@ public class PatientService {
             Boolean token_status = true;
 
             String encryptedPassword = new BCryptPasswordEncoder().encode(senhaTemp);
-            Auth newAuth = new Auth(data.email(), encryptedPassword, token, status, expirationToken, token_status);
+            Auth newAuth = new Auth(data.email(), data.name(), encryptedPassword, token, status, expirationToken, token_status);
 
             newAuth.getRoles().add(patient);
             authRepository.save(newAuth);
@@ -58,8 +58,6 @@ public class PatientService {
             try {
                 Patient newPatient = new Patient();
                 newPatient.setCpf(data.cpf());
-                newPatient.setName(data.name());
-                newPatient.setEmail(data.email());
                 newPatient.setAuthId(newAuth);
                 patientRepository.save(newPatient);
 
@@ -95,10 +93,6 @@ public class PatientService {
         return patientRepository.findAll().stream().map(GetAllPatientDTO::new).toList();
     }
 
-    public Patient getPatientByEmail(PatientDTO data) {
-
-        return patientRepository.findByEmail(data.email());
-    }
 
     public Patient getPatientById(RequestTokenDTO data) {
         return patientRepository.findById(UUID.fromString(data.Token())).orElseThrow(() -> new EntityNotFoundException("paciente não encontrado"));

@@ -18,9 +18,7 @@ public interface ExamsRepository extends JpaRepository<Exams, UUID> {
            e.status,
            e.result_value,
            e.result_file_url,
-           e.observation,
-           l.name,
-           p.name
+           e.observation
            )
            
            from Exams e

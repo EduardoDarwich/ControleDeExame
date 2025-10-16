@@ -1,9 +1,9 @@
 package com.SCX.ControleDeExame.service;
 
-import com.SCX.ControleDeExame.dataTransferObject.authDTO.AuthVerificDTO;
-import com.SCX.ControleDeExame.dataTransferObject.authDTO.FirstLoginTokenDTO;
-import com.SCX.ControleDeExame.dataTransferObject.authDTO.FistLoginPasswordDTO;
+import com.SCX.ControleDeExame.dataTransferObject.authDTO.*;
+import com.SCX.ControleDeExame.dataTransferObject.roleDTO.RoleDTO;
 import com.SCX.ControleDeExame.domain.auth.Auth;
+import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.repository.AuthRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +15,10 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 //Classe contendo a logica para fazer a procura no banco de dados
@@ -26,6 +28,9 @@ public class AuthService implements UserDetailsService {
     //Instância automatica da interface AuthRepository
     @Autowired
     AuthRepository authRepository;
+
+    @Autowired
+    TokenService tokenService;
 
     //Metodo do Spring security para realizar a consulta do usuario
     @Override
@@ -70,4 +75,13 @@ public class AuthService implements UserDetailsService {
 
         }
     }
+
+    public PerfilDTO perfil (RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
+        List<RoleDTO> roles = auth.getRoles().stream().map(role -> new RoleDTO(role.getName())).collect(Collectors.toList());
+        return new PerfilDTO(auth.getName(), roles);
+    }
 }
+

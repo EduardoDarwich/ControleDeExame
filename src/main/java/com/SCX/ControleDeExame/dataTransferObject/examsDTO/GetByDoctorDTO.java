@@ -16,8 +16,6 @@ public class GetByDoctorDTO {
     private String result_value;
     private String result_filter_url;
     private String observation;
-    private String laboratory;
-    private String patient;
 
 
 

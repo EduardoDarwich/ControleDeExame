@@ -1,9 +1,6 @@
 package com.SCX.ControleDeExame.controller;
 
-import com.SCX.ControleDeExame.dataTransferObject.authDTO.AuthenticationDTO;
-import com.SCX.ControleDeExame.dataTransferObject.authDTO.FirstLoginTokenDTO;
-import com.SCX.ControleDeExame.dataTransferObject.authDTO.FistLoginPasswordDTO;
-import com.SCX.ControleDeExame.dataTransferObject.authDTO.LoginResponseDTO;
+import com.SCX.ControleDeExame.dataTransferObject.authDTO.*;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.service.AuthService;
@@ -30,7 +27,7 @@ public class AuthController {
     AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity login (@RequestBody @Valid AuthenticationDTO data){
+    public ResponseEntity login(@RequestBody @Valid AuthenticationDTO data) {
         try {
             var passUser = new UsernamePasswordAuthenticationToken(data.usernameKey(), data.password_key());
             var auth = this.authenticationManager.authenticate(passUser);
@@ -38,19 +35,36 @@ public class AuthController {
 
             return ResponseEntity.ok(new LoginResponseDTO(token));
 
-        } catch (Exception e ) {e.printStackTrace();
-            throw e;}
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @PostMapping("/first-login/{token}")
-    public ResponseEntity firstLogin (@RequestBody @Valid FistLoginPasswordDTO data, @PathVariable("token") @Valid FirstLoginTokenDTO dataT){
+    public ResponseEntity firstLogin(@RequestBody @Valid FistLoginPasswordDTO data, @PathVariable("token") @Valid FirstLoginTokenDTO dataT) {
         try {
 
             authService.firstLogin(data, dataT);
             return ResponseEntity.ok().build();
 
-        } catch (Exception e ) {e.printStackTrace();
-            throw e;}
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
+
+    @GetMapping("/perfil")
+    public ResponseEntity perfil(@RequestHeader("Authorization") RequestTokenDTO dataT) {
+        try {
+            PerfilDTO perfil = authService.perfil(dataT);
+            return  ResponseEntity.ok(perfil);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
 
 }

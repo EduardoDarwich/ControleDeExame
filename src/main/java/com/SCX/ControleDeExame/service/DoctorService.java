@@ -70,8 +70,6 @@ public class DoctorService {
                 //Cadastrando dados de médico a esse usuario
                 Doctor newDoctor = new Doctor();
                 newDoctor.setCrm(data.crm());
-                newDoctor.setName(data.name());
-                newDoctor.setEmail(data.email());
                 newDoctor.setAuthId(user);
                 return doctorRepository.save(newDoctor);
 
@@ -89,6 +87,7 @@ public class DoctorService {
 
             newAuth.setPassword_key(encryptedPassword);
             newAuth.setUsernameKey(data.email());
+            newAuth.setName(data.name());
             newAuth.setActive(true);
             newAuth.setLocked(false);
             newAuth.getRoles().add(doctor);
@@ -98,8 +97,6 @@ public class DoctorService {
                 //Cadastrando dados de médico ao usuario novo
                 Doctor newDoctor = new Doctor();
                 newDoctor.setCrm(data.crm());
-                newDoctor.setName(data.name());
-                newDoctor.setEmail(data.email());
                 newDoctor.setAuthId(newAuth);
                 return doctorRepository.save(newDoctor);
             } catch (Exception e) {

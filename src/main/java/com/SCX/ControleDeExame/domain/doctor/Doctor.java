@@ -19,8 +19,6 @@ public class Doctor {
     @Id
     @GeneratedValue
     private UUID id;
-    private String name;
-    private String email;
     private String crm;
     private String telephone;
 

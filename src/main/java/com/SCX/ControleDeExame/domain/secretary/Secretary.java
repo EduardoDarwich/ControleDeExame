@@ -20,8 +20,6 @@ public class Secretary {
     @Id
     @GeneratedValue
     private UUID id;
-    private String name;
-    private String email;
     private String cpf;
     private String telephone;
 

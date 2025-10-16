@@ -24,11 +24,9 @@ public class Patient {
     @Id
     @GeneratedValue
     private UUID id;
-    private String name;
     private Date date_birth;
     private String telephone;
     private String cpf;
-    private String email;
     private String address;
 
     @ManyToOne(cascade = CascadeType.REMOVE)

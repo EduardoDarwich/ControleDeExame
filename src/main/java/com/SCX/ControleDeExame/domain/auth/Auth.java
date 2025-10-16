@@ -38,6 +38,7 @@ public class Auth implements UserDetails {
     @Column(name = "username_key")
     private String usernameKey;
     private String password_key;
+    private String name;
     private String token;
     private Boolean active;
     private Timestamp data_expiration_token;
@@ -72,8 +73,9 @@ public class Auth implements UserDetails {
     @OneToMany(mappedBy = "authId")
     private List<Patient> patients = new ArrayList<>();
 
-    public Auth (String usernameKey, String password_key,  String token, Boolean active, Timestamp data_expiration_token, Boolean token_status){
+    public Auth (String usernameKey, String name, String password_key,  String token, Boolean active, Timestamp data_expiration_token, Boolean token_status){
         this.usernameKey = usernameKey;
+        this.name = name;
         this.password_key = password_key;
         this.token = token;
         this.active = active;

@@ -20,8 +20,6 @@ public class Admin {
     @Id
     @GeneratedValue
     private UUID id;
-    private String name;
-    private String email;
     private String cpf;
     private String telephone;
 

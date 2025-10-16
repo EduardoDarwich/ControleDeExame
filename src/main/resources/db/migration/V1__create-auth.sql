@@ -1,6 +1,7 @@
 --Tabela onde são armazenadas informações do usuário utilizadas na autenticação e controle de segurança
 Create table auth (
 id UUID PRIMARY key, --Id de identificação do usuário
+name text not null,
 username_key text unique not null, --Username do usuário usado para login
 password_key text not null, --Password do usuário usado para login
 active boolean default false, --Status do usuário para definir se está ativo no sistema ou não(usado para restringir acesso sem deletar a conta do banco)

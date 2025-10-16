@@ -69,6 +69,7 @@ public class ClinicService {
 
         Auth newAuth = new Auth();
         newAuth.setUsernameKey(data.email());
+        newAuth.setName(data.name());
         newAuth.setPassword_key(encryptedPassword);
         newAuth.setActive(false);
         newAuth.setToken(token);
@@ -90,7 +91,6 @@ public class ClinicService {
                 clinic.getUsers().add(newAuth);
                 clinicRepository.save(clinic);
 
-                newAdmin.setEmail(data.email());
                 newAdmin.setAuthId(newAuth);
                 newAdmin.setClinicId(clinic);
                 adminRepository.save(newAdmin);
@@ -107,7 +107,7 @@ public class ClinicService {
     //Metodo para registrar um laboratorio
     public void registerNewLaboratory(CreateLaboratoryDTO data, RequestTokenDTO dataT) {
 
-        var idC = dataT.toString().replace("RequestTokenDTO[Token=", "").replace("]", "");
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         var admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
         var clinic = clinicRepository.findById(admin.getClinicId().getId()).orElseThrow(() -> new EntityNotFoundException("Clinica não encontrada"));
