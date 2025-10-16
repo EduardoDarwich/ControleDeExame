@@ -29,7 +29,7 @@ public class Patient {
     private String cpf;
     private String address;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "auth_id", nullable = false, unique = true)
     private Auth authId;
 

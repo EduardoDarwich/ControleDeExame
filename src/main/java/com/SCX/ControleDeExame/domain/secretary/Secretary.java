@@ -23,7 +23,7 @@ public class Secretary {
     private String cpf;
     private String telephone;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "auth_id", nullable = false, unique = true)
     private Auth authId;
 

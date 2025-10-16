@@ -23,7 +23,7 @@ public class UserLab {
     @JoinColumn(name = "id_laboratory")
     private Laboratory laboratoryId;
 
-    @ManyToOne
+    @OneToOne
     @MapsId("idUser")
     @JoinColumn(name = "id_user")
     private Auth authId;

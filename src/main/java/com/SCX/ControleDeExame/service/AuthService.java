@@ -81,7 +81,7 @@ public class AuthService implements UserDetailsService {
         var id = tokenService.registerUser(idC);
         Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
         List<RoleDTO> roles = auth.getRoles().stream().map(role -> new RoleDTO(role.getName())).collect(Collectors.toList());
-        return new PerfilDTO(auth.getName(), roles);
+        return new PerfilDTO(auth.getName(), roles, auth.getUsernameKey());
     }
 }
 

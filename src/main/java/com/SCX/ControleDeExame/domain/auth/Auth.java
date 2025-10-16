@@ -49,7 +49,7 @@ public class Auth implements UserDetails {
     @Column(name = "lock_time")
     private LocalDateTime lockTime;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_role",
             joinColumns = @JoinColumn(name = "id_user"),
@@ -57,21 +57,10 @@ public class Auth implements UserDetails {
     )
     private Set<Role> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "authId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserLab> userLabs = new ArrayList<>();
-
 
     @ManyToMany(mappedBy = "users")
     private List<Clinic> clinics = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "authId")
-    private List<Admin> admins = new ArrayList<>();
-
-    @OneToMany(mappedBy = "authId")
-    private List<Doctor> doctors = new ArrayList<>();
-
-    @OneToMany(mappedBy = "authId")
-    private List<Patient> patients = new ArrayList<>();
 
     public Auth (String usernameKey, String name, String password_key,  String token, Boolean active, Timestamp data_expiration_token, Boolean token_status){
         this.usernameKey = usernameKey;

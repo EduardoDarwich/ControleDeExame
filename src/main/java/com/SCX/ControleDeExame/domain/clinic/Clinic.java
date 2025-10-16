@@ -2,6 +2,7 @@ package com.SCX.ControleDeExame.domain.clinic;
 
 import com.SCX.ControleDeExame.domain.admin.Admin;
 import com.SCX.ControleDeExame.domain.auth.Auth;
+import com.SCX.ControleDeExame.domain.doctor.Doctor;
 import com.SCX.ControleDeExame.domain.examsRequest.ExamsRequest;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.domain.role.Role;
@@ -29,7 +30,7 @@ public class Clinic {
     private String address;
     private String telephone;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "laboratory_cli",
             joinColumns = @JoinColumn(name = "id_clinic"),
@@ -37,8 +38,16 @@ public class Clinic {
     )
     private List<Laboratory> laboratories = new ArrayList<>();
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "doc_cli",
+            joinColumns = @JoinColumn(name = "id_clinic"),
+            inverseJoinColumns = @JoinColumn(name = "id_doctor")
+    )
+    private List<Doctor> doctors = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_cli",
             joinColumns = @JoinColumn(name = "id_clinic"),

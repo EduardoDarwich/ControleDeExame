@@ -1,9 +1,12 @@
 package com.SCX.ControleDeExame.domain.doctor;
 
 import com.SCX.ControleDeExame.domain.auth.Auth;
+import com.SCX.ControleDeExame.domain.clinic.Clinic;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 //Classe representando a tabela "doctor"
@@ -22,9 +25,12 @@ public class Doctor {
     private String crm;
     private String telephone;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "auth_id", nullable = false, unique = true)
     private Auth authId;
+
+    @ManyToMany(mappedBy = "doctors", fetch = FetchType.LAZY)
+    private List<Clinic> clinic = new ArrayList<>();
 
    /* @OneToMany(mappedBy = "doctorId")
     private Doctor doctor;*/

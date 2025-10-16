@@ -2,15 +2,20 @@ package com.SCX.ControleDeExame.controller;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.CreateDoctorDTO;
+import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorVerificDTO;
+import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseDocDataDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsDTO.GetByDoctorDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.ExamsRequestDTO;
+import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.doctor.Doctor;
 
+import com.SCX.ControleDeExame.repository.AuthRepository;
 import com.SCX.ControleDeExame.service.DoctorService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,10 +28,16 @@ public class DoctorController {
     @Autowired
     DoctorService doctorService;
 
+    @Autowired
+    AuthRepository authRepository;
+
     @PostMapping("/register")
-    public ResponseEntity register (@RequestBody @Valid CreateDoctorDTO data){
-        Doctor doctor = doctorService.registerDoctor(data);
-        return ResponseEntity.status(HttpStatus.CREATED).body(doctor);
+    public ResponseEntity register (@RequestBody @Valid CreateDoctorDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT){
+        UserDetails user =  authRepository.findByUsernameKey(data.email());
+        Auth auth = (Auth) user;
+
+         doctorService.registerDoctor(data, dataT);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/delete/{id}")
@@ -53,5 +64,17 @@ public class DoctorController {
                                        ){
         doctorService.requestExams(data, dataT);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/searchDoc")
+    public ResponseEntity searchDoc (@RequestBody @Valid DoctorVerificDTO data, @RequestHeader("Authorization")RequestTokenDTO dataT){
+        boolean response = doctorService.verificDocCli(data, dataT);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/getByCrm")
+    public ResponseEntity<ResponseDocDataDTO> getByCrm (@RequestBody @Valid DoctorVerificDTO data){
+        Doctor doctor = doctorService.doctorVerific(data);
+        return ResponseEntity.ok(new ResponseDocDataDTO(doctor));
     }
 }
