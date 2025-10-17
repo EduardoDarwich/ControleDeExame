@@ -57,6 +57,7 @@ public class LaboratoryService {
 
         Auth newAuth = new Auth();
         newAuth.setUsernameKey(data.email());
+        newAuth.setName(data.name());
         newAuth.setPassword_key(encryptedPassword);
         newAuth.setActive(false);
         newAuth.setToken(token);
@@ -76,10 +77,10 @@ public class LaboratoryService {
             userLab.setEmail(data.email());
             userLabRepository.save(userLab);
 
-            String tokenE = newAuth.getToken();
-            String url = "http://localhost:5173/auth/first-login/" + tokenE;
+            //String tokenE = newAuth.getToken();
+            //String url = "http://localhost:5173/firstLogin" + tokenE;
 
-            emailService.sendEmail(newAuth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
+            //emailService.sendEmail(newAuth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
 
         } catch (Exception e) {
 
@@ -89,6 +90,7 @@ public class LaboratoryService {
         }
 
     }
+
     //Metodo para registrar um usuario comum do laboratório
     public void registerUserLab(CreateLabUserDTO data, RequestTokenDTO dataT){
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
@@ -106,6 +108,7 @@ public class LaboratoryService {
 
         Auth newAuth = new Auth();
         newAuth.setUsernameKey(data.email());
+        newAuth.setName(data.name());
         newAuth.setPassword_key(encryptedPassword);
         newAuth.setActive(false);
         newAuth.setToken(token);
@@ -125,10 +128,10 @@ public class LaboratoryService {
             newUserLab.setEmail(data.email());
             userLabRepository.save(newUserLab);
 
-            String tokenE = newAuth.getToken();
-            String url = "http://localhost:5173/auth/first-login/" + tokenE;
+            //String tokenE = newAuth.getToken();
+            //String url = "http://localhost:5173/firstLogin" + tokenE;
 
-            emailService.sendEmail(newAuth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
+            //emailService.sendEmail(newAuth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
 
         } catch (Exception e) {
             authRepository.delete(newAuth);
