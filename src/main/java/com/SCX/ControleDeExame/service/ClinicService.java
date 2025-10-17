@@ -98,10 +98,10 @@ public class ClinicService {
                 newAdmin.setClinicId(clinic);
                 adminRepository.save(newAdmin);
 
-                String tokenE = newAuth.getToken();
-                String url = "http://localhost:5173/auth/first-login/" + tokenE;
+                //String tokenE = newAuth.getToken();
+                //String url = "http://localhost:5173/firstLogin" + tokenE;
 
-                emailService.sendEmail(newAuth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
+                //emailService.sendEmail(newAuth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
 
             } catch (Exception e) {
                 authRepository.delete(newAuth);
