@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -28,6 +29,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid AuthenticationDTO data) {
+
         try {
             var passUser = new UsernamePasswordAuthenticationToken(data.usernameKey(), data.password_key());
             var auth = this.authenticationManager.authenticate(passUser);
@@ -58,12 +60,24 @@ public class AuthController {
     public ResponseEntity perfil(@RequestHeader("Authorization") RequestTokenDTO dataT) {
         try {
             PerfilDTO perfil = authService.perfil(dataT);
-            return  ResponseEntity.ok(perfil);
+            return ResponseEntity.ok(perfil);
 
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
+    }
+
+    @PostMapping("/verificUserExists")
+    public ResponseEntity verificUserExists(@RequestBody @Valid AuthVerificDTO data) {
+        boolean result = authService.authVerific(data);
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/verificUserActive")
+    public ResponseEntity verificUserActive(@RequestBody @Valid AuthVerificDTO data){
+        boolean result = authService.verificUserActive(data);
+        return ResponseEntity.ok(result);
     }
 
 

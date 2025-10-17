@@ -1,6 +1,7 @@
 package com.SCX.ControleDeExame.controller;
 
 import com.SCX.ControleDeExame.dataTransferObject.adminDTO.CreateAdminDTO;
+import com.SCX.ControleDeExame.dataTransferObject.adminDTO.ResponseAdminClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.service.AdminService;
 import jakarta.validation.Valid;
@@ -19,5 +20,11 @@ public class AdminController {
     public ResponseEntity registerAdmin (@RequestBody @Valid CreateAdminDTO data, @RequestHeader("Authorization") RequestTokenDTO token){
         adminService.registerAdm(data,token);
         return  ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/clinicAdm")
+    public ResponseEntity<ResponseAdminClinicDTO> clinicAdm (@RequestHeader("Authorization") RequestTokenDTO dataT ){
+        ResponseAdminClinicDTO response = adminService.clinicAdm(dataT);
+        return  ResponseEntity.ok(response);
     }
 }

@@ -3,6 +3,7 @@ package com.SCX.ControleDeExame.controller;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.CreateDoctorDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorVerificDTO;
+import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicMedDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseDocDataDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsDTO.GetByDoctorDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.ExamsRequestDTO;
@@ -59,22 +60,32 @@ public class DoctorController {
     }
 
     @PostMapping("/requestExm/{token}")
-    public ResponseEntity requestExam (@RequestBody @Valid ExamsRequestDTO data,
-                                       @PathVariable("token") @Valid RequestTokenDTO dataT
-                                       ){
+    public ResponseEntity requestExam (@RequestBody @Valid ExamsRequestDTO data, @PathVariable("token") @Valid RequestTokenDTO dataT){
         doctorService.requestExams(data, dataT);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/searchDoc")
+    @PostMapping("/searchDoc")
     public ResponseEntity searchDoc (@RequestBody @Valid DoctorVerificDTO data, @RequestHeader("Authorization")RequestTokenDTO dataT){
         boolean response = doctorService.verificDocCli(data, dataT);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/getByCrm")
-    public ResponseEntity<ResponseDocDataDTO> getByCrm (@RequestBody @Valid DoctorVerificDTO data){
-        Doctor doctor = doctorService.doctorVerific(data);
-        return ResponseEntity.ok(new ResponseDocDataDTO(doctor));
+    @PostMapping("/getByCrm")
+    public ResponseEntity getByCrm (@RequestBody @Valid DoctorVerificDTO data){
+        boolean exists= doctorService.doctorVerific(data);
+        return ResponseEntity.ok(exists);
+    }
+
+    @PostMapping("/transferDoctor")
+    public ResponseEntity transferDoctor(@RequestBody @Valid DoctorVerificDTO data, @RequestHeader("Authorization")RequestTokenDTO dataT){
+        doctorService.registerDocUserExists(data, dataT);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/clinicsDoctor")
+    public ResponseEntity<List<ResponseClinicMedDTO>> verifyClinicByDoctor(@RequestHeader("Authorization") RequestTokenDTO dataT){
+        List<ResponseClinicMedDTO> clinics = doctorService.clinicsDoctor(dataT);
+        return ResponseEntity.ok(clinics);
     }
 }
