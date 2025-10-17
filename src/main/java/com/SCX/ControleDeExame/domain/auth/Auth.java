@@ -49,7 +49,7 @@ public class Auth implements UserDetails {
     @Column(name = "lock_time")
     private LocalDateTime lockTime;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
             joinColumns = @JoinColumn(name = "id_user"),

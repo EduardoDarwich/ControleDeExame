@@ -29,7 +29,7 @@ public class Doctor {
     @JoinColumn(name = "auth_id", nullable = false, unique = true)
     private Auth authId;
 
-    @ManyToMany(mappedBy = "doctors", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "doctors", fetch = FetchType.EAGER)
     private List<Clinic> clinic = new ArrayList<>();
 
    /* @OneToMany(mappedBy = "doctorId")

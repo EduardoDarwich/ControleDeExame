@@ -97,6 +97,12 @@ public class AdminService {
             newAdmin.setCpf(data.cpf());
             newAdmin.setAuthId(newAuth);
             newAdmin.setClinicId(clinic);
+
+            String tokenE = newAuth.getToken();
+            String url = "http://localhost:5173/auth/first-login/" + tokenE;
+
+            emailService.sendEmail(newAuth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
+
             return adminRepository.save(newAdmin);
 
         } catch (Exception e) {

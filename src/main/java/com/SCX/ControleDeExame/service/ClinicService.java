@@ -45,6 +45,9 @@ public class ClinicService {
     @Autowired
     LaboratoryRepository laboratoryRepository;
 
+    @Autowired
+    EmailService emailService;
+
     //Metodo para registrar uma clinica
     public Clinic regiterClinic(CreateClinicDTO data) {
         Clinic newClinic = new Clinic();
@@ -94,6 +97,12 @@ public class ClinicService {
                 newAdmin.setAuthId(newAuth);
                 newAdmin.setClinicId(clinic);
                 adminRepository.save(newAdmin);
+
+                String tokenE = newAuth.getToken();
+                String url = "http://localhost:5173/auth/first-login/" + tokenE;
+
+                emailService.sendEmail(newAuth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
+
             } catch (Exception e) {
                 authRepository.delete(newAuth);
                 clinic.getUsers().remove(newAuth);

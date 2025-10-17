@@ -34,15 +34,19 @@ public class LaboratoryService {
 
     @Autowired
     AuthRepository authRepository;
+
     @Autowired
     UserLabRepository userLabRepository;
 
     @Autowired
     RoleRepository roleRepository;
 
+    @Autowired
+    EmailService emailService;
+
 
     //Metodo para registrar um usuario administrador para o laboratorio
-    public UserLab registerUserAdminLab(CreateLabUserAdmDTO data) {
+    public void registerUserAdminLab(CreateLabUserAdmDTO data) {
         Laboratory laboratory = laboratoryRepository.findByCnpj(data.cnpj());
         Role laboratoryAdmin = roleRepository.findByName("LaboratoryAdmin");
 
@@ -70,8 +74,15 @@ public class LaboratoryService {
             userLab.setLaboratoryId(laboratory);
             userLab.setAuthId(newAuth);
             userLab.setEmail(data.email());
-            return userLabRepository.save(userLab);
+            userLabRepository.save(userLab);
+
+            String tokenE = newAuth.getToken();
+            String url = "http://localhost:5173/auth/first-login/" + tokenE;
+
+            emailService.sendEmail(newAuth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
+
         } catch (Exception e) {
+
             authRepository.delete(newAuth);
             e.printStackTrace();
             throw e;
@@ -79,7 +90,7 @@ public class LaboratoryService {
 
     }
     //Metodo para registrar um usuario comum do laboratório
-    public UserLab registerUserLab(CreateLabUserDTO data, RequestTokenDTO dataT){
+    public void registerUserLab(CreateLabUserDTO data, RequestTokenDTO dataT){
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         UserLab userLab = userLabRepository.findByAuthId_Id(UUID.fromString(id));
@@ -112,7 +123,13 @@ public class LaboratoryService {
             newUserLab.setLaboratoryId(laboratory);
             newUserLab.setAuthId(newAuth);
             newUserLab.setEmail(data.email());
-            return userLabRepository.save(newUserLab);
+            userLabRepository.save(newUserLab);
+
+            String tokenE = newAuth.getToken();
+            String url = "http://localhost:5173/auth/first-login/" + tokenE;
+
+            emailService.sendEmail(newAuth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
+
         } catch (Exception e) {
             authRepository.delete(newAuth);
             e.printStackTrace();

@@ -30,7 +30,7 @@ public class Clinic {
     private String address;
     private String telephone;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "laboratory_cli",
             joinColumns = @JoinColumn(name = "id_clinic"),
@@ -38,7 +38,7 @@ public class Clinic {
     )
     private List<Laboratory> laboratories = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "doc_cli",
             joinColumns = @JoinColumn(name = "id_clinic"),
@@ -47,7 +47,7 @@ public class Clinic {
     private List<Doctor> doctors = new ArrayList<>();
 
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_cli",
             joinColumns = @JoinColumn(name = "id_clinic"),

@@ -64,6 +64,9 @@ public class DoctorService {
     @Autowired
     ClinicRepository clinicRepository;
 
+    @Autowired
+    EmailService emailService;
+
     //Metodo para registrar um médico
     public void registerDoctor(CreateDoctorDTO data, RequestTokenDTO dataT) {
 
@@ -100,6 +103,11 @@ public class DoctorService {
             newDoctor.setCrm(data.crm());
             newDoctor.setAuthId(newAuth);
             doctorRepository.save(newDoctor);
+
+            String tokenE = newAuth.getToken();
+            String url = "http://localhost:5173/auth/first-login/" + tokenE;
+
+            emailService.sendEmail(newAuth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
 
             //Adicionadno o médico criado a clinica na qual ele está sendo cadastrado
             clinic.getDoctors().add(newDoctor);
