@@ -2,8 +2,8 @@ package com.SCX.ControleDeExame.service;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.CreateDoctorDTO;
-import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.CreateUserDocExistsDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorVerificDTO;
+import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicMedDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsDTO.GetByDoctorDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.ExamsRequestDTO;
 import com.SCX.ControleDeExame.domain.auth.Auth;
@@ -18,16 +18,13 @@ import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.print.Doc;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 //Classe contendo a logica da entidade do médico
@@ -104,10 +101,10 @@ public class DoctorService {
             newDoctor.setAuthId(newAuth);
             doctorRepository.save(newDoctor);
 
-            String tokenE = newAuth.getToken();
-            String url = "http://localhost:5173/auth/first-login/" + tokenE;
+           //String tokenE = newAuth.getToken();
+           //String url = "http://localhost:5173/firstLogin" + tokenE;
 
-            emailService.sendEmail(newAuth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
+            //emailService.sendEmail(newAuth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
 
             //Adicionadno o médico criado a clinica na qual ele está sendo cadastrado
             clinic.getDoctors().add(newDoctor);
@@ -122,8 +119,9 @@ public class DoctorService {
         }
 
     }
+
     //Metodo para cadastrar um medico que ja existe no sistema em uma clinica
-    public void registerDocUserExists(CreateUserDocExistsDTO data, RequestTokenDTO dataT){
+    public void registerDocUserExists(DoctorVerificDTO data, RequestTokenDTO dataT){
 
         //Criando instâncias do adiministrador que está cadastrando e da clinica que ele está vinculado
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
@@ -138,8 +136,6 @@ public class DoctorService {
             clinicRepository.save(clinic);
         } catch (Exception e){
 
-            clinic.getDoctors().remove(docUser);
-            clinicRepository.save(clinic);
             e.printStackTrace();
             throw e;
         }
@@ -147,17 +143,29 @@ public class DoctorService {
     }
 
     //Metodo para verificar se o médico ja está cadastrado no sistema
-    public Doctor doctorVerific(DoctorVerificDTO data) {
-        Doctor doctor = doctorRepository.findByCrm(data.crm());
-        return doctor;
+    public boolean doctorVerific(DoctorVerificDTO data) {
+        boolean exists = doctorRepository.existsByCrm(data.crm());
+        return exists;
     }
-    //Metodo para verificar se o usuario está cadastrado na clinica
-    public Boolean verificDocCli(DoctorVerificDTO data, RequestTokenDTO dataT){
+
+    //Metodo para devolver as clinicas que o médico está vinculado
+    public List<ResponseClinicMedDTO> clinicsDoctor(RequestTokenDTO dataT) {
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
+        Doctor doctor = doctorRepository.findByAuthId_Id(auth.getId());
+
+        return doctorRepository.findClinicByDoctor(doctor.getId());
+    }
+
+    //Metodo para verificar se o Medico está cadastrado na clinica
+    public boolean verificDocCli(DoctorVerificDTO data, RequestTokenDTO dataT){
 
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         var admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
         Clinic clinic = clinicRepository.findById(admin.getClinicId().getId()).orElseThrow(() -> new RuntimeException("Clinica não encontrada"));
+
         Doctor doctor = doctorRepository.findByCrm(data.crm());
 
         Boolean exists = clinicRepository.existsDoctorClinic(clinic.getId(), doctor.getId());
