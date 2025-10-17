@@ -1,18 +1,15 @@
 package com.SCX.ControleDeExame.service;
 
 import com.SCX.ControleDeExame.dataTransferObject.adminDTO.CreateAdminDTO;
+import com.SCX.ControleDeExame.dataTransferObject.adminDTO.ResponseAdminClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
-import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLaboratoryDTO;
 import com.SCX.ControleDeExame.dataTransferObject.logDTO.LogDTO;
-import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.RequestSecretaryEmailDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.SecretaryDTO;
 import com.SCX.ControleDeExame.domain.admin.Admin;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
-import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.domain.role.Role;
 import com.SCX.ControleDeExame.domain.secretary.Secretary;
-import com.SCX.ControleDeExame.domain.user_lab.UserLab;
 import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.repository.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -23,7 +20,6 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 //@Service indica pro spring que essa class é uma Service
@@ -98,10 +94,10 @@ public class AdminService {
             newAdmin.setAuthId(newAuth);
             newAdmin.setClinicId(clinic);
 
-            String tokenE = newAuth.getToken();
-            String url = "http://localhost:5173/auth/first-login/" + tokenE;
+            //String tokenE = newAuth.getToken();
+            // String url = "http://localhost:5173/firstLogin" + tokenE;
 
-            emailService.sendEmail(newAuth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
+            //emailService.sendEmail(newAuth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
 
             return adminRepository.save(newAdmin);
 
@@ -112,6 +108,16 @@ public class AdminService {
         }
 
 
+    }
+
+    //Metodo para devolver a clinica que o administrador está
+    public ResponseAdminClinicDTO clinicAdm(RequestTokenDTO dataT) {
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
+        Admin admin = adminRepository.findByAuthId_Id(auth.getId());
+        Clinic clinic = clinicRepository.findById(admin.getClinicId().getId()).orElseThrow(() -> new EntityNotFoundException("Clinica não encontrada"));
+        return new ResponseAdminClinicDTO(clinic.getName());
     }
 
     //Metodo para cadastrar um usuario ja existente como adiministrador
@@ -175,10 +181,6 @@ public class AdminService {
         }
 
     }
-
-
-
-
 
 
 /*
