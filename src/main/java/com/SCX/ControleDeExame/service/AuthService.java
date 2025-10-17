@@ -1,10 +1,16 @@
 package com.SCX.ControleDeExame.service;
 
+import com.SCX.ControleDeExame.dataTransferObject.adminDTO.ResponseAdminClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.*;
+import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicMedDTO;
 import com.SCX.ControleDeExame.dataTransferObject.roleDTO.RoleDTO;
+import com.SCX.ControleDeExame.domain.admin.Admin;
 import com.SCX.ControleDeExame.domain.auth.Auth;
+import com.SCX.ControleDeExame.domain.clinic.Clinic;
+import com.SCX.ControleDeExame.domain.doctor.Doctor;
+import com.SCX.ControleDeExame.domain.user_lab.UserLab;
 import com.SCX.ControleDeExame.infra.security.TokenService;
-import com.SCX.ControleDeExame.repository.AuthRepository;
+import com.SCX.ControleDeExame.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,6 +37,18 @@ public class AuthService implements UserDetailsService {
 
     @Autowired
     TokenService tokenService;
+
+    @Autowired
+    AdminRepository adminRepository;
+
+    @Autowired
+    DoctorRepository doctorRepository;
+
+    @Autowired
+    UserLabRepository userLabRepository;
+
+    @Autowired
+    ClinicRepository clinicRepository;
 
     //Metodo do Spring security para realizar a consulta do usuario
     @Override
@@ -63,25 +81,33 @@ public class AuthService implements UserDetailsService {
     }
 
     //Metodo para verificar se um usuário ja está cadastrado no sistema
-    public Auth authVerific(AuthVerificDTO data) {
-        try {
-            Optional<Auth> userOPT = authRepository.findAuthByUsernameKey(data.email());
-            return userOPT.get();
+    public boolean authVerific(AuthVerificDTO data) {
 
-        } catch (Exception e) {
-
-            e.printStackTrace();
-            throw e;
-
+        Optional<Auth> userOPT = authRepository.findAuthByUsernameKey(data.email());
+        if (userOPT.isPresent()) {
+            return true;
+        } else {
+            return false;
         }
+
+
     }
 
-    public PerfilDTO perfil (RequestTokenDTO dataT){
+    //Metodo para devolver o perfil do usuario(nome, role e email)
+    public PerfilDTO perfil(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
         List<RoleDTO> roles = auth.getRoles().stream().map(role -> new RoleDTO(role.getName())).collect(Collectors.toList());
         return new PerfilDTO(auth.getName(), roles, auth.getUsernameKey());
     }
+
+    //Metodo para verificar se o usuario está ativo
+    public boolean verificUserActive(AuthVerificDTO data) {
+        Auth user = (Auth) authRepository.findByUsernameKey(data.email());
+        return user.getActive();
+    }
+
+
 }
 
