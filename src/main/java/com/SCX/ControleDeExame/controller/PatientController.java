@@ -19,11 +19,7 @@ public class PatientController {
     @Autowired
     PatientService patientService;
 
-    @PostMapping("/register")
-    public ResponseEntity register (@RequestBody @Valid PatientDTO data){
-         patientService.registerPatient(data);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
+
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity delete (@PathVariable UUID id){

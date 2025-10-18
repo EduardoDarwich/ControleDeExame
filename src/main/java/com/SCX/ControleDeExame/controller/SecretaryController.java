@@ -1,5 +1,7 @@
 package com.SCX.ControleDeExame.controller;
 
+import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
+import com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.SecretaryDTO;
 import com.SCX.ControleDeExame.domain.secretary.Secretary;
 import com.SCX.ControleDeExame.service.AdminService;
@@ -25,6 +27,12 @@ public class SecretaryController {
     public ResponseEntity register (@RequestBody @Valid SecretaryDTO data){
         Secretary secretary = adminService.registerSecretary(data);
         return ResponseEntity.status(HttpStatus.CREATED).body(secretary);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity register (@RequestBody @Valid PatientDTO data, @RequestHeader("Authorization")RequestTokenDTO dataT){
+        secretaryService.registerPatient(data, dataT);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/delete/{id}")
