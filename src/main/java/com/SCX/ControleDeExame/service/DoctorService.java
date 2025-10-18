@@ -3,7 +3,7 @@ package com.SCX.ControleDeExame.service;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.CreateDoctorDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorVerificDTO;
-import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicMedDTO;
+import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicDocDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsDTO.GetByDoctorDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.ExamsRequestDTO;
 import com.SCX.ControleDeExame.domain.auth.Auth;
@@ -149,7 +149,7 @@ public class DoctorService {
     }
 
     //Metodo para devolver as clinicas que o médico está vinculado
-    public List<ResponseClinicMedDTO> clinicsDoctor(RequestTokenDTO dataT) {
+    public List<ResponseClinicDocDTO> clinicsDoctor(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
