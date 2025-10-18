@@ -58,10 +58,6 @@ public class Auth implements UserDetails {
     private Set<Role> roles = new HashSet<>();
 
 
-    @ManyToMany(mappedBy = "users")
-    private List<Clinic> clinics = new ArrayList<>();
-
-
     public Auth (String usernameKey, String name, String password_key,  String token, Boolean active, Timestamp data_expiration_token, Boolean token_status){
         this.usernameKey = usernameKey;
         this.name = name;

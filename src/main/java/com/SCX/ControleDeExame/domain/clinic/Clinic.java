@@ -5,6 +5,7 @@ import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.doctor.Doctor;
 import com.SCX.ControleDeExame.domain.examsRequest.ExamsRequest;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
+import com.SCX.ControleDeExame.domain.patient.Patient;
 import com.SCX.ControleDeExame.domain.role.Role;
 import com.SCX.ControleDeExame.domain.secretary.Secretary;
 import jakarta.persistence.*;
@@ -49,11 +50,11 @@ public class Clinic {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "user_cli",
+            name = "pat_cli",
             joinColumns = @JoinColumn(name = "id_clinic"),
-            inverseJoinColumns = @JoinColumn(name = "id_user")
+            inverseJoinColumns = @JoinColumn(name = "id_pat")
     )
-    private List<Auth> users = new ArrayList<>();
+    private List<Patient> patients = new ArrayList<>();
 
     @OneToMany(mappedBy = "clinicId")
     private List<Admin> admins = new ArrayList<>();
