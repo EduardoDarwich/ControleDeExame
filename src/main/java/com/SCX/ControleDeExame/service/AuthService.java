@@ -1,14 +1,8 @@
 package com.SCX.ControleDeExame.service;
 
-import com.SCX.ControleDeExame.dataTransferObject.adminDTO.ResponseAdminClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.*;
-import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicMedDTO;
 import com.SCX.ControleDeExame.dataTransferObject.roleDTO.RoleDTO;
-import com.SCX.ControleDeExame.domain.admin.Admin;
 import com.SCX.ControleDeExame.domain.auth.Auth;
-import com.SCX.ControleDeExame.domain.clinic.Clinic;
-import com.SCX.ControleDeExame.domain.doctor.Doctor;
-import com.SCX.ControleDeExame.domain.user_lab.UserLab;
 import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.repository.*;
 import jakarta.persistence.EntityNotFoundException;
