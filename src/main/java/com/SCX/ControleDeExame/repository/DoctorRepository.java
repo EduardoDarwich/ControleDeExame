@@ -1,6 +1,6 @@
 package com.SCX.ControleDeExame.repository;
 
-import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicMedDTO;
+import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicDocDTO;
 import com.SCX.ControleDeExame.domain.doctor.Doctor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,11 +15,11 @@ public interface DoctorRepository extends JpaRepository <Doctor, UUID> {
     boolean existsByCrm(String crm);
 
     @Query("""
-            select new com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicMedDTO(c.name)
+            select new com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicDocDTO(c.name)
             from Clinic c
             join c.doctors d
             where d.id = :doctorId
             """)
-    List<ResponseClinicMedDTO> findClinicByDoctor(@Param("doctorId") UUID doctorId);
+    List<ResponseClinicDocDTO> findClinicByDoctor(@Param("doctorId") UUID doctorId);
 
 }
