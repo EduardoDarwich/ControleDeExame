@@ -2,11 +2,13 @@ package com.SCX.ControleDeExame.service;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.GetAllPatientDTO;
+import com.SCX.ControleDeExame.dataTransferObject.patientDTO.GetPatientByCPFDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientDTO;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.patient.Patient;
 import com.SCX.ControleDeExame.domain.role.Role;
 import com.SCX.ControleDeExame.domain.role.RoleEnum;
+import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.repository.AuthRepository;
 import com.SCX.ControleDeExame.repository.PatientRepository;
 import com.SCX.ControleDeExame.repository.RoleRepository;
@@ -30,46 +32,12 @@ public class PatientService {
     AuthRepository authRepository;
     @Autowired
     RoleRepository roleRepository;
+    @Autowired
+    TokenService tokenService;
 
 
-    public void registerPatient(PatientDTO data) {
-
-        Role patient = roleRepository.findByName("Patient");
-        Auth user = (Auth) authRepository.findByUsernameKey(data.email());
-
-        if (user.getUsernameKey() != null) {
-
-            user.getRoles().add(patient);
-            authRepository.save(user);
-        } else {
-
-            String senhaTemp = UUID.randomUUID().toString().substring(0, 8);
-            String token = UUID.randomUUID().toString();
-            Boolean status = false;
-            Timestamp expirationToken = Timestamp.valueOf(LocalDateTime.now().plusDays(1));
-            Boolean token_status = true;
-
-            String encryptedPassword = new BCryptPasswordEncoder().encode(senhaTemp);
-            Auth newAuth = new Auth(data.email(), data.name(), encryptedPassword, token, status, expirationToken, token_status);
-
-            newAuth.getRoles().add(patient);
-            authRepository.save(newAuth);
-
-            try {
-                Patient newPatient = new Patient();
-                newPatient.setCpf(data.cpf());
-                newPatient.setAuthId(newAuth);
-                patientRepository.save(newPatient);
-
-            } catch (Exception e) {
-                authRepository.delete(newAuth);
-                e.printStackTrace();
-                throw e;
-            }
-        }
 
 
-    }
 
     public void deletePatient(UUID uuid) {
 
