@@ -30,7 +30,7 @@ public class Doctor {
     private Auth authId;
 
     @ManyToMany(mappedBy = "doctors", fetch = FetchType.EAGER)
-    private List<Clinic> clinic = new ArrayList<>();
+    private List<Clinic> clinics = new ArrayList<>();
 
    /* @OneToMany(mappedBy = "doctorId")
     private Doctor doctor;*/
