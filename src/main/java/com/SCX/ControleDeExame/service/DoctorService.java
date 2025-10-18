@@ -144,8 +144,7 @@ public class DoctorService {
 
     //Metodo para verificar se o médico ja está cadastrado no sistema
     public boolean doctorVerific(DoctorVerificDTO data) {
-        boolean exists = doctorRepository.existsByCrm(data.crm());
-        return exists;
+        return doctorRepository.existsByCrm(data.crm());
     }
 
     //Metodo para devolver as clinicas que o médico está vinculado
@@ -168,8 +167,7 @@ public class DoctorService {
 
         Doctor doctor = doctorRepository.findByCrm(data.crm());
 
-        Boolean exists = clinicRepository.existsDoctorClinic(clinic.getId(), doctor.getId());
-        return exists;
+        return clinicRepository.existsDoctorClinic(clinic.getId(), doctor.getId());
     }
 
     public void deleteDoctor(UUID uuid) {

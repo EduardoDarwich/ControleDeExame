@@ -83,8 +83,7 @@ public class AdminService {
         newAuth.getRoles().add(adminRole);
         authRepository.save(newAuth);
 
-        clinic.getUsers().add(newAuth);
-        clinicRepository.save(clinic);
+
 
         try {
 
@@ -99,6 +98,9 @@ public class AdminService {
             // String url = "http://localhost:5173/firstLogin" + tokenE;
 
             //emailService.sendEmail(newAuth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
+
+            clinic.getAdmins().add(newAdmin);
+            clinicRepository.save(clinic);
 
             return adminRepository.save(newAdmin);
 

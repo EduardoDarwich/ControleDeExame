@@ -85,18 +85,18 @@ public class ClinicService {
         if (clinic == null) {
 
             authRepository.delete(newAuth);
-            clinic.getUsers().remove(newAuth);
-
 
         } else {
 
             try {
-                clinic.getUsers().add(newAuth);
-                clinicRepository.save(clinic);
+
 
                 newAdmin.setAuthId(newAuth);
                 newAdmin.setClinicId(clinic);
                 adminRepository.save(newAdmin);
+
+                clinic.getAdmins().add(newAdmin);
+                clinicRepository.save(clinic);
 
                 //String tokenE = newAuth.getToken();
                 //String url = "http://localhost:5173/firstLogin" + tokenE;
@@ -105,7 +105,7 @@ public class ClinicService {
 
             } catch (Exception e) {
                 authRepository.delete(newAuth);
-                clinic.getUsers().remove(newAuth);
+                clinic.getAdmins().remove(newAdmin);
             }
 
         }
