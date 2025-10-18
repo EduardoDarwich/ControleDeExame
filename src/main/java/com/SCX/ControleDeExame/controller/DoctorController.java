@@ -3,12 +3,10 @@ package com.SCX.ControleDeExame.controller;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.CreateDoctorDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorVerificDTO;
-import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicMedDTO;
-import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseDocDataDTO;
+import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicDocDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsDTO.GetByDoctorDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.ExamsRequestDTO;
 import com.SCX.ControleDeExame.domain.auth.Auth;
-import com.SCX.ControleDeExame.domain.doctor.Doctor;
 
 import com.SCX.ControleDeExame.repository.AuthRepository;
 import com.SCX.ControleDeExame.service.DoctorService;
@@ -84,8 +82,10 @@ public class DoctorController {
     }
 
     @GetMapping("/clinicsDoctor")
-    public ResponseEntity<List<ResponseClinicMedDTO>> verifyClinicByDoctor(@RequestHeader("Authorization") RequestTokenDTO dataT){
-        List<ResponseClinicMedDTO> clinics = doctorService.clinicsDoctor(dataT);
+    public ResponseEntity<List<ResponseClinicDocDTO>> verifyClinicByDoctor(@RequestHeader("Authorization") RequestTokenDTO dataT){
+        List<ResponseClinicDocDTO> clinics = doctorService.clinicsDoctor(dataT);
         return ResponseEntity.ok(clinics);
     }
+
+
 }
