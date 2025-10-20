@@ -172,8 +172,8 @@ public class AdminService {
 
     }*/
 
-    //Metodo para criar uma secretaria nova(testar)
-    public Secretary registerSecretary(SecretaryDTO data, RequestTokenDTO dataT) {
+    //Metodo para criar uma secretaria nova
+    public void registerSecretary(SecretaryDTO data, RequestTokenDTO dataT) {
 
 
         //Criando instâncias do adiministrador que está cadastrando e da clinica que ele está vinculado
@@ -209,7 +209,7 @@ public class AdminService {
             newSecretary.setAuthId(newAuth);
             newSecretary.setClinicId(clinic);
             newSecretary.setTelephone(data.telephone());
-            return secretaryRepository.save(newSecretary);
+            secretaryRepository.save(newSecretary);
 
         } catch (Exception e) {
             authRepository.delete(newAuth);
@@ -219,7 +219,7 @@ public class AdminService {
 
     }
 
-    //Metodo para ver ser a secretaria está cadastrada no sistema (testar)
+    //Metodo para ver ser a secretaria está cadastrada no sistema
     public boolean secretaryExists (RequestSecretaryCpfDTO data) {
         return  secretaryRepository.existsByCpf(data.cpf());
     }

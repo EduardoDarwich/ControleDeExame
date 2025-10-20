@@ -2,6 +2,8 @@ package com.SCX.ControleDeExame.service;
 
 import com.SCX.ControleDeExame.dataTransferObject.adminDTO.ResponseAdminClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
+import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliDTO;
+import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponsePatCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.GetPatientByCPFDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.ResponseSecretaryClinicDTO;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -51,7 +54,7 @@ public class SecretaryService {
 
     }
 
-    //Metodo para registrar um paciente que não está cadastrado no sistema(testar)
+    //Metodo para registrar um paciente que não está cadastrado no sistema
     public void registerPatient(PatientDTO data, RequestTokenDTO dataT) {
 
         //Criando instâncias do adiministrador que está cadastrando e da clinica que ele está vinculado
@@ -104,7 +107,7 @@ public class SecretaryService {
 
     }
 
-    //Metodo para ver a clinica que a secretaria está cadastrada (testar)
+    //Metodo para ver a clinica que a secretaria está cadastrada
     public ResponseSecretaryClinicDTO clinicSecretary(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
@@ -114,7 +117,7 @@ public class SecretaryService {
         return new ResponseSecretaryClinicDTO(clinic.getName());
     }
 
-    //Metodo para ver se o paciente está cadastrado na clínica (testar)
+    //Metodo para ver se o paciente está cadastrado na clínica
     public boolean patientCli(GetPatientByCPFDTO data, RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
@@ -123,16 +126,17 @@ public class SecretaryService {
 
         Patient patient = patientRepository.findByCpf(data.cpf());
 
+
         return clinicRepository.existsPatientClinic(clinic.getId(), patient.getId());
 
     }
 
-    //Metodo para ver ser o paciente está cadastrado no sistema (testar)
+    //Metodo para ver ser o paciente está cadastrado no sistema
     public boolean patientExists(GetPatientByCPFDTO data) {
         return patientRepository.existsByCpf(data.cpf());
     }
 
-    //Metodo para cadastrar um paciente ja cadastrado no sistema em uma nova clinica (testar)
+    //Metodo para cadastrar um paciente ja cadastrado no sistema em uma nova clinica
     public void registerPatExistsCli(GetPatientByCPFDTO data, RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
@@ -149,6 +153,17 @@ public class SecretaryService {
             e.printStackTrace();
             throw e;
         }
+    }
+
+    //Metodo para consultar os pacientes de uma clinica pelo Id da secretaria logado
+    public List<ResponsePatCliDTO> patCli (RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        var secretary = secretaryRepository.findByAuthId_Id(UUID.fromString(id));
+        Clinic clinic = clinicRepository.findById(secretary.getClinicId().getId()).orElseThrow(() -> new RuntimeException("Clinica não encontrada"));
+
+        return clinicRepository.findPatByClinic(clinic.getId());
+
     }
 
 
