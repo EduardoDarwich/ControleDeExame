@@ -4,9 +4,13 @@ import com.SCX.ControleDeExame.dataTransferObject.adminDTO.CreateAdminDTO;
 import com.SCX.ControleDeExame.dataTransferObject.adminDTO.ResponseAdminClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliDTO;
+import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.RequestSecretaryCpfDTO;
+import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.SecretaryDTO;
+import com.SCX.ControleDeExame.domain.secretary.Secretary;
 import com.SCX.ControleDeExame.service.AdminService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,10 +23,21 @@ public class AdminController {
     @Autowired
     AdminService adminService;
 
-    @PostMapping("/register")
+    @PostMapping("/registerAdmin")
     public ResponseEntity registerAdmin (@RequestBody @Valid CreateAdminDTO data, @RequestHeader("Authorization") RequestTokenDTO token){
         adminService.registerAdm(data,token);
         return  ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/registerSecretary")
+    public ResponseEntity registerSecretary (@RequestBody @Valid SecretaryDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT){
+        Secretary secretary = adminService.registerSecretary(data,dataT);
+        return ResponseEntity.status(HttpStatus.CREATED).body(secretary);
+    }
+
+    @PostMapping("/verificSecretaryExists")
+    public ResponseEntity verificSecretary (@RequestBody @Valid RequestSecretaryCpfDTO data){
+        return ResponseEntity.ok(adminService.secretaryExists(data));
     }
 
     @GetMapping("/clinicAdm")

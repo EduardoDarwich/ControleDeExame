@@ -1,7 +1,10 @@
 package com.SCX.ControleDeExame.controller;
 
+import com.SCX.ControleDeExame.dataTransferObject.adminDTO.ResponseAdminClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
+import com.SCX.ControleDeExame.dataTransferObject.patientDTO.GetPatientByCPFDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientDTO;
+import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.ResponseSecretaryClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.SecretaryDTO;
 import com.SCX.ControleDeExame.domain.secretary.Secretary;
 import com.SCX.ControleDeExame.service.AdminService;
@@ -20,19 +23,36 @@ public class SecretaryController {
     @Autowired
     SecretaryService secretaryService;
 
-    @Autowired
-    AdminService adminService;
 
-    @PostMapping("/register")
-    public ResponseEntity register (@RequestBody @Valid SecretaryDTO data){
-        Secretary secretary = adminService.registerSecretary(data);
-        return ResponseEntity.status(HttpStatus.CREATED).body(secretary);
-    }
+
 
     @PostMapping("/registerPatient")
     public ResponseEntity register (@RequestBody @Valid PatientDTO data, @RequestHeader("Authorization")RequestTokenDTO dataT){
         secretaryService.registerPatient(data, dataT);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/verificPatCli")
+    public ResponseEntity patVerifyCli (@RequestBody @Valid GetPatientByCPFDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT){
+
+        return ResponseEntity.ok(secretaryService.patientCli(data, dataT));
+    }
+
+    @PostMapping("/verificPatSyst")
+    public ResponseEntity patVerificSyst(@RequestBody @Valid GetPatientByCPFDTO data){
+        return  ResponseEntity.ok(secretaryService.patientExists(data));
+    }
+
+    @PostMapping("transferPat")
+    public ResponseEntity transferPat(@RequestBody @Valid GetPatientByCPFDTO data, RequestTokenDTO dataT){
+        secretaryService.registerPatExistsCli(data, dataT);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/clinicSecretary")
+    public ResponseEntity<ResponseSecretaryClinicDTO> clinicAdm (@RequestHeader("Authorization") RequestTokenDTO dataT ){
+        ResponseSecretaryClinicDTO response = secretaryService.clinicSecretary(dataT);
+        return  ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/delete/{id}")
