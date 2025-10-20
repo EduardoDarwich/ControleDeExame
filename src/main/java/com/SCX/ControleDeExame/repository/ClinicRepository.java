@@ -1,6 +1,7 @@
 package com.SCX.ControleDeExame.repository;
 
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliDTO;
+import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponsePatCliDTO;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -37,4 +38,13 @@ public interface ClinicRepository extends JpaRepository<Clinic, UUID> {
             where c.id = :clinicId
             """)
     List<ResponseDocCliDTO> findDocByClinic(@Param("clinicId") UUID clinicId);
+
+    @Query("""
+            select new com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponsePatCliDTO(a.name, a.active)
+            from Patient p
+            join p.clinics c
+            join p.authId a
+            where c.id = :clinicId
+            """)
+    List<ResponsePatCliDTO> findPatByClinic(@Param("clinicId") UUID clinicId);
 }
