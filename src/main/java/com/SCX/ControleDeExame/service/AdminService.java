@@ -113,6 +113,8 @@ public class AdminService {
 
     }
 
+
+
     //Metodo para devolver a clinica que o administrador está
     public ResponseAdminClinicDTO clinicAdm(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");

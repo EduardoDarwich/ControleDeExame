@@ -37,7 +37,7 @@ public class Patient {
     @OneToMany(mappedBy = "patientId")
     private List<ExamsRequest> examsRequests = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany(mappedBy = "patients")
     private List<Clinic> clinics = new ArrayList<>();
 
 }

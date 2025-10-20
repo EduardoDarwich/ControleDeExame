@@ -29,7 +29,7 @@ public class SecretaryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(secretary);
     }
 
-    @PostMapping("/register")
+    @PostMapping("/registerPatient")
     public ResponseEntity register (@RequestBody @Valid PatientDTO data, @RequestHeader("Authorization")RequestTokenDTO dataT){
         secretaryService.registerPatient(data, dataT);
         return ResponseEntity.status(HttpStatus.CREATED).build();
