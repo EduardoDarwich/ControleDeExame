@@ -5,6 +5,7 @@ import com.SCX.ControleDeExame.dataTransferObject.adminDTO.ResponseAdminClinicDT
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.logDTO.LogDTO;
+import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.RequestSecretaryCpfDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.SecretaryDTO;
 import com.SCX.ControleDeExame.domain.admin.Admin;
 import com.SCX.ControleDeExame.domain.auth.Auth;
@@ -171,23 +172,43 @@ public class AdminService {
 
     }*/
 
+    //Metodo para criar uma secretaria nova(testar)
+    public Secretary registerSecretary(SecretaryDTO data, RequestTokenDTO dataT) {
 
-    public Secretary registerSecretary(SecretaryDTO data) {
 
+        //Criando instâncias do adiministrador que está cadastrando e da clinica que ele está vinculado
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        var admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
+        Clinic clinic = clinicRepository.findById(admin.getClinicId().getId()).orElseThrow(() -> new RuntimeException("Clinica não encontrada"));
+
+        //Criando instâncias de usuario e médico
+        Auth newAuth = new Auth();
+        Secretary newSecretary = new Secretary();
+        Role secretary = roleRepository.findByName("Secretary");
+
+        //Criando senha temporaria e token para primeiro login
         String senhaTemp = UUID.randomUUID().toString().substring(0, 8);
         String token = UUID.randomUUID().toString();
-        Boolean status = false;
         Timestamp expirationToken = Timestamp.valueOf(LocalDateTime.now().plusDays(1));
-        Boolean token_status = true;
         String encryptedPassword = new BCryptPasswordEncoder().encode(senhaTemp);
-        Auth newAuth = new Auth(data.email(), data.name(), encryptedPassword, token, status, expirationToken, token_status);
+
+        newAuth.setPassword_key(encryptedPassword);
+        newAuth.setUsernameKey(data.email());
+        newAuth.setName(data.name());
+        newAuth.setActive(false);
+        newAuth.setToken(token);
+        newAuth.setData_expiration_token(expirationToken);
+        newAuth.setToken_status(true);
+        newAuth.setLocked(false);
+        newAuth.getRoles().add(secretary);
         authRepository.save(newAuth);
 
-
         try {
-            Secretary newSecretary = new Secretary();
             newSecretary.setCpf(data.cpf());
             newSecretary.setAuthId(newAuth);
+            newSecretary.setClinicId(clinic);
+            newSecretary.setTelephone(data.telephone());
             return secretaryRepository.save(newSecretary);
 
         } catch (Exception e) {
@@ -197,6 +218,14 @@ public class AdminService {
         }
 
     }
+
+    //Metodo para ver ser a secretaria está cadastrada no sistema (testar)
+    public boolean secretaryExists (RequestSecretaryCpfDTO data) {
+        return  secretaryRepository.existsByCpf(data.cpf());
+    }
+
+
+
 
 
 /*

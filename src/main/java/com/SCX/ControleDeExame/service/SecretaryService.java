@@ -1,8 +1,10 @@
 package com.SCX.ControleDeExame.service;
 
+import com.SCX.ControleDeExame.dataTransferObject.adminDTO.ResponseAdminClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.GetPatientByCPFDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientDTO;
+import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.ResponseSecretaryClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.SecretaryDTO;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
@@ -58,19 +60,24 @@ public class SecretaryService {
         var secretary = secretaryRepository.findByAuthId_Id(UUID.fromString(id));
         Clinic clinic = clinicRepository.findById(secretary.getClinicId().getId()).orElseThrow(() -> new RuntimeException("Clinica não encontrada"));
 
-
+        Auth newAuth = new Auth();
         Patient newPatient = new Patient();
         Role patient = roleRepository.findByName("Patient");
 
         String senhaTemp = UUID.randomUUID().toString().substring(0, 8);
         String token = UUID.randomUUID().toString();
-        Boolean status = false;
         Timestamp expirationToken = Timestamp.valueOf(LocalDateTime.now().plusDays(1));
-        Boolean token_status = true;
-
         String encryptedPassword = new BCryptPasswordEncoder().encode(senhaTemp);
-        Auth newAuth = new Auth(data.email(), data.name(), encryptedPassword, token, status, expirationToken, token_status);
 
+
+        newAuth.setPassword_key(encryptedPassword);
+        newAuth.setUsernameKey(data.email());
+        newAuth.setName(data.name());
+        newAuth.setActive(false);
+        newAuth.setToken(token);
+        newAuth.setData_expiration_token(expirationToken);
+        newAuth.setToken_status(true);
+        newAuth.setLocked(false);
         newAuth.getRoles().add(patient);
         authRepository.save(newAuth);
 
@@ -89,15 +96,22 @@ public class SecretaryService {
             clinicRepository.save(clinic);
 
         } catch (Exception e) {
-            clinic.getPatients().remove(newPatient);
-            clinicRepository.save(clinic);
-
             authRepository.delete(newAuth);
             e.printStackTrace();
             throw e;
         }
 
 
+    }
+
+    //Metodo para ver a clinica que a secretaria está cadastrada (testar)
+    public ResponseSecretaryClinicDTO clinicSecretary(RequestTokenDTO dataT) {
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
+        Secretary secretary = secretaryRepository.findByAuthId_Id(auth.getId());
+        Clinic clinic = clinicRepository.findById(secretary.getClinicId().getId()).orElseThrow(() -> new EntityNotFoundException("Clinica não encontrada"));
+        return new ResponseSecretaryClinicDTO(clinic.getName());
     }
 
     //Metodo para ver se o paciente está cadastrado na clínica (testar)
