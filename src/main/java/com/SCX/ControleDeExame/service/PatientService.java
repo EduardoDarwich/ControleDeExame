@@ -35,10 +35,6 @@ public class PatientService {
     @Autowired
     TokenService tokenService;
 
-
-
-
-
     public void deletePatient(UUID uuid) {
 
         Patient patient = patientRepository.findById(uuid).orElseThrow(() -> new EntityNotFoundException("paciente não encontrado"));

@@ -137,40 +137,6 @@ public class AdminService {
 
     }
 
-    //Metodo para cadastrar um usuario ja existente como adiministrador
-    /*public Admin registerAdmInUser(CreateAdminDTO data, RequestTokenDTO dataT) {
-        var idC = dataT.toString().replace("RequestTokenDTO[Token=", "").replace("]", "");
-        var id = tokenService.registerUser(idC);
-        var admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
-
-        Role adminRole = roleRepository.findByName("Admin");
-        Optional<Auth> userOPT = authRepository.findAuthByUsernameKey(data.email());
-
-        Auth user = userOPT.get();
-        user.getRoles().add(adminRole);
-        authRepository.save(user);
-
-        try {
-            //Cadastrando dados de admin a esse usuario;
-            Admin newAdmin = new Admin();
-            newAdmin.setName(data.name());
-            newAdmin.setEmail(data.email());
-            newAdmin.setTelephone(data.telephone());
-            newAdmin.setCpf(data.cpf());
-            newAdmin.setAuthId(user);
-            return adminRepository.save(newAdmin);
-
-        } catch (Exception e) {
-            //Removendo a role dele caso tenha problema no cadastro como admin
-            user.getRoles().remove(admin);
-            authRepository.save(user);
-            e.printStackTrace();
-            throw e;
-
-        }
-
-
-    }*/
 
     //Metodo para criar uma secretaria nova
     public void registerSecretary(SecretaryDTO data, RequestTokenDTO dataT) {
@@ -223,10 +189,6 @@ public class AdminService {
     public boolean secretaryExists (RequestSecretaryCpfDTO data) {
         return  secretaryRepository.existsByCpf(data.cpf());
     }
-
-
-
-
 
 /*
     public void disableLaboratory(GetLaboratoryCNPJDTO data) {

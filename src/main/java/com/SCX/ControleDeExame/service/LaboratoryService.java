@@ -45,7 +45,7 @@ public class LaboratoryService {
     EmailService emailService;
 
 
-    //Metodo para registrar um usuario administrador para o laboratorio(testar)
+    //Metodo para registrar um usuario administrador para o laboratorio
     public void registerUserAdminLab(CreateLabUserAdmDTO data) {
         Laboratory laboratory = laboratoryRepository.findByCnpj(data.cnpj());
         Role laboratoryAdmin = roleRepository.findByName("LaboratoryAdmin");
@@ -91,6 +91,8 @@ public class LaboratoryService {
         }
 
     }
+
+
 
     //Metodo para registrar um usuario comum do laboratório
     public void registerUserLab(CreateLabUserDTO data, RequestTokenDTO dataT){

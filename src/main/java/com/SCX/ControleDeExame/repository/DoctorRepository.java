@@ -15,7 +15,7 @@ public interface DoctorRepository extends JpaRepository <Doctor, UUID> {
     boolean existsByCrm(String crm);
 
     @Query("""
-            select new com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicDocDTO(c.name)
+            select new com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicDocDTO(c.name, c.cnpj)
             from Clinic c
             join c.doctors d
             where d.id = :doctorId
