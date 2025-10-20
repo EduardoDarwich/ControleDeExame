@@ -31,8 +31,8 @@ public class AdminController {
 
     @PostMapping("/registerSecretary")
     public ResponseEntity registerSecretary (@RequestBody @Valid SecretaryDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT){
-        Secretary secretary = adminService.registerSecretary(data,dataT);
-        return ResponseEntity.status(HttpStatus.CREATED).body(secretary);
+        adminService.registerSecretary(data,dataT);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/verificSecretaryExists")

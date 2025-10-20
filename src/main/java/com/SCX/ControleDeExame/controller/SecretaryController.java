@@ -2,6 +2,7 @@ package com.SCX.ControleDeExame.controller;
 
 import com.SCX.ControleDeExame.dataTransferObject.adminDTO.ResponseAdminClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
+import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponsePatCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.GetPatientByCPFDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.ResponseSecretaryClinicDTO;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -43,14 +45,14 @@ public class SecretaryController {
         return  ResponseEntity.ok(secretaryService.patientExists(data));
     }
 
-    @PostMapping("transferPat")
-    public ResponseEntity transferPat(@RequestBody @Valid GetPatientByCPFDTO data, RequestTokenDTO dataT){
+    @PostMapping("/transferPat")
+    public ResponseEntity transferPat(@RequestBody @Valid GetPatientByCPFDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT){
         secretaryService.registerPatExistsCli(data, dataT);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/clinicSecretary")
-    public ResponseEntity<ResponseSecretaryClinicDTO> clinicAdm (@RequestHeader("Authorization") RequestTokenDTO dataT ){
+    public ResponseEntity<ResponseSecretaryClinicDTO> clinicSecretary (@RequestHeader("Authorization") RequestTokenDTO dataT ){
         ResponseSecretaryClinicDTO response = secretaryService.clinicSecretary(dataT);
         return  ResponseEntity.ok(response);
     }
@@ -65,5 +67,10 @@ public class SecretaryController {
     public ResponseEntity update (@PathVariable UUID id, @RequestBody @Valid SecretaryDTO data){
         secretaryService.updateSecretary(data, id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/getPatientsCli")
+    public ResponseEntity<List<ResponsePatCliDTO>> getPatients (@RequestHeader("Authorization") RequestTokenDTO dataT){
+        return ResponseEntity.ok(secretaryService.patCli(dataT));
     }
 }
