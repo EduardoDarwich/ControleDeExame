@@ -5,6 +5,7 @@ import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLabUserAdmDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLabUserDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLaboratoryDTO;
+import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.ResponseClinicLabDTO;
 import com.SCX.ControleDeExame.service.ClinicService;
 import com.SCX.ControleDeExame.service.LaboratoryService;
 import jakarta.validation.Valid;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -47,5 +49,10 @@ public class LaboratoryController {
     public ResponseEntity delete (@PathVariable UUID id){
         laboratoryService.deleteLaboratory(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/clinicsLab")
+    public ResponseEntity<List<ResponseClinicLabDTO>> verifyClinicByLab(@RequestHeader("Authorization") RequestTokenDTO dataT){
+        return ResponseEntity.ok(laboratoryService.clinicsLaboratory(dataT));
     }
 }

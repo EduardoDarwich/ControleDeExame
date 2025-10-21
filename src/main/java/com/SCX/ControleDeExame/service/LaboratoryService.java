@@ -4,6 +4,7 @@ import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLabUserAdmDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLabUserDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryVerificDTO;
+import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.ResponseClinicLabDTO;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.domain.role.Role;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -152,6 +155,18 @@ public class LaboratoryService {
             throw e;
         }
     }
+
+    //Metodo para ver todas as clinicas que o laboratorio está cadastrado(testar)
+    public List<ResponseClinicLabDTO> clinicsLaboratory(RequestTokenDTO dataT) {
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
+        Optional<Laboratory> laboratoryOPT =  laboratoryRepository.findById(auth.getId());
+        Laboratory laboratory = laboratoryOPT.get();
+
+        return laboratoryRepository.findClinicByLaboratory(laboratory.getId());
+    }
+
 
     public void deleteLaboratory(UUID uuid) {
 
