@@ -146,14 +146,7 @@ public class LaboratoryService {
 
     }
 
-    //Metodo para verificar se um laboratorio ja está cadastrado no sistema
-    public Laboratory labVerific(LaboratoryVerificDTO data) {
-        try {
-            return laboratoryRepository.findByCnpj(data.cnpj());
-        } catch (Exception e) {
-            throw e;
-        }
-    }
+
 
     //Metodo para ver todas as clinicas que o laboratorio está cadastrado
     public List<ResponseClinicLabDTO> clinicsLaboratory(RequestTokenDTO dataT) {

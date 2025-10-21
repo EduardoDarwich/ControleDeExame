@@ -57,4 +57,9 @@ public class AdminController {
         return ResponseEntity.ok(adminService.verificLabCLi(dataT,data));
     }
 
+    @PostMapping("/verificLabExists")
+    public ResponseEntity verificLabSyst(@RequestBody @Valid LaboratoryVerificDTO data){
+        return ResponseEntity.ok(adminService.labVerific(data));
+    }
+
 }

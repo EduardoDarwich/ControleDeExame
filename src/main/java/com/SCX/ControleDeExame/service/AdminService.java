@@ -206,6 +206,15 @@ public class AdminService {
         return clinicRepository.existsLaboratoryClinic(clinic.getId(),laboratory.getId());
     }
 
+    //Metodo para verificar se um laboratorio ja está cadastrado no sistema
+    public Laboratory labVerific(LaboratoryVerificDTO data) {
+        try {
+            return laboratoryRepository.findByCnpj(data.cnpj());
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
 
 /*
     public void disableLaboratory(GetLaboratoryCNPJDTO data) {
