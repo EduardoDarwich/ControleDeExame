@@ -38,7 +38,7 @@ public class LaboratoryController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("register/User")
+    @PostMapping("/register/User")
     public ResponseEntity registerUserLab (@RequestBody @Valid CreateLabUserDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT){
         laboratoryService.registerUserLab(data, dataT);
         return ResponseEntity.status(HttpStatus.CREATED).build();

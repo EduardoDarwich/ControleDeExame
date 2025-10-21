@@ -156,12 +156,15 @@ public class LaboratoryService {
         }
     }
 
-    //Metodo para ver todas as clinicas que o laboratorio está cadastrado(testar)
+    //Metodo para ver todas as clinicas que o laboratorio está cadastrado
     public List<ResponseClinicLabDTO> clinicsLaboratory(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
-        Optional<Laboratory> laboratoryOPT =  laboratoryRepository.findById(auth.getId());
+        UserLab userLab = userLabRepository.findByAuthId_Id(UUID.fromString(id));
+
+        Optional<Laboratory> laboratoryOPT =  laboratoryRepository.findById(userLab.getLaboratoryId().getId());
+
         Laboratory laboratory = laboratoryOPT.get();
 
         return laboratoryRepository.findClinicByLaboratory(laboratory.getId());
