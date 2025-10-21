@@ -4,6 +4,7 @@ import com.SCX.ControleDeExame.dataTransferObject.adminDTO.CreateAdminDTO;
 import com.SCX.ControleDeExame.dataTransferObject.adminDTO.ResponseAdminClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliDTO;
+import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryVerificDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.RequestSecretaryCpfDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.SecretaryDTO;
 import com.SCX.ControleDeExame.domain.secretary.Secretary;
@@ -49,6 +50,11 @@ public class AdminController {
     @GetMapping("/doctorClinic")
     public ResponseEntity<List<ResponseDocCliDTO>> docCli (@RequestHeader ("Authorization") RequestTokenDTO dataT){
         return ResponseEntity.ok(adminService.docCli(dataT));
+    }
+
+    @PostMapping("/verificLabCli")
+    public ResponseEntity verificLabCli(@RequestHeader("Authorization") RequestTokenDTO dataT, @RequestBody @Valid LaboratoryVerificDTO data){
+        return ResponseEntity.ok(adminService.verificLabCLi(dataT,data));
     }
 
 }

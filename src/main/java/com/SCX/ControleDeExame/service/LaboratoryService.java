@@ -11,10 +11,7 @@ import com.SCX.ControleDeExame.domain.role.Role;
 import com.SCX.ControleDeExame.domain.user_lab.UserLab;
 import com.SCX.ControleDeExame.domain.user_lab.UserLabId;
 import com.SCX.ControleDeExame.infra.security.TokenService;
-import com.SCX.ControleDeExame.repository.AuthRepository;
-import com.SCX.ControleDeExame.repository.LaboratoryRepository;
-import com.SCX.ControleDeExame.repository.RoleRepository;
-import com.SCX.ControleDeExame.repository.UserLabRepository;
+import com.SCX.ControleDeExame.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -46,6 +43,8 @@ public class LaboratoryService {
 
     @Autowired
     EmailService emailService;
+
+
 
 
     //Metodo para registrar um usuario administrador para o laboratorio
@@ -169,6 +168,8 @@ public class LaboratoryService {
 
         return laboratoryRepository.findClinicByLaboratory(laboratory.getId());
     }
+
+
 
 
     public void deleteLaboratory(UUID uuid) {

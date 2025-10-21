@@ -28,7 +28,15 @@ public interface ClinicRepository extends JpaRepository<Clinic, UUID> {
             where c.id = :clinicId and p.id = :patientId
             """)
     boolean existsPatientClinic(@Param("clinicId") UUID clinicId,
-                                @Param("doctorId") UUID patientId);
+                                @Param("patientId") UUID patientId);
+
+    @Query("""
+            select case when count(c) > 0 then true else false end
+            from Clinic c join c.laboratories l
+            where c.id = :clinicId and l.id = :laboratoryId
+            """)
+    boolean existsLaboratoryClinic(@Param("clinicId") UUID clinicId,
+                                   @Param("laboratoryId") UUID laboratoryId);
 
     @Query("""
             select new com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliDTO(d.crm, a.name)
