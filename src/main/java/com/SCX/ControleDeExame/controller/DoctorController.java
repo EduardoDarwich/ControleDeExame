@@ -94,5 +94,10 @@ public class DoctorController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/getClinicActive")
+    public ResponseEntity getClinicActive(@RequestHeader("Authorization") RequestTokenDTO dataT){
+        return ResponseEntity.ok(doctorService.clinicDocActive(dataT));
+    }
+
 
 }

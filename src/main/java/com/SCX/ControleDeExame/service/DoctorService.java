@@ -26,6 +26,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 //Classe contendo a logica da entidade do médico
@@ -181,6 +182,19 @@ public class DoctorService {
 
         doctor.setIdClinic(clinic.getId());
         doctorRepository.save(doctor);
+    }
+
+    //Metodo para retornar a clinica ativa do medico
+    public RequestNameClinicDTO clinicDocActive(RequestTokenDTO dataT) {
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+
+        Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
+
+        Optional<Clinic> clinic = clinicRepository.findById(doctor.getIdClinic());
+
+        return new RequestNameClinicDTO(clinic.get().getName());
+
     }
 
     public void deleteDoctor(UUID uuid) {
