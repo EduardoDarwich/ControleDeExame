@@ -4,6 +4,7 @@ import com.SCX.ControleDeExame.dataTransferObject.adminDTO.CreateAdminDTO;
 import com.SCX.ControleDeExame.dataTransferObject.adminDTO.ResponseAdminClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliDTO;
+import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseLabCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryVerificDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.RequestSecretaryCpfDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.SecretaryDTO;
@@ -13,6 +14,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -60,6 +62,17 @@ public class AdminController {
     @PostMapping("/verificLabExists")
     public ResponseEntity verificLabSyst(@RequestBody @Valid LaboratoryVerificDTO data){
         return ResponseEntity.ok(adminService.labVerific(data));
+    }
+
+    @PostMapping("/transferLab")
+    public ResponseEntity transferLab(@RequestBody @Valid LaboratoryVerificDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT){
+        adminService.registerLabExists(data,dataT);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/getLabCli")
+    public ResponseEntity<List<ResponseLabCliDTO>> getLabCli (@RequestHeader("Authorization") RequestTokenDTO dataT){
+        return ResponseEntity.ok(adminService.labCli(dataT));
     }
 
 }

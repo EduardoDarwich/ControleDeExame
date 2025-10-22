@@ -84,8 +84,8 @@ public class AuthService implements UserDetailsService {
             return false;
         }
 
-
     }
+
 
     //Metodo para devolver o perfil do usuario(nome, role e email)
     public PerfilDTO perfil(RequestTokenDTO dataT) {

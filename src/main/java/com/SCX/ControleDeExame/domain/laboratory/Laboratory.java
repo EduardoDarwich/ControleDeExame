@@ -30,7 +30,7 @@ public class Laboratory {
     private List<UserLab> userLabs = new ArrayList<>();
 
     @ManyToMany(mappedBy = "laboratories")
-    private List<Clinic> clinic = new ArrayList<>();
+    private List<Clinic> clinics = new ArrayList<>();
 
 
 

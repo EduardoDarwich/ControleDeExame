@@ -4,6 +4,7 @@ import com.SCX.ControleDeExame.dataTransferObject.adminDTO.CreateAdminDTO;
 import com.SCX.ControleDeExame.dataTransferObject.adminDTO.ResponseAdminClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliDTO;
+import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseLabCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryVerificDTO;
 import com.SCX.ControleDeExame.dataTransferObject.logDTO.LogDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.RequestSecretaryCpfDTO;
@@ -214,6 +215,41 @@ public class AdminService {
             throw e;
         }
     }
+
+    //Metodo para cadastrar um medico que ja existe no sistema em uma clinica
+    public void registerLabExists(LaboratoryVerificDTO data, RequestTokenDTO dataT){
+
+        //Criando instâncias do adiministrador que está cadastrando e da clinica que ele está vinculado
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        var admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
+        Clinic clinic = clinicRepository.findById(admin.getClinicId().getId()).orElseThrow(() -> new RuntimeException("Clinica não encontrada"));
+
+        Laboratory laboratory = laboratoryRepository.findByCnpj(data.cnpj());
+
+        try {
+            clinic.getLaboratories().add(laboratory);
+            clinicRepository.save(clinic);
+        } catch (Exception e){
+
+            e.printStackTrace();
+            throw e;
+        }
+
+    }
+
+    //Metodo para devolver os laboratorios de uma clinica
+    public List<ResponseLabCliDTO> labCli (RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        var admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
+        Clinic clinic = clinicRepository.findById(admin.getClinicId().getId()).orElseThrow(() -> new RuntimeException("Clinica não encontrada"));
+
+        return clinicRepository.findLabByClinic(clinic.getId());
+    }
+
+    //Metodo para desativar um usuário da secretaria
+
 
 
 /*
