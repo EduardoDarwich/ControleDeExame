@@ -1,10 +1,8 @@
 package com.SCX.ControleDeExame.service;
 
-import com.SCX.ControleDeExame.dataTransferObject.adminDTO.ResponseAdminClinicDTO;
-import com.SCX.ControleDeExame.dataTransferObject.appointment.RegisterAppointment;
+import com.SCX.ControleDeExame.dataTransferObject.appointment.RegisterAppointmentDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliConsultDTO;
-import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponsePatCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.GetPatientByCPFDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientDTO;
@@ -198,8 +196,8 @@ public class SecretaryService {
 
     }
 
-    //Metodo para criar as consultas (testar)
-    public void registerAppointment (RegisterAppointment data, RequestTokenDTO dataT){
+    //Metodo para criar as consultas
+    public void registerAppointment (RegisterAppointmentDTO data, RequestTokenDTO dataT){
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         var secretary = secretaryRepository.findByAuthId_Id(UUID.fromString(id));
@@ -211,13 +209,22 @@ public class SecretaryService {
 
         Patient patient = patientRepository.findByCpf(data.cpf());
 
-        Appointment newAppointment = new Appointment();
-        newAppointment.setClinic(clinic);
-        newAppointment.setPatient(patient);
-        newAppointment.setDoctor(doctor);
-        newAppointment.setDateCreate(LocalDateTime.now());
-        newAppointment.setOpenAppointment(true);
-        appointmentRepository.save(newAppointment);
+        if (!doctor.isAvailable()){
+            System.out.println("deu erro");
+        } else {
+            Appointment newAppointment = new Appointment();
+            newAppointment.setClinic(clinic);
+            newAppointment.setPatient(patient);
+            newAppointment.setDoctor(doctor);
+            newAppointment.setDateCreate(LocalDateTime.now());
+            newAppointment.setOpenAppointment(true);
+            appointmentRepository.save(newAppointment);
+
+            doctor.setAvailable(false);
+            doctorRepository.save(doctor);
+        }
+
+
     }
 
 

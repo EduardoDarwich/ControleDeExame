@@ -7,6 +7,7 @@ import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorVerificDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicDocDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsDTO.GetByDoctorDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.ExamsRequestDTO;
+import com.SCX.ControleDeExame.domain.appointment.Appointment;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
 import com.SCX.ControleDeExame.domain.doctor.Doctor;
@@ -65,6 +66,9 @@ public class DoctorService {
 
     @Autowired
     EmailService emailService;
+
+    @Autowired
+    AppointmentRepository appointmentRepository;
 
     //Metodo para registrar um médico
     public void registerDoctor(CreateDoctorDTO data, RequestTokenDTO dataT) {
@@ -195,6 +199,22 @@ public class DoctorService {
 
         return new RequestNameClinicDTO(clinic.get().getName());
 
+    }
+
+    //Metodo para encerrar uma consulta
+    public void closeAppointment (RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
+        Doctor doctor = doctorRepository.findByAuthId_Id(auth.getId());
+
+        doctor.setAvailable(true);
+        doctorRepository.save(doctor);
+
+        Appointment appointment = appointmentRepository.findByDoctorAvaiable(doctor.getId());
+        appointment.setDateEnd(LocalDateTime.now());
+        appointment.setOpenAppointment(false);
+        appointmentRepository.save(appointment);
     }
 
     public void deleteDoctor(UUID uuid) {
