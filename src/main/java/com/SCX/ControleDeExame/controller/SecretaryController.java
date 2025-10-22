@@ -2,6 +2,8 @@ package com.SCX.ControleDeExame.controller;
 
 import com.SCX.ControleDeExame.dataTransferObject.adminDTO.ResponseAdminClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
+import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestNameClinicDTO;
+import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliConsultDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponsePatCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.GetPatientByCPFDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientDTO;
@@ -73,4 +75,11 @@ public class SecretaryController {
     public ResponseEntity<List<ResponsePatCliDTO>> getPatients (@RequestHeader("Authorization") RequestTokenDTO dataT){
         return ResponseEntity.ok(secretaryService.patCli(dataT));
     }
+
+    @GetMapping("/getDocsAvailable")
+    public ResponseEntity<List<ResponseDocCliConsultDTO>> getDocsAvailable(@RequestHeader("Authorization") RequestTokenDTO dataT){
+        return ResponseEntity.ok(secretaryService.docCLiConsult(dataT));
+    }
+
+
 }

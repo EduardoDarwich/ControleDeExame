@@ -1,6 +1,7 @@
 package com.SCX.ControleDeExame.controller;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
+import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestNameClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.CreateDoctorDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorVerificDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicDocDTO;
@@ -85,6 +86,12 @@ public class DoctorController {
     public ResponseEntity<List<ResponseClinicDocDTO>> verifyClinicByDoctor(@RequestHeader("Authorization") RequestTokenDTO dataT){
         List<ResponseClinicDocDTO> clinics = doctorService.clinicsDoctor(dataT);
         return ResponseEntity.ok(clinics);
+    }
+
+    @PatchMapping("/updateClinicDocPresent")
+    public ResponseEntity updateClinicDoc(@RequestBody @Valid RequestNameClinicDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT){
+        doctorService.updateClinicMed(data, dataT);
+        return ResponseEntity.ok().build();
     }
 
 
