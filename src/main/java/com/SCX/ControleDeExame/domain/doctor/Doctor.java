@@ -24,6 +24,10 @@ public class Doctor {
     private UUID id;
     private String crm;
     private String telephone;
+    private boolean available;
+
+    @Column(name = "id_clinic")
+    private UUID idClinic;
 
     @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "auth_id", nullable = false, unique = true)
