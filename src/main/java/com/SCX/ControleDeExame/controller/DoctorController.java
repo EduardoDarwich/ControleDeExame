@@ -99,5 +99,11 @@ public class DoctorController {
         return ResponseEntity.ok(doctorService.clinicDocActive(dataT));
     }
 
+    @PatchMapping("/closeAppointment")
+    public ResponseEntity closeAppointment(@RequestHeader("Authorization") RequestTokenDTO dataT){
+        doctorService.closeAppointment(dataT);
+        return ResponseEntity.ok().build();
+    }
+
 
 }

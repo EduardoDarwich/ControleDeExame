@@ -1,16 +1,13 @@
 package com.SCX.ControleDeExame.controller;
 
-import com.SCX.ControleDeExame.dataTransferObject.adminDTO.ResponseAdminClinicDTO;
+import com.SCX.ControleDeExame.dataTransferObject.appointment.RegisterAppointmentDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
-import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestNameClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliConsultDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponsePatCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.GetPatientByCPFDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.ResponseSecretaryClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.SecretaryDTO;
-import com.SCX.ControleDeExame.domain.secretary.Secretary;
-import com.SCX.ControleDeExame.service.AdminService;
 import com.SCX.ControleDeExame.service.SecretaryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +76,12 @@ public class SecretaryController {
     @GetMapping("/getDocsAvailable")
     public ResponseEntity<List<ResponseDocCliConsultDTO>> getDocsAvailable(@RequestHeader("Authorization") RequestTokenDTO dataT){
         return ResponseEntity.ok(secretaryService.docCLiConsult(dataT));
+    }
+
+    @PostMapping("/openAppointment")
+    public ResponseEntity openAppointment(@RequestHeader("Authorization") RequestTokenDTO dataT, @RequestBody @Valid RegisterAppointmentDTO data){
+        secretaryService.registerAppointment(data, dataT);
+        return ResponseEntity.ok().build();
     }
 
 
