@@ -1,6 +1,7 @@
 package com.SCX.ControleDeExame.service;
 
 import com.SCX.ControleDeExame.dataTransferObject.adminDTO.ResponseAdminClinicDTO;
+import com.SCX.ControleDeExame.dataTransferObject.appointment.RegisterAppointment;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliConsultDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliDTO;
@@ -9,8 +10,10 @@ import com.SCX.ControleDeExame.dataTransferObject.patientDTO.GetPatientByCPFDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.ResponseSecretaryClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.SecretaryDTO;
+import com.SCX.ControleDeExame.domain.appointment.Appointment;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
+import com.SCX.ControleDeExame.domain.doctor.Doctor;
 import com.SCX.ControleDeExame.domain.patient.Patient;
 import com.SCX.ControleDeExame.domain.role.Role;
 import com.SCX.ControleDeExame.domain.secretary.Secretary;
@@ -24,6 +27,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -46,6 +50,12 @@ public class SecretaryService {
 
     @Autowired
     RoleRepository roleRepository;
+
+    @Autowired
+    AppointmentRepository appointmentRepository;
+
+    @Autowired
+    DoctorRepository doctorRepository;
 
 
     public void deleteSecretary(UUID uuid) {
@@ -187,4 +197,28 @@ public class SecretaryService {
         return clinicRepository.findDocConsultByClinic(clinic.getId());
 
     }
+
+    //Metodo para criar as consultas (testar)
+    public void registerAppointment (RegisterAppointment data, RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        var secretary = secretaryRepository.findByAuthId_Id(UUID.fromString(id));
+        Clinic clinic = clinicRepository.findById(secretary.getClinicId().getId()).orElseThrow(() -> new EntityNotFoundException("Clinica não encontrada"));
+
+        Optional<Auth> auth = authRepository.findAuthByUsernameKey(data.email());
+
+        Doctor doctor = doctorRepository.findByAuthId_Id(auth.get().getId());
+
+        Patient patient = patientRepository.findByCpf(data.cpf());
+
+        Appointment newAppointment = new Appointment();
+        newAppointment.setClinic(clinic);
+        newAppointment.setPatient(patient);
+        newAppointment.setDoctor(doctor);
+        newAppointment.setDateCreate(LocalDateTime.now());
+        newAppointment.setOpenAppointment(true);
+        appointmentRepository.save(newAppointment);
+    }
+
+
 }
