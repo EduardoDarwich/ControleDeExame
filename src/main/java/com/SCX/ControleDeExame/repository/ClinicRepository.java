@@ -1,5 +1,6 @@
 package com.SCX.ControleDeExame.repository;
 
+import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliConsultDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseLabCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponsePatCliDTO;
@@ -13,6 +14,8 @@ import java.util.UUID;
 
 public interface ClinicRepository extends JpaRepository<Clinic, UUID> {
     Clinic findByCnpj(String cnpj);
+
+    Clinic findByName(String name);
 
     @Query(""" 
             select case when count(c) > 0 then true else false end
@@ -64,4 +67,15 @@ public interface ClinicRepository extends JpaRepository<Clinic, UUID> {
             where c.id = :clinicId
             """)
     List<ResponseLabCliDTO> findLabByClinic(@Param("clinicId") UUID clinicId);
+
+    @Query("""
+            select new com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliConsultDTO(a.name, d.available, a.usernameKey)
+            from Doctor d
+            join d.clinics c
+            join d.authId a
+            where c.id = :clinicId and d.idClinic = :clinicId and d.available = true
+            """)
+    List<ResponseDocCliConsultDTO> findDocConsultByClinic(@Param("clinicId") UUID clinicId);
+
+
 }

@@ -12,6 +12,7 @@ import java.util.UUID;
 
 public interface LaboratoryRepository extends JpaRepository <Laboratory, UUID> {
     Laboratory findByCnpj(String cnpj);
+    boolean existsByCnpj(String cnpj);
 
     @Query("""
             select new com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.ResponseClinicLabDTO(c.name, c.cnpj)
