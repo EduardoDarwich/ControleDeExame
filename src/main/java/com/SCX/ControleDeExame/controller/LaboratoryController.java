@@ -26,18 +26,21 @@ public class LaboratoryController {
     @Autowired
     ClinicService clinicService;
 
+    //Rota para registrar um laboratorio
     @PostMapping("/register")
     public ResponseEntity register (@RequestBody @Valid CreateLaboratoryDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT){
          clinicService.registerNewLaboratory(data, dataT);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    //Rota para registrar um administrador do laboratório
     @PostMapping("/register/Adm")
     public ResponseEntity registerAdm (@RequestBody @Valid CreateLabUserAdmDTO data){
         laboratoryService.registerUserAdminLab(data);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    //Rota para registar o usuario do comun do laboratorio
     @PostMapping("/register/User")
     public ResponseEntity registerUserLab (@RequestBody @Valid CreateLabUserDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT){
         laboratoryService.registerUserLab(data, dataT);
@@ -45,12 +48,14 @@ public class LaboratoryController {
 
     }
 
+    //Rota para deletar uma laboratorio
     @DeleteMapping("/delete/{id}")
     public ResponseEntity delete (@PathVariable UUID id){
         laboratoryService.deleteLaboratory(id);
         return ResponseEntity.ok().build();
     }
 
+    //Metodo para listar as clinicas que o laboratorio está cadastrado
     @GetMapping("/clinicsLab")
     public ResponseEntity<List<ResponseClinicLabDTO>> verifyClinicByLab(@RequestHeader("Authorization") RequestTokenDTO dataT){
         return ResponseEntity.ok(laboratoryService.clinicsLaboratory(dataT));

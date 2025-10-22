@@ -25,51 +25,59 @@ public class AdminController {
 
     @Autowired
     AdminService adminService;
-
+    //Rota para registrar um administrador
     @PostMapping("/registerAdmin")
     public ResponseEntity registerAdmin (@RequestBody @Valid CreateAdminDTO data, @RequestHeader("Authorization") RequestTokenDTO token){
         adminService.registerAdm(data,token);
         return  ResponseEntity.ok().build();
     }
 
+    //Rota para registrar uma secretaria
     @PostMapping("/registerSecretary")
     public ResponseEntity registerSecretary (@RequestBody @Valid SecretaryDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT){
         adminService.registerSecretary(data,dataT);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    //Rota para verificar se o usuario da secretaria ja está cadastrado no sistema
     @PostMapping("/verificSecretaryExists")
     public ResponseEntity verificSecretary (@RequestBody @Valid RequestSecretaryCpfDTO data){
         return ResponseEntity.ok(adminService.secretaryExists(data));
     }
 
+    //Rota para devolver a clinica do administrador logado
     @GetMapping("/clinicAdm")
     public ResponseEntity<ResponseAdminClinicDTO> clinicAdm (@RequestHeader("Authorization") RequestTokenDTO dataT ){
         ResponseAdminClinicDTO response = adminService.clinicAdm(dataT);
         return  ResponseEntity.ok(response);
     }
 
+    //Rota para devolver os médicos cadastrados na clinica do administrador
     @GetMapping("/doctorClinic")
     public ResponseEntity<List<ResponseDocCliDTO>> docCli (@RequestHeader ("Authorization") RequestTokenDTO dataT){
         return ResponseEntity.ok(adminService.docCli(dataT));
     }
 
+    //Rota para verificar se o laboratorio ja está na clinica do administrador
     @PostMapping("/verificLabCli")
     public ResponseEntity verificLabCli(@RequestHeader("Authorization") RequestTokenDTO dataT, @RequestBody @Valid LaboratoryVerificDTO data){
         return ResponseEntity.ok(adminService.verificLabCLi(dataT,data));
     }
 
+    //Rota para verificar se o laboratório existe no sistema
     @PostMapping("/verificLabExists")
     public ResponseEntity verificLabSyst(@RequestBody @Valid LaboratoryVerificDTO data){
         return ResponseEntity.ok(adminService.labVerific(data));
     }
 
+    //Rota para cadastrar um laboratório que ja existe no sistema mas não está cadastrado na clinica
     @PostMapping("/transferLab")
     public ResponseEntity transferLab(@RequestBody @Valid LaboratoryVerificDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT){
         adminService.registerLabExists(data,dataT);
         return ResponseEntity.ok().build();
     }
 
+    //Rota para listar todos os laboratórios da clinica do administrador
     @GetMapping("/getLabCli")
     public ResponseEntity<List<ResponseLabCliDTO>> getLabCli (@RequestHeader("Authorization") RequestTokenDTO dataT){
         return ResponseEntity.ok(adminService.labCli(dataT));

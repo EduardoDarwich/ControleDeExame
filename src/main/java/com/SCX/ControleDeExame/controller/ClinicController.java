@@ -19,7 +19,7 @@ public class ClinicController {
     @Autowired
     ClinicService clinicService;
 
-
+    //Rota para criar a clinica
     @PostMapping("/create")
     public ResponseEntity createClinic (@RequestBody @Valid CreateClinicDTO data){
         clinicService.regiterClinic(data);
@@ -27,6 +27,7 @@ public class ClinicController {
         return ResponseEntity.ok().build();
     }
 
+    //Rota para cadastrar o primeiro administrador da clinica
     @PostMapping("/firstAdm")
     public ResponseEntity createFirstAdm (@RequestBody @Valid CreateFirstAdmDTO data){
 

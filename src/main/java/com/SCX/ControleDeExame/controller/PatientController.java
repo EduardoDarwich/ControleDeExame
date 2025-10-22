@@ -20,26 +20,28 @@ public class PatientController {
     PatientService patientService;
 
 
-
+    //Rota para deletar um paciente
     @DeleteMapping("/delete/{id}")
     public ResponseEntity delete (@PathVariable UUID id){
         patientService.deletePatient(id);
         return ResponseEntity.ok().build();
     }
 
+    //Rota para Atualizar um paciente
     @PostMapping("/update/{id}")
     public ResponseEntity update (@PathVariable UUID id, @RequestBody @Valid PatientDTO data){
         patientService.updatePatient(data, id);
         return ResponseEntity.ok().build();
     }
 
+    //Rota para devolver todos os pacientes do sistema
     @GetMapping("/GetAllPatient")
     public ResponseEntity getAll(){
         return ResponseEntity.ok(patientService.getAllPatient());
 
     }
 
-
+    //Rota para devolver um paciente pelo Id
     @GetMapping("/GetPatientById")
     public ResponseEntity getById(@RequestBody @Valid RequestTokenDTO data){
         return ResponseEntity.ok(patientService.getPatientById(data));

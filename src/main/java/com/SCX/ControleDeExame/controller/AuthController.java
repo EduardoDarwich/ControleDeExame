@@ -27,6 +27,7 @@ public class AuthController {
     @Autowired
     AuthService authService;
 
+    //Rota de login
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid AuthenticationDTO data) {
 
@@ -43,6 +44,7 @@ public class AuthController {
         }
     }
 
+    //Rota de first login
     @PostMapping("/first-login/{token}")
     public ResponseEntity firstLogin(@RequestBody @Valid FistLoginPasswordDTO data, @PathVariable("token") @Valid FirstLoginTokenDTO dataT) {
         try {
@@ -56,6 +58,7 @@ public class AuthController {
         }
     }
 
+    //Rota para devolver o perfil do usuario
     @GetMapping("/perfil")
     public ResponseEntity perfil(@RequestHeader("Authorization") RequestTokenDTO dataT) {
         try {
@@ -68,12 +71,14 @@ public class AuthController {
         }
     }
 
+    //Rota para verificar se o usuario existe no sistema
     @PostMapping("/verificUserExists")
     public ResponseEntity verificUserExists(@RequestBody @Valid AuthVerificDTO data) {
         boolean result = authService.authVerific(data);
         return ResponseEntity.ok(result);
     }
 
+    //Rota para verificar se o usuario está ativo
     @PostMapping("/verificUserActive")
     public ResponseEntity verificUserActive(@RequestBody @Valid AuthVerificDTO data){
         boolean result = authService.verificUserActive(data);
