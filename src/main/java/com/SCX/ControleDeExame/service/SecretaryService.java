@@ -2,6 +2,7 @@ package com.SCX.ControleDeExame.service;
 
 import com.SCX.ControleDeExame.dataTransferObject.adminDTO.ResponseAdminClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
+import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliConsultDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponsePatCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.GetPatientByCPFDTO;
@@ -173,6 +174,17 @@ public class SecretaryService {
         secretaryUpdate.setTelephone(data.telephone());
 
         return secretaryRepository.save(secretaryUpdate);
+
+    }
+
+    //Metodo para listar os médicos disponiveis para realizar uma consulta
+    public List<ResponseDocCliConsultDTO> docCLiConsult (RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        var secretary = secretaryRepository.findByAuthId_Id(UUID.fromString(id));
+        Clinic clinic = clinicRepository.findById(secretary.getClinicId().getId()).orElseThrow(() -> new EntityNotFoundException("Clinica não encontrada"));
+
+        return clinicRepository.findDocConsultByClinic(clinic.getId());
 
     }
 }

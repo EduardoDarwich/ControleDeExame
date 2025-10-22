@@ -8,6 +8,7 @@ import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseLabCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryVerificDTO;
 import com.SCX.ControleDeExame.dataTransferObject.logDTO.LogDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.RequestSecretaryCpfDTO;
+import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.RequestSecretaryEmailDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.SecretaryDTO;
 import com.SCX.ControleDeExame.domain.admin.Admin;
 import com.SCX.ControleDeExame.domain.auth.Auth;
@@ -119,8 +120,6 @@ public class AdminService {
 
     }
 
-
-
     //Metodo para devolver a clinica que o administrador está
     public ResponseAdminClinicDTO clinicAdm(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
@@ -141,7 +140,6 @@ public class AdminService {
         return clinicRepository.findDocByClinic(clinic.getId());
 
     }
-
 
     //Metodo para criar uma secretaria nova
     public void registerSecretary(SecretaryDTO data, RequestTokenDTO dataT) {
@@ -208,15 +206,15 @@ public class AdminService {
     }
 
     //Metodo para verificar se um laboratorio ja está cadastrado no sistema
-    public Laboratory labVerific(LaboratoryVerificDTO data) {
+    public boolean labVerific(LaboratoryVerificDTO data) {
         try {
-            return laboratoryRepository.findByCnpj(data.cnpj());
+            return laboratoryRepository.existsByCnpj(data.cnpj());
         } catch (Exception e) {
             throw e;
         }
     }
 
-    //Metodo para cadastrar um medico que ja existe no sistema em uma clinica
+    //Metodo para cadastrar um laboratorio que ja existe no sistema em uma clinica
     public void registerLabExists(LaboratoryVerificDTO data, RequestTokenDTO dataT){
 
         //Criando instâncias do adiministrador que está cadastrando e da clinica que ele está vinculado
@@ -248,35 +246,41 @@ public class AdminService {
         return clinicRepository.findLabByClinic(clinic.getId());
     }
 
-    //Metodo para desativar um usuário da secretaria
+ /*   //Metodo para desativar um usuario da secretaria(testar)
+    public void disableSecretary(RequestSecretaryEmailDTO data) {
+        String email = data.Email();
+        Secretary secretary = secretaryRepository.findByEmail(email);
+        Auth auth = authRepository.findById(secretary.getAuthId().getId()).orElseThrow();
+        auth.setActive(false);
 
+    }
 
+    //Metodo para ativar um usuário da secretaria(testar)
+    public void enableSecretary(RequestSecretaryEmailDTO data) {
+        String email = data.Email();
+        Secretary secretary = secretaryRepository.findByEmail(email);
+        Auth auth = authRepository.findById(secretary.getAuthId().getId()).orElseThrow();
+        auth.setActive(true);
+    }
 
-/*
+    //Metodo para ativar um usuario do laboratorio(testar)
+    public void enableLaboratory(LaboratoryVerificDTO data) {
+        String cnpj = data.cnpj();
+        Laboratory laboratory = laboratoryRepository.findByCnpj(cnpj);
+        Auth auth = authRepository.findById(laboratory.getAuthId().getId()).orElseThrow();
+        auth.setActive(true);
+
+    }
+
+    //Metodo para desativar um usuario do laboratorio(testar)
     public void disableLaboratory(GetLaboratoryCNPJDTO data) {
         String cnpj = data.cnpj();
         Laboratory laboratory = laboratoryRepository.findByCnpj(cnpj);
         Auth auth = authRepository.findById(laboratory.getAuthId().getId()).orElseThrow();
         auth.setActive(false);
 
-    }
-
-    public void enableLaboratory(GetLaboratoryCNPJDTO data) {
-        String cnpj = data.cnpj();
-        Laboratory laboratory = laboratoryRepository.findByCnpj(cnpj);
-        Auth auth = authRepository.findById(laboratory.getAuthId().getId()).orElseThrow();
-        auth.setActive(true);
-
-    }
-
-    public void enableSecretary(RequestSecretaryEmailDTO data) {
-        String email = data.Email();
-        Secretary secretary = secretaryRepository.findByEmail(email);
-        Auth auth = authRepository.findById(secretary.getAuthId().getId()).orElseThrow();
-        auth.setActive(true);
-
     }*/
-
+    
     public List<LogDTO> getAllLog() {
 
         return logRepository.findAll().stream().map(LogDTO::new).toList();

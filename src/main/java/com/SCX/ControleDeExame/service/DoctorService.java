@@ -1,6 +1,7 @@
 package com.SCX.ControleDeExame.service;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
+import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestNameClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.CreateDoctorDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorVerificDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicDocDTO;
@@ -98,11 +99,12 @@ public class DoctorService {
         try {
             //Cadastrando dados de médico ao usuario novo
             newDoctor.setCrm(data.crm());
+            newDoctor.setAvailable(true);
             newDoctor.setAuthId(newAuth);
             doctorRepository.save(newDoctor);
 
-           //String tokenE = newAuth.getToken();
-           //String url = "http://localhost:5173/firstLogin" + tokenE;
+            //String tokenE = newAuth.getToken();
+            //String url = "http://localhost:5173/firstLogin" + tokenE;
 
             //emailService.sendEmail(newAuth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
 
@@ -121,7 +123,7 @@ public class DoctorService {
     }
 
     //Metodo para cadastrar um medico que ja existe no sistema em uma clinica
-    public void registerDocUserExists(DoctorVerificDTO data, RequestTokenDTO dataT){
+    public void registerDocUserExists(DoctorVerificDTO data, RequestTokenDTO dataT) {
 
         //Criando instâncias do adiministrador que está cadastrando e da clinica que ele está vinculado
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
@@ -134,7 +136,7 @@ public class DoctorService {
         try {
             clinic.getDoctors().add(docUser);
             clinicRepository.save(clinic);
-        } catch (Exception e){
+        } catch (Exception e) {
 
             e.printStackTrace();
             throw e;
@@ -158,7 +160,7 @@ public class DoctorService {
     }
 
     //Metodo para verificar se o Medico está cadastrado na clinica
-    public boolean verificDocCli(DoctorVerificDTO data, RequestTokenDTO dataT){
+    public boolean verificDocCli(DoctorVerificDTO data, RequestTokenDTO dataT) {
 
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
@@ -168,6 +170,17 @@ public class DoctorService {
         Doctor doctor = doctorRepository.findByCrm(data.crm());
 
         return clinicRepository.existsDoctorClinic(clinic.getId(), doctor.getId());
+    }
+
+    //Metodo para alterar a clinica que o médico está "logado"
+    public void updateClinicMed(RequestNameClinicDTO data, RequestTokenDTO dataT) {
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
+        Clinic clinic = clinicRepository.findByName(data.name());
+
+        doctor.setIdClinic(clinic.getId());
+        doctorRepository.save(doctor);
     }
 
     public void deleteDoctor(UUID uuid) {
@@ -195,7 +208,7 @@ public class DoctorService {
             LocalDateTime now = LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String dataToString = now.format(formatter);
-            var idC = dataT.toString().replace("RequestTokenDTO[Token=", "").replace("]", "");
+            var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer", "").replace("]", "");
             var id = tokenService.registerUser(idC);
             Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
             ExamsRequest newExamRequest = new ExamsRequest();
@@ -205,6 +218,7 @@ public class DoctorService {
             newExamRequest.setComplement(data.complement());
             newExamRequest.setRequestDate(dataToString);
             requestExamsRepository.save(newExamRequest);
+
             String cnpj = data.cnpj();
             String cpf = data.cpf();
             Laboratory laboratory = laboratoryRepository.findByCnpj(cnpj);
