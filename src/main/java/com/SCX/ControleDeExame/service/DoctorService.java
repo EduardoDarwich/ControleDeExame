@@ -210,8 +210,8 @@ public class DoctorService {
 
     }
 
-    //Metodo para retornar os laboratórios disponiveis na clinica ativa do médico(testar)
-    public List<ResponseDocCliLabDTO> LabByclinicDoc(ResponseDocCliLabDTO data, RequestTokenDTO dataT) {
+    //Metodo para retornar os laboratórios disponiveis na clinica ativa do médico
+    public List<ResponseDocCliLabDTO> LabByclinicDoc( RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
@@ -220,6 +220,7 @@ public class DoctorService {
 
 
             Optional<Clinic> clinic = clinicRepository.findById(doctor.getIdClinic());
+
 
             return doctorRepository.findLabByClinicDoc(doctor.getIdClinic());
 

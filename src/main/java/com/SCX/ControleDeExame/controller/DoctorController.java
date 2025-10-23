@@ -119,9 +119,9 @@ public class DoctorController {
     }
 
     //Rota para retornar os laboratórios disponiveis na clinica que o medico está ativo
-    @PostMapping("/getLabDocCli")
-    public ResponseEntity<List<ResponseDocCliLabDTO>> findLabByDocCli(@RequestHeader("Authorization") RequestTokenDTO dataT, @RequestBody @Valid ResponseDocCliLabDTO data){
-        return ResponseEntity.ok(doctorService.LabByclinicDoc(data, dataT));
+    @GetMapping("/getLabDocCli")
+    public ResponseEntity<List<ResponseDocCliLabDTO>> findLabByDocCli(@RequestHeader("Authorization") RequestTokenDTO dataT){
+        return ResponseEntity.ok(doctorService.LabByclinicDoc( dataT));
     }
 
 

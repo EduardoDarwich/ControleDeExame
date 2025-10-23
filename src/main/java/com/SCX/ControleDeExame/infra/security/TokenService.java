@@ -42,7 +42,6 @@ public class TokenService {
 
     public String registerUser (String token){
         try {
-            System.out.println(token);
             Algorithm algorithm = Algorithm.HMAC256(security);
             return JWT.require(algorithm).withIssuer("api.scx").build().verify(token).getSubject();
         } catch (JWTVerificationException exception){

@@ -44,7 +44,7 @@ public class SecretaryController {
         return ResponseEntity.ok(secretaryService.patientExists(data));
     }
 
-    //Rota para cadastrar um apciente que ja existe no sistema
+    //Rota para cadastrar um paciente que ja existe no sistema
     @PostMapping("/transferPat")
     public ResponseEntity transferPat(@RequestBody @Valid GetPatientByCPFDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT) {
         secretaryService.registerPatExistsCli(data, dataT);
