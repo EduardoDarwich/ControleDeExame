@@ -1,5 +1,6 @@
 package com.SCX.ControleDeExame.repository;
 
+import com.SCX.ControleDeExame.dataTransferObject.appointmentDTO.GetAppointmentOpenDocDTO;
 import com.SCX.ControleDeExame.domain.appointment.Appointment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,4 +17,16 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
             where d.id = :doctorId and a.openAppointment = true
             """)
     Appointment findByDoctorAvaiable(@Param("doctorId") UUID doctorId);
+
+    @Query("""
+            select new com.SCX.ControleDeExame.dataTransferObject.appointmentDTO.GetAppointmentOpenDocDTO(a.name, o.dateCreate)
+            from Appointment o
+            join o.doctor d
+            join o.patient p
+            join p.authId a
+            where d.id = :doctorId and o.openAppointment = true
+            """)
+    GetAppointmentOpenDocDTO findByDoctorAppointmentOpen(@Param("doctorId") UUID doctorId);
+
+
 }

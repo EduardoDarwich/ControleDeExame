@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ExamsRepository extends JpaRepository<Exams, UUID> {
-    Exams findByDoctorId (UUID id);
 
-    @Query("""
+
+ /*   @Query("""
            SELECT new com.SCX.ControleDeExame.dataTransferObject.examsDTO.GetByDoctorDTO(
            e.cid,
            e.status,
@@ -26,5 +26,5 @@ public interface ExamsRepository extends JpaRepository<Exams, UUID> {
            JOIN e.laboratoryId l
            where e.doctor.id = :doctorId
             """)
-    List<GetByDoctorDTO> findAllByDoctorId(@Param("doctorId") UUID doctorId);
+    List<GetByDoctorDTO> findAllByDoctorId(@Param("doctorId") UUID doctorId);*/
 }
