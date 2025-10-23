@@ -193,16 +193,16 @@ public class DoctorService {
     public RequestNameClinicDTO clinicDocActive(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
+        Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
 
         try {
 
-            Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
 
             Optional<Clinic> clinic = clinicRepository.findById(doctor.getIdClinic());
 
             return new RequestNameClinicDTO(clinic.get().getName());
 
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("Null");
 
         }
@@ -211,26 +211,26 @@ public class DoctorService {
     }
 
     //Metodo para retornar os laboratórios disponiveis na clinica ativa do médico(testar)
-    public List<ResponseDocCliLabDTO> LabByclinicDoc(ResponseDocCliLabDTO data, RequestTokenDTO dataT){
+    public List<ResponseDocCliLabDTO> LabByclinicDoc(ResponseDocCliLabDTO data, RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
+        Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
 
         try {
 
-            Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
 
             Optional<Clinic> clinic = clinicRepository.findById(doctor.getIdClinic());
 
             return doctorRepository.findLabByClinicDoc(doctor.getIdClinic());
 
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("Null");
 
         }
     }
 
     //Metodo para encerrar uma consulta
-    public void closeAppointment (RequestTokenDTO dataT){
+    public void closeAppointment(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
