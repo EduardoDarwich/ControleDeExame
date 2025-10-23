@@ -5,6 +5,7 @@ import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestNameClinicDTO
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.CreateDoctorDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorVerificDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicDocDTO;
+import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseDocCliLabDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsDTO.GetByDoctorDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.ExamsRequestDTO;
 import com.SCX.ControleDeExame.domain.appointment.Appointment;
@@ -207,6 +208,25 @@ public class DoctorService {
         }
 
 
+    }
+
+    //Metodo para retornar os laboratórios disponiveis na clinica ativa do médico(testar)
+    public List<ResponseDocCliLabDTO> LabByclinicDoc(ResponseDocCliLabDTO data, RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+
+        try {
+
+            Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
+
+            Optional<Clinic> clinic = clinicRepository.findById(doctor.getIdClinic());
+
+            return doctorRepository.findLabByClinicDoc(doctor.getIdClinic());
+
+        } catch (Exception e){
+            throw new RuntimeException("Null");
+
+        }
     }
 
     //Metodo para encerrar uma consulta

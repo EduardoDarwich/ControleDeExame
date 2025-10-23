@@ -5,6 +5,7 @@ import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestNameClinicDTO
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.CreateDoctorDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorVerificDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicDocDTO;
+import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseDocCliLabDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsDTO.GetByDoctorDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.ExamsRequestDTO;
 import com.SCX.ControleDeExame.domain.auth.Auth;
@@ -115,6 +116,12 @@ public class DoctorController {
     public ResponseEntity closeAppointment(@RequestHeader("Authorization") RequestTokenDTO dataT){
         doctorService.closeAppointment(dataT);
         return ResponseEntity.ok().build();
+    }
+
+    //Rota para retornar os laboratórios disponiveis na clinica que o medico está ativo
+    @PostMapping("/getLabDocCli")
+    public ResponseEntity<List<ResponseDocCliLabDTO>> findLabByDocCli(@RequestHeader("Authorization") RequestTokenDTO dataT, @RequestBody @Valid ResponseDocCliLabDTO data){
+        return ResponseEntity.ok(doctorService.LabByclinicDoc(data, dataT));
     }
 
 
