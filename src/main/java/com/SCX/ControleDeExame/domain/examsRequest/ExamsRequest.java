@@ -1,5 +1,6 @@
 package com.SCX.ControleDeExame.domain.examsRequest;
 
+import com.SCX.ControleDeExame.domain.appointment.Appointment;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
 import com.SCX.ControleDeExame.domain.doctor.Doctor;
@@ -46,5 +47,9 @@ public class ExamsRequest {
     @ManyToOne()
     @JoinColumn(name = "laboratory_id", nullable = false, unique = true)
     private Laboratory laboratoryId;
+
+    @ManyToOne()
+    @JoinColumn(name = "appointment_id" , nullable = false, unique = true)
+    private Appointment appointmentId;
 }
 

@@ -1,5 +1,6 @@
 package com.SCX.ControleDeExame.service;
 
+import com.SCX.ControleDeExame.dataTransferObject.appointmentDTO.GetAppointmentOpenDocDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestNameClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.CreateDoctorDTO;
@@ -8,6 +9,7 @@ import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicDocDTO
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseDocCliLabDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsDTO.GetByDoctorDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.ExamsRequestDTO;
+import com.SCX.ControleDeExame.dataTransferObject.examsTypeDTO.ExamsTypeDTO;
 import com.SCX.ControleDeExame.domain.appointment.Appointment;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
@@ -210,8 +212,17 @@ public class DoctorService {
 
     }
 
+    //Metodo para devolver a consulta atual do medico
+    public GetAppointmentOpenDocDTO returnOpenAppointment(RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
+
+        return appointmentRepository.findByDoctorAppointmentOpen(doctor.getId());
+    }
+
     //Metodo para retornar os laboratórios disponiveis na clinica ativa do médico
-    public List<ResponseDocCliLabDTO> LabByclinicDoc( RequestTokenDTO dataT) {
+    public List<ResponseDocCliLabDTO> LabByclinicDoc(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
@@ -246,6 +257,9 @@ public class DoctorService {
         appointmentRepository.save(appointment);
     }
 
+    /*//Metodo para retornar todos os tipos de exame
+    public List<ExamsTypeDTO>*/
+
     public void deleteDoctor(UUID uuid) {
         Doctor doctor = doctorRepository.findById(uuid).orElseThrow(() -> new EntityNotFoundException("paciente não encontrado"));
         doctorRepository.delete(doctor);
@@ -259,40 +273,45 @@ public class DoctorService {
 
     }
 
-    public List<GetByDoctorDTO> getExamsByDoctor(RequestTokenDTO data) {
+    /*public List<GetByDoctorDTO> getExamsByDoctor(RequestTokenDTO data) {
         var idC = data.toString().replace("RequestTokenDTO[Token=", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Doctor doctorId = doctorRepository.findByAuthId_Id(UUID.fromString(id));
         return examsRepository.findAllByDoctorId(doctorId.getId());
-    }
+    }*/
 
+    //Metodo para fazer a requisição de um exame (testar)
     public void requestExams(ExamsRequestDTO data, RequestTokenDTO dataT) {
         try {
             LocalDateTime now = LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String dataToString = now.format(formatter);
-            var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer", "").replace("]", "");
+            var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
             var id = tokenService.registerUser(idC);
             Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
+            Optional<Clinic> clinic = clinicRepository.findById(doctor.getIdClinic());
+            Patient patient = patientRepository.findByCpf(data.cpf());
+            Laboratory laboratory = laboratoryRepository.findByName(data.name());
+            Appointment appointment = appointmentRepository.findByDoctorAvaiable(doctor.getId());
+
             ExamsRequest newExamRequest = new ExamsRequest();
             newExamRequest.setDoctorId(doctor);
+            newExamRequest.setClinicId(clinic.get());
+            newExamRequest.setPatientId(patient);
+            newExamRequest.setLaboratoryId(laboratory);
+            newExamRequest.setAppointmentId(appointment);
             newExamRequest.setExam_type(data.exam_type());
             newExamRequest.setSample_type(data.sample_type());
             newExamRequest.setComplement(data.complement());
             newExamRequest.setRequestDate(dataToString);
             requestExamsRepository.save(newExamRequest);
 
-            String cnpj = data.cnpj();
-            String cpf = data.cpf();
-            Laboratory laboratory = laboratoryRepository.findByCnpj(cnpj);
-            Patient patient = patientRepository.findByCpf(cpf);
+
+
+
 
             Exams newExam = new Exams();
-            newExam.setStatus("Pendente");
-            newExam.setDoctor(doctor);
             newExam.setRequestId(newExamRequest);
-            newExam.setLaboratoryId(laboratory);
-            newExam.setPatientId(patient);
             examsRepository.save(newExam);
 
 

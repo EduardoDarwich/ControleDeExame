@@ -22,7 +22,6 @@ public class Exams {
     @GeneratedValue
     private UUID id;
     private String cid;
-    private String status;
     private String result_value;
     private String result_file_url;
     private String observation;
@@ -31,17 +30,5 @@ public class Exams {
     @OneToOne()
     @JoinColumn(name = "request_id", nullable = false, unique = true)
     private ExamsRequest requestId;
-
-    @ManyToOne()
-    @JoinColumn(name = "patient_id", nullable = false, unique = true)
-    private Patient patientId;
-
-    @ManyToOne()
-    @JoinColumn(name = "laboratory_id", nullable = false, unique = true)
-    private Laboratory laboratoryId;
-
-    @ManyToOne()
-    @JoinColumn(name = "doctor_id", nullable = false, unique = true)
-    private Doctor doctor;
 
 }

@@ -1,6 +1,6 @@
 package com.SCX.ControleDeExame.service;
 
-import com.SCX.ControleDeExame.dataTransferObject.appointment.RegisterAppointmentDTO;
+import com.SCX.ControleDeExame.dataTransferObject.appointmentDTO.RegisterAppointmentDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliConsultDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponsePatCliDTO;

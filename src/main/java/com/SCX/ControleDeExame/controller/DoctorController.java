@@ -57,11 +57,11 @@ public class DoctorController {
     }
 
     //Rota para Devolver os exames vinculados a um médico
-    @GetMapping("/get/{id}")
+    /*@GetMapping("/get/{id}")
     public ResponseEntity<List<GetByDoctorDTO>> listById (@PathVariable("id") RequestTokenDTO data) {
         List<GetByDoctorDTO> exams = doctorService.getExamsByDoctor(data);
         return ResponseEntity.ok(exams);
-    }
+    }*/
 
     //Rota para fazer uma requisição de exames
     @PostMapping("/requestExm/{token}")
@@ -82,6 +82,13 @@ public class DoctorController {
     public ResponseEntity getByCrm (@RequestBody @Valid DoctorVerificDTO data){
         boolean exists= doctorService.doctorVerific(data);
         return ResponseEntity.ok(exists);
+    }
+
+    //Metodo para Retornar a consulta ativa do médico
+    @GetMapping("/getAppointmentOpen")
+    public ResponseEntity getAppointmentOpen (@RequestHeader("Authorization")RequestTokenDTO dataT){
+
+        return ResponseEntity.ok(doctorService.returnOpenAppointment(dataT));
     }
 
     //Rota para cadastrar um medico que ja está cadastrado no sistema a uma clinica

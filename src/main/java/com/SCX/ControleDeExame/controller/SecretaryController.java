@@ -1,6 +1,6 @@
 package com.SCX.ControleDeExame.controller;
 
-import com.SCX.ControleDeExame.dataTransferObject.appointment.RegisterAppointmentDTO;
+import com.SCX.ControleDeExame.dataTransferObject.appointmentDTO.RegisterAppointmentDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliConsultDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponsePatCliDTO;
@@ -65,7 +65,7 @@ public class SecretaryController {
         return ResponseEntity.ok().build();
     }
 
-    //Rota para atualizara a secretaria
+    //Rota para atualizar a secretaria
     @PostMapping("/update/{id}")
     public ResponseEntity update(@PathVariable UUID id, @RequestBody @Valid SecretaryDTO data) {
         secretaryService.updateSecretary(data, id);
