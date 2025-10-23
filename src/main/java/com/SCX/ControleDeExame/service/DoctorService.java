@@ -193,11 +193,19 @@ public class DoctorService {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
 
-        Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
+        try {
 
-        Optional<Clinic> clinic = clinicRepository.findById(doctor.getIdClinic());
+            Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
 
-        return new RequestNameClinicDTO(clinic.get().getName());
+            Optional<Clinic> clinic = clinicRepository.findById(doctor.getIdClinic());
+
+            return new RequestNameClinicDTO(clinic.get().getName());
+
+        } catch (Exception e){
+            throw new RuntimeException("Null");
+
+        }
+
 
     }
 

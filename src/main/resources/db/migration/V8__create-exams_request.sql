@@ -4,6 +4,7 @@ id UUID primary key, --Id de identificação do pedido de exame no banco de dado
 doctor_id uuid not null, --Id do médico que solicitou o exame
 clinic_id uuid not null,
 patient_id uuid not null,
+laboratory_id uuid not null,
 complement text, -- possiveis complementos para o exame
 exam_type text, --Tipo do exame
 sample_type text, --Tipo de amostra
@@ -12,6 +13,7 @@ request_date text, --data que o pedido foi feito
 executed_date text, --data que o pedido foi entregue
 foreign key (doctor_id) references doctor(id), --definindo a chave estrangeira de médico
 CONSTRAINT fk_clinic FOREIGN KEY (clinic_id) REFERENCES clinic (id) ON DELETE CASCADE ,
-foreign key (patient_id) references patient (id)
+foreign key (patient_id) references patient (id),
+foreign key (laboratory_id) references laboratory(id)
 );
 

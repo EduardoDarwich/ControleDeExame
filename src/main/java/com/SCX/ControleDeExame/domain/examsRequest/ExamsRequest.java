@@ -3,6 +3,7 @@ package com.SCX.ControleDeExame.domain.examsRequest;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
 import com.SCX.ControleDeExame.domain.doctor.Doctor;
+import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.domain.patient.Patient;
 import jakarta.persistence.*;
 import lombok.*;
@@ -41,5 +42,9 @@ public class ExamsRequest {
     @ManyToOne()
     @JoinColumn(name = "patient_id", nullable = false, unique = true)
     private Patient patientId;
+
+    @ManyToOne()
+    @JoinColumn(name = "laboratory_id", nullable = false, unique = true)
+    private Laboratory laboratoryId;
 }
 
