@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ExamsRepository extends JpaRepository<Exams, UUID> {
-
+Exams findByRequestId_Id (UUID id);
 
  /*   @Query("""
            SELECT new com.SCX.ControleDeExame.dataTransferObject.examsDTO.GetByDoctorDTO(

@@ -35,7 +35,8 @@ public interface LaboratoryRepository extends JpaRepository<Laboratory, UUID> {
             e.complement,
             e.examType,
             e.sampleType,
-            e.requestDate
+            e.requestDate,
+            e.id
             )
             from Laboratory l
             join l.examsRequests e

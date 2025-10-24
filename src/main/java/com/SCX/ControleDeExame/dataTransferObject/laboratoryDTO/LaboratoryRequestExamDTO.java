@@ -6,10 +6,12 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.UUID;
 
 @Getter
 public class LaboratoryRequestExamDTO {
     private String nameP;
+    private UUID idReq;
     private String nameC;
     private String nameD;
     private String status;
@@ -19,7 +21,7 @@ public class LaboratoryRequestExamDTO {
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime dateTime;
 
-    public LaboratoryRequestExamDTO(String nameP, String nameC, String nameD, String status, String complement, String typeEx, String typeAm, LocalDateTime dateTime){
+    public LaboratoryRequestExamDTO(String nameP, String nameC, String nameD, String status, String complement, String typeEx, String typeAm, LocalDateTime dateTime, UUID idReq){
         this.nameP = nameP;
         this.nameC = nameC;
         this.nameD = nameD;
@@ -28,5 +30,6 @@ public class LaboratoryRequestExamDTO {
         this.typeEx = typeEx;
         this.typeAm = typeAm;
         this.dateTime = dateTime;
+        this.idReq = idReq;
     }
 }

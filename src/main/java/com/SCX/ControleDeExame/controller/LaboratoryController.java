@@ -2,6 +2,7 @@
 package com.SCX.ControleDeExame.controller;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
+import com.SCX.ControleDeExame.dataTransferObject.examsDTO.ExamsDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.*;
 import com.SCX.ControleDeExame.service.ClinicService;
 import com.SCX.ControleDeExame.service.LaboratoryService;
@@ -62,5 +63,12 @@ public class LaboratoryController {
     @GetMapping("/getRequestExamPendent")
     public ResponseEntity<List<LaboratoryRequestExamDTO>> requestExamLab (@RequestHeader("Authorization") RequestTokenDTO dataT){
         return ResponseEntity.ok(laboratoryService.laboratoryRequestExam(dataT));
+    }
+
+    //Rota para realizar o cadastro do exame
+    @PostMapping("/registerExam")
+    public ResponseEntity registerExam (@RequestBody @Valid ExamsDTO data){
+        laboratoryService.registerResultExames(data);
+        return ResponseEntity.ok().build();
     }
 }

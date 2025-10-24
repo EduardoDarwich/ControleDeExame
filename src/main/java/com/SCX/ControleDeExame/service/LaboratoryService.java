@@ -1,8 +1,11 @@
 package com.SCX.ControleDeExame.service;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
+import com.SCX.ControleDeExame.dataTransferObject.examsDTO.ExamsDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.*;
 import com.SCX.ControleDeExame.domain.auth.Auth;
+import com.SCX.ControleDeExame.domain.exams.Exams;
+import com.SCX.ControleDeExame.domain.examsRequest.ExamsRequest;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.domain.role.Role;
 import com.SCX.ControleDeExame.domain.user_lab.UserLab;
@@ -37,6 +40,12 @@ public class LaboratoryService {
 
     @Autowired
     RoleRepository roleRepository;
+
+    @Autowired
+    ExamsRepository examsRepository;
+
+    @Autowired
+    RequestExamsRepository requestExamsRepository;
 
     @Autowired
     EmailService emailService;
@@ -161,6 +170,23 @@ public class LaboratoryService {
         Laboratory laboratory = laboratoryOPT.get();
 
         return laboratoryRepository.findRequestExamByLaboratory(laboratory.getId());
+    }
+
+    //Metodo para registrar os resultados do exame no sistema
+    public void registerResultExames(ExamsDTO data){
+        Exams exams = examsRepository.findByRequestId_Id(UUID.fromString(data.id()));
+        Optional<ExamsRequest> examsRequest = requestExamsRepository.findById(exams.getRequestId().getId());
+
+        exams.setCid(data.cid());
+        exams.setObservation(data.observation());
+        exams.setResult_value(data.result_value());
+        exams.setResult_file_url(data.result_file_url());
+        examsRepository.save(exams);
+
+        examsRequest.get().setStatus("Finalizado");
+        examsRequest.get().setExecutedDate(LocalDateTime.now());
+        requestExamsRepository.save(examsRequest.get());
+
     }
 
 
