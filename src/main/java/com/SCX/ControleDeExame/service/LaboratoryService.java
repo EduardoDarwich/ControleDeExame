@@ -191,7 +191,6 @@ public class LaboratoryService {
 
 
 
-
     public void deleteLaboratory(UUID uuid) {
 
         Laboratory laboratory = laboratoryRepository.findById(uuid).orElseThrow(() -> new EntityNotFoundException("Registro não encontrado"));

@@ -142,6 +142,12 @@ public class DoctorController {
         return ResponseEntity.ok(doctorService.getExamsType());
     }
 
+    //Rota para retornar todas as devoluções de exame do medico pela clinica que ele está ativo
+    @GetMapping("/getExamsResult")
+    public ResponseEntity<List<DoctorResultExamDTO>> examsResult(@RequestHeader("Authorization") RequestTokenDTO dataT){
+        return ResponseEntity.ok(doctorService.doctorResultExam(dataT));
+    }
+
 
 
 

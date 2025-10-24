@@ -1,6 +1,7 @@
 package com.SCX.ControleDeExame.service;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
+import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorResultExamDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.GetAllPatientDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.GetPatientByCPFDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientDTO;
@@ -68,6 +69,14 @@ public class PatientService {
         return patientRepository.findRequestExamByPatient(patient.getId());
     }
 
+    //Metodo para retornar todos os exames devolvidos
+    public List<DoctorResultExamDTO> patientResultExam(RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Patient patient = patientRepository.findByAuthId_Id(UUID.fromString(id));
+
+        return patientRepository.findResultExamByPatient(patient.getId());
+    }
 
     public Patient getPatientById(RequestTokenDTO data) {
         return patientRepository.findById(UUID.fromString(data.Token())).orElseThrow(() -> new EntityNotFoundException("paciente não encontrado"));

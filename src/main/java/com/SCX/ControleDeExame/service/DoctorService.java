@@ -321,6 +321,15 @@ public class DoctorService {
         }
     }
 
+    //Metodo para retornar as devoluções dos exames
+    public List<DoctorResultExamDTO> doctorResultExam(RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
+
+        return doctorRepository.findByResultExamDoctor(doctor.getId());
+    }
+
     //Metodo para retornar todas as requisições de exame pendente do medico
     public List<DoctorRequestExamDTO> doctorRequestExam(RequestTokenDTO dataT){
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");

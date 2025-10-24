@@ -1,6 +1,7 @@
 package com.SCX.ControleDeExame.repository;
 
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorRequestExamDTO;
+import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorResultExamDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicDocDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseDocCliLabDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryRequestExamDTO;
@@ -54,5 +55,18 @@ public interface DoctorRepository extends JpaRepository <Doctor, UUID> {
             where d.id = :doctorId and e.status = 'Pendente' and e.clinicId.id = d.idClinic
             """)
     List<DoctorRequestExamDTO> findRequestExamByDoctor(@Param("doctorId") UUID doctorId);
+
+    @Query("""
+            select new com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorResultExamDTO(
+            ex.cid,
+            ex.result_value,
+            ex.observation
+            )
+            from Doctor d
+            join d.examsRequests e
+            join e.exams ex
+            where d.id = :doctorId and e.clinicId.id = d.idClinic
+            """)
+    List<DoctorResultExamDTO> findByResultExamDoctor(@Param("doctorId") UUID doctorId);
 
 }
