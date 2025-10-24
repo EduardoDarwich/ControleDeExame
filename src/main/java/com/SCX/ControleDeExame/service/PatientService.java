@@ -4,6 +4,7 @@ import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.GetAllPatientDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.GetPatientByCPFDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientDTO;
+import com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientRequestExamDTO;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.patient.Patient;
 import com.SCX.ControleDeExame.domain.role.Role;
@@ -21,6 +22,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -55,6 +57,15 @@ public class PatientService {
     public List<GetAllPatientDTO> getAllPatient() {
 
         return patientRepository.findAll().stream().map(GetAllPatientDTO::new).toList();
+    }
+
+    //Metodo para retornar todas as requisições de exame pendentes do paciente
+    public List<PatientRequestExamDTO> requestExamPatient (RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Patient patient = patientRepository.findByAuthId_Id(UUID.fromString(id));
+
+        return patientRepository.findRequestExamByPatient(patient.getId());
     }
 
 
