@@ -1,6 +1,7 @@
 package com.SCX.ControleDeExame.repository;
 
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicDocDTO;
+import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryRequestExamDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.ResponseClinicLabDTO;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,9 +11,11 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.UUID;
 
-public interface LaboratoryRepository extends JpaRepository <Laboratory, UUID> {
+public interface LaboratoryRepository extends JpaRepository<Laboratory, UUID> {
     Laboratory findByCnpj(String cnpj);
+
     boolean existsByCnpj(String cnpj);
+
     Laboratory findByName(String name);
 
     @Query("""
@@ -22,4 +25,26 @@ public interface LaboratoryRepository extends JpaRepository <Laboratory, UUID> {
             where l.id = :laboratoryId
             """)
     List<ResponseClinicLabDTO> findClinicByLaboratory(@Param("laboratoryId") UUID laboratoryId);
+
+    @Query("""
+            select new com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryRequestExamDTO(
+            pa.name,
+            c.name,
+            da.name,
+            e.status,
+            e.complement,
+            e.examType,
+            e.sampleType,
+            e.requestDate
+            )
+            from Laboratory l
+            join l.examsRequests e
+            join e.patientId p
+            join p.authId pa
+            join e.clinicId c
+            join e.doctorId d
+            join d.authId da
+            where l.id = :laboratoryId and e.status = 'Pendente'
+            """)
+    List<LaboratoryRequestExamDTO> findRequestExamByLaboratory(@Param("laboratoryId") UUID laboratoryId);
 }

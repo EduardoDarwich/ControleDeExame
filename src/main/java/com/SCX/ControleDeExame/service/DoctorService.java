@@ -3,19 +3,17 @@ package com.SCX.ControleDeExame.service;
 import com.SCX.ControleDeExame.dataTransferObject.appointmentDTO.GetAppointmentOpenDocDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestNameClinicDTO;
-import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.CreateDoctorDTO;
-import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorVerificDTO;
-import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicDocDTO;
-import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseDocCliLabDTO;
-import com.SCX.ControleDeExame.dataTransferObject.examsDTO.GetByDoctorDTO;
+import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.*;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.ExamsRequestDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsTypeDTO.ExamsTypeDTO;
+import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryRequestExamDTO;
 import com.SCX.ControleDeExame.domain.appointment.Appointment;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
 import com.SCX.ControleDeExame.domain.doctor.Doctor;
 import com.SCX.ControleDeExame.domain.exams.Exams;
 import com.SCX.ControleDeExame.domain.examsRequest.ExamsRequest;
+import com.SCX.ControleDeExame.domain.examsType.ExamsType;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.domain.patient.Patient;
 import com.SCX.ControleDeExame.domain.role.Role;
@@ -72,6 +70,9 @@ public class DoctorService {
 
     @Autowired
     AppointmentRepository appointmentRepository;
+
+    @Autowired
+    ExamsTypeRepository examsTypeRepository;
 
     //Metodo para registrar um médico
     public void registerDoctor(CreateDoctorDTO data, RequestTokenDTO dataT) {
@@ -257,8 +258,10 @@ public class DoctorService {
         appointmentRepository.save(appointment);
     }
 
-    /*//Metodo para retornar todos os tipos de exame
-    public List<ExamsTypeDTO>*/
+    //Metodo para retornar todos os tipos de exame
+    public List<ExamsTypeDTO> getExamsType(){
+        return examsTypeRepository.findAll().stream().map(ExamsTypeDTO::new).toList();
+    }
 
     public void deleteDoctor(UUID uuid) {
         Doctor doctor = doctorRepository.findById(uuid).orElseThrow(() -> new EntityNotFoundException("paciente não encontrado"));
@@ -280,34 +283,30 @@ public class DoctorService {
         return examsRepository.findAllByDoctorId(doctorId.getId());
     }*/
 
-    //Metodo para fazer a requisição de um exame (testar)
+    //Metodo para fazer a requisição de um exame
     public void requestExams(ExamsRequestDTO data, RequestTokenDTO dataT) {
         try {
-            LocalDateTime now = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            String dataToString = now.format(formatter);
             var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
             var id = tokenService.registerUser(idC);
             Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
             Optional<Clinic> clinic = clinicRepository.findById(doctor.getIdClinic());
-            Patient patient = patientRepository.findByCpf(data.cpf());
             Laboratory laboratory = laboratoryRepository.findByName(data.name());
             Appointment appointment = appointmentRepository.findByDoctorAvaiable(doctor.getId());
+            Optional<Patient> patient = patientRepository.findById(appointment.getPatient().getId());
+
 
             ExamsRequest newExamRequest = new ExamsRequest();
             newExamRequest.setDoctorId(doctor);
             newExamRequest.setClinicId(clinic.get());
-            newExamRequest.setPatientId(patient);
+            newExamRequest.setPatientId(patient.get());
             newExamRequest.setLaboratoryId(laboratory);
             newExamRequest.setAppointmentId(appointment);
-            newExamRequest.setExam_type(data.exam_type());
-            newExamRequest.setSample_type(data.sample_type());
+            newExamRequest.setExamType(data.exam_type());
+            newExamRequest.setSampleType(data.sample_type());
+            newExamRequest.setStatus("Pendente");
             newExamRequest.setComplement(data.complement());
-            newExamRequest.setRequestDate(dataToString);
+            newExamRequest.setRequestDate(LocalDateTime.now());
             requestExamsRepository.save(newExamRequest);
-
-
-
 
 
             Exams newExam = new Exams();
@@ -320,6 +319,15 @@ public class DoctorService {
             throw e;
 
         }
+    }
+
+    //Metodo para retornar todas as requisições de exame pendente do medico
+    public List<DoctorRequestExamDTO> doctorRequestExam(RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
+
+        return doctorRepository.findRequestExamByDoctor(doctor.getId());
     }
 
     //Metodo para procurar exames por status

@@ -9,6 +9,7 @@ import com.SCX.ControleDeExame.domain.patient.Patient;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Table(name = "exams_request")
@@ -22,13 +23,15 @@ public class ExamsRequest {
     @Id
     @GeneratedValue
     private UUID id;
-    private String exam_type;
-    private String sample_type;
+    @Column(name = "exam_type" )
+    private String examType;
+    @Column(name = "sample_type")
+    private String sampleType;
     private String complement;
     @Column(name = "request_date")
-    private String requestDate;
+    private LocalDateTime requestDate;
     @Column(name = "executed_date")
-    private String executedDate;
+    private LocalDateTime executedDate;
     private String status;
 
 

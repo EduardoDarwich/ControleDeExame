@@ -1,10 +1,7 @@
 package com.SCX.ControleDeExame.service;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
-import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLabUserAdmDTO;
-import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLabUserDTO;
-import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryVerificDTO;
-import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.ResponseClinicLabDTO;
+import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.*;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.domain.role.Role;
@@ -43,8 +40,6 @@ public class LaboratoryService {
 
     @Autowired
     EmailService emailService;
-
-
 
 
     //Metodo para registrar um usuario administrador para o laboratorio
@@ -93,8 +88,6 @@ public class LaboratoryService {
         }
 
     }
-
-
 
     //Metodo para registrar um usuario comum do laboratório
     public void registerUserLab(CreateLabUserDTO data, RequestTokenDTO dataT){
@@ -146,20 +139,28 @@ public class LaboratoryService {
 
     }
 
-
-
     //Metodo para ver todas as clinicas que o laboratorio está cadastrado
     public List<ResponseClinicLabDTO> clinicsLaboratory(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
         UserLab userLab = userLabRepository.findByAuthId_Id(UUID.fromString(id));
-
         Optional<Laboratory> laboratoryOPT =  laboratoryRepository.findById(userLab.getLaboratoryId().getId());
-
         Laboratory laboratory = laboratoryOPT.get();
 
         return laboratoryRepository.findClinicByLaboratory(laboratory.getId());
+    }
+
+    //Metodo para ver todas as requisições de exame do laboratorio
+    public List<LaboratoryRequestExamDTO> laboratoryRequestExam(RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
+        UserLab userLab = userLabRepository.findByAuthId_Id(UUID.fromString(id));
+        Optional<Laboratory> laboratoryOPT =  laboratoryRepository.findById(userLab.getLaboratoryId().getId());
+        Laboratory laboratory = laboratoryOPT.get();
+
+        return laboratoryRepository.findRequestExamByLaboratory(laboratory.getId());
     }
 
 

@@ -1,4 +1,4 @@
-package com.SCX.ControleDeExame.domain.exams_type;
+package com.SCX.ControleDeExame.domain.examsType;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 
-public class Exams_type {
+public class ExamsType {
     @Id
     @GeneratedValue
     private UUID id;

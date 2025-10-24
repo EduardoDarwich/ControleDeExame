@@ -2,6 +2,7 @@ package com.SCX.ControleDeExame.domain.laboratory;
 
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
+import com.SCX.ControleDeExame.domain.examsRequest.ExamsRequest;
 import com.SCX.ControleDeExame.domain.user_lab.UserLab;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,6 +29,9 @@ public class Laboratory {
 
     @OneToMany(mappedBy = "laboratoryId")
     private List<UserLab> userLabs = new ArrayList<>();
+
+    @OneToMany(mappedBy = "laboratoryId")
+    private List<ExamsRequest> examsRequests = new ArrayList<>();
 
     @ManyToMany(mappedBy = "laboratories")
     private List<Clinic> clinics = new ArrayList<>();

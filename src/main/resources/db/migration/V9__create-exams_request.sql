@@ -10,8 +10,8 @@ complement text, -- possiveis complementos para o exame
 exam_type text, --Tipo do exame
 sample_type text, --Tipo de amostra
 status text default 'pendente', --Informa o status do exame,
-request_date text, --data que o pedido foi feito
-executed_date text, --data que o pedido foi entregue
+request_date timestamp, --data que o pedido foi feito
+executed_date timestamp, --data que o pedido foi entregue
 foreign key (doctor_id) references doctor(id), --definindo a chave estrangeira de médico
 CONSTRAINT fk_clinic FOREIGN KEY (clinic_id) REFERENCES clinic (id) ON DELETE CASCADE ,
 foreign key (patient_id) references patient (id),

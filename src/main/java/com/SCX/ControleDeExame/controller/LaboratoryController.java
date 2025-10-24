@@ -2,10 +2,7 @@
 package com.SCX.ControleDeExame.controller;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
-import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLabUserAdmDTO;
-import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLabUserDTO;
-import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLaboratoryDTO;
-import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.ResponseClinicLabDTO;
+import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.*;
 import com.SCX.ControleDeExame.service.ClinicService;
 import com.SCX.ControleDeExame.service.LaboratoryService;
 import jakarta.validation.Valid;
@@ -55,9 +52,15 @@ public class LaboratoryController {
         return ResponseEntity.ok().build();
     }
 
-    //Metodo para listar as clinicas que o laboratorio está cadastrado
+    //Rota para listar as clinicas que o laboratorio está cadastrado
     @GetMapping("/clinicsLab")
     public ResponseEntity<List<ResponseClinicLabDTO>> verifyClinicByLab(@RequestHeader("Authorization") RequestTokenDTO dataT){
         return ResponseEntity.ok(laboratoryService.clinicsLaboratory(dataT));
+    }
+
+    //Rota para listar as requisições de exame que o laboratorio tem e estão pendentes
+    @GetMapping("/getRequestExamPendent")
+    public ResponseEntity<List<LaboratoryRequestExamDTO>> requestExamLab (@RequestHeader("Authorization") RequestTokenDTO dataT){
+        return ResponseEntity.ok(laboratoryService.laboratoryRequestExam(dataT));
     }
 }

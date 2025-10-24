@@ -2,12 +2,11 @@ package com.SCX.ControleDeExame.controller;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestNameClinicDTO;
-import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.CreateDoctorDTO;
-import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorVerificDTO;
-import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicDocDTO;
-import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseDocCliLabDTO;
+import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.*;
 import com.SCX.ControleDeExame.dataTransferObject.examsDTO.GetByDoctorDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.ExamsRequestDTO;
+import com.SCX.ControleDeExame.dataTransferObject.examsTypeDTO.ExamsTypeDTO;
+import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryRequestExamDTO;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 
 import com.SCX.ControleDeExame.repository.AuthRepository;
@@ -64,8 +63,8 @@ public class DoctorController {
     }*/
 
     //Rota para fazer uma requisição de exames
-    @PostMapping("/requestExm/{token}")
-    public ResponseEntity requestExam (@RequestBody @Valid ExamsRequestDTO data, @PathVariable("token") @Valid RequestTokenDTO dataT){
+    @PostMapping("/requestExm")
+    public ResponseEntity requestExam (@RequestBody @Valid ExamsRequestDTO data, @RequestHeader("Authorization")RequestTokenDTO dataT){
         doctorService.requestExams(data, dataT);
         return ResponseEntity.ok().build();
     }
@@ -75,6 +74,12 @@ public class DoctorController {
     public ResponseEntity searchDoc (@RequestBody @Valid DoctorVerificDTO data, @RequestHeader("Authorization")RequestTokenDTO dataT){
         boolean response = doctorService.verificDocCli(data, dataT);
         return ResponseEntity.ok(response);
+    }
+
+    //Rota para devolver as requisições de exame pendente do medico da clinica especifica
+    @GetMapping("/getRequestExamPendent")
+    public ResponseEntity<List<DoctorRequestExamDTO>> requestExamLab (@RequestHeader("Authorization") RequestTokenDTO dataT){
+        return ResponseEntity.ok(doctorService.doctorRequestExam(dataT));
     }
 
     //Rota para ver se o medico existe no sistema
@@ -130,6 +135,14 @@ public class DoctorController {
     public ResponseEntity<List<ResponseDocCliLabDTO>> findLabByDocCli(@RequestHeader("Authorization") RequestTokenDTO dataT){
         return ResponseEntity.ok(doctorService.LabByclinicDoc( dataT));
     }
+
+    //Rota para listar todos os tipos de exame
+    @GetMapping("/getExamsType")
+    public ResponseEntity<List<ExamsTypeDTO>> examsTypes(){
+        return ResponseEntity.ok(doctorService.getExamsType());
+    }
+
+
 
 
 }
