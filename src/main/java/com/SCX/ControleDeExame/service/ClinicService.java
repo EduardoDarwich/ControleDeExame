@@ -49,7 +49,7 @@ public class ClinicService {
     EmailService emailService;
 
     //Metodo para registrar uma clinica
-    public Clinic regiterClinic(CreateClinicDTO data) {
+    public Clinic registerClinic(CreateClinicDTO data) {
         Clinic newClinic = new Clinic();
         newClinic.setAddress(data.address());
         newClinic.setName(data.name());

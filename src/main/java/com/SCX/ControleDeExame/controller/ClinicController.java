@@ -22,7 +22,7 @@ public class ClinicController {
     //Rota para criar a clinica
     @PostMapping("/create")
     public ResponseEntity createClinic (@RequestBody @Valid CreateClinicDTO data){
-        clinicService.regiterClinic(data);
+        clinicService.registerClinic(data);
 
         return ResponseEntity.ok().build();
     }
