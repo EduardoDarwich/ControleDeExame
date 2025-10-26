@@ -7,4 +7,5 @@ values
 ('LaboratoryUser'),
 ('Doctor'),
 ('Patient'),
-('Secretary')
+('Secretary'),
+('Support')
