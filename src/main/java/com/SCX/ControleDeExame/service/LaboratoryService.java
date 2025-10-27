@@ -50,6 +50,9 @@ public class LaboratoryService {
     @Autowired
     EmailService emailService;
 
+    @Autowired
+    LogService logService;
+
 
     //Metodo para registrar um usuario administrador para o laboratorio
     public void registerUserAdminLab(CreateLabUserAdmDTO data) {
@@ -72,7 +75,6 @@ public class LaboratoryService {
         newAuth.setLocked(false);
         newAuth.getRoles().add(laboratoryAdmin);
         authRepository.save(newAuth);
-
 
 
         try {
@@ -99,12 +101,13 @@ public class LaboratoryService {
     }
 
     //Metodo para registrar um usuario comum do laboratório
-    public void registerUserLab(CreateLabUserDTO data, RequestTokenDTO dataT){
+    public void registerUserLab(CreateLabUserDTO data, RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         UserLab userLab = userLabRepository.findByAuthId_Id(UUID.fromString(id));
+        var auth = authRepository.findById(userLab.getAuthId().getId());
         var idLab = userLab.getLaboratoryId().getId();
-        Laboratory laboratory = laboratoryRepository.findById(idLab).orElseThrow(() -> new  RuntimeException("Laboratorio nao encontrado"));
+        Laboratory laboratory = laboratoryRepository.findById(idLab).orElseThrow(() -> new RuntimeException("Laboratorio nao encontrado"));
 
         Role laboratoryUser = roleRepository.findByName("LaboratoryUser");
 
@@ -135,6 +138,8 @@ public class LaboratoryService {
             newUserLab.setEmail(data.email());
             userLabRepository.save(newUserLab);
 
+            logService.logAction(auth.get(), "Registrou um novo usuario para o laboratório");
+
             //String tokenE = newAuth.getToken();
             //String url = "http://localhost:5173/firstLogin" + tokenE;
 
@@ -154,28 +159,33 @@ public class LaboratoryService {
         var id = tokenService.registerUser(idC);
         Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
         UserLab userLab = userLabRepository.findByAuthId_Id(UUID.fromString(id));
-        Optional<Laboratory> laboratoryOPT =  laboratoryRepository.findById(userLab.getLaboratoryId().getId());
+        Optional<Laboratory> laboratoryOPT = laboratoryRepository.findById(userLab.getLaboratoryId().getId());
         Laboratory laboratory = laboratoryOPT.get();
 
         return laboratoryRepository.findClinicByLaboratory(laboratory.getId());
     }
 
     //Metodo para ver todas as requisições de exame do laboratorio
-    public List<LaboratoryRequestExamDTO> laboratoryRequestExam(RequestTokenDTO dataT){
+    public List<LaboratoryRequestExamDTO> laboratoryRequestExam(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
         UserLab userLab = userLabRepository.findByAuthId_Id(UUID.fromString(id));
-        Optional<Laboratory> laboratoryOPT =  laboratoryRepository.findById(userLab.getLaboratoryId().getId());
+        Optional<Laboratory> laboratoryOPT = laboratoryRepository.findById(userLab.getLaboratoryId().getId());
         Laboratory laboratory = laboratoryOPT.get();
 
         return laboratoryRepository.findRequestExamByLaboratory(laboratory.getId());
     }
 
     //Metodo para registrar os resultados do exame no sistema
-    public void registerResultExames(ExamsDTO data){
+    public void registerResultExames(ExamsDTO data, RequestTokenDTO dataT) {
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        var auth = authRepository.findById(UUID.fromString(id));
         Exams exams = examsRepository.findByRequestId_Id(UUID.fromString(data.id()));
         Optional<ExamsRequest> examsRequest = requestExamsRepository.findById(exams.getRequestId().getId());
+
+        String msg = "Enviou o resultado do exame " + exams.getId() + " para o sistema";
 
         exams.setCid(data.cid());
         exams.setObservation(data.observation());
@@ -187,8 +197,9 @@ public class LaboratoryService {
         examsRequest.get().setExecutedDate(LocalDateTime.now());
         requestExamsRepository.save(examsRequest.get());
 
-    }
+        logService.logAction(auth.get(), msg);
 
+    }
 
 
     public void deleteLaboratory(UUID uuid) {

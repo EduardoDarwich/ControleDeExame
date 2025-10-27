@@ -4,9 +4,12 @@ import com.SCX.ControleDeExame.domain.admin.Admin;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
 import com.SCX.ControleDeExame.domain.doctor.Doctor;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
+import com.SCX.ControleDeExame.domain.log.Log;
+import com.SCX.ControleDeExame.domain.notification.Notification;
 import com.SCX.ControleDeExame.domain.patient.Patient;
 import com.SCX.ControleDeExame.domain.role.Role;
 import com.SCX.ControleDeExame.domain.role.RoleEnum;
+import com.SCX.ControleDeExame.domain.supportTicket.SupportTicket;
 import com.SCX.ControleDeExame.domain.user_lab.UserLab;
 import jakarta.persistence.*;
 import lombok.*;
@@ -57,6 +60,14 @@ public class Auth implements UserDetails {
     )
     private Set<Role> roles = new HashSet<>();
 
+    @OneToMany(mappedBy =  "authId", fetch = FetchType.EAGER)
+    private List<Notification> notifications = new ArrayList<>();
+
+    @OneToMany(mappedBy =  "authId", fetch = FetchType.EAGER)
+    private List<SupportTicket> supportTickets = new ArrayList<>();
+
+    @OneToMany(mappedBy = "authId", fetch = FetchType.EAGER)
+    private List<Log> logs = new ArrayList<>();
 
     public Auth (String usernameKey, String name, String password_key,  String token, Boolean active, Timestamp data_expiration_token, Boolean token_status){
         this.usernameKey = usernameKey;

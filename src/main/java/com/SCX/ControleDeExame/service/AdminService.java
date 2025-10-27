@@ -62,6 +62,9 @@ public class AdminService {
     @Autowired
     ClinicRepository clinicRepository;
 
+    @Autowired
+    LogService logService;
+
 
     //Metodo para criar um usuário de adiministrador
     public Admin registerAdm(CreateAdminDTO data, RequestTokenDTO dataT) {
@@ -69,6 +72,7 @@ public class AdminService {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         var admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
+        var auth = authRepository.findById(admin.getAuthId().getId());
         Clinic clinic = clinicRepository.findById(admin.getClinicId().getId()).orElseThrow(() -> new RuntimeException("Clinica não encontrada"));
 
         Role adminRole = roleRepository.findByName("Admin");
@@ -108,6 +112,8 @@ public class AdminService {
 
             clinic.getAdmins().add(newAdmin);
             clinicRepository.save(clinic);
+
+            logService.logAction(auth.get(), "Registrou um novo administrador na clinica");
 
             return adminRepository.save(newAdmin);
 
@@ -149,6 +155,7 @@ public class AdminService {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         var admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
+        var auth = authRepository.findById(admin.getAuthId().getId());
         Clinic clinic = clinicRepository.findById(admin.getClinicId().getId()).orElseThrow(() -> new RuntimeException("Clinica não encontrada"));
 
         //Criando instâncias de usuario e médico
@@ -179,6 +186,7 @@ public class AdminService {
             newSecretary.setClinicId(clinic);
             newSecretary.setTelephone(data.telephone());
             secretaryRepository.save(newSecretary);
+            logService.logAction(auth.get(), "Registrou um novo usuario da secretaria");
 
         } catch (Exception e) {
             authRepository.delete(newAuth);
@@ -221,6 +229,7 @@ public class AdminService {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         var admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
+        var auth = authRepository.findById(admin.getAuthId().getId());
         Clinic clinic = clinicRepository.findById(admin.getClinicId().getId()).orElseThrow(() -> new RuntimeException("Clinica não encontrada"));
 
         Laboratory laboratory = laboratoryRepository.findByCnpj(data.cnpj());
@@ -228,6 +237,7 @@ public class AdminService {
         try {
             clinic.getLaboratories().add(laboratory);
             clinicRepository.save(clinic);
+            logService.logAction(auth.get(), "Registrou um novo laboratório na clinica");
         } catch (Exception e){
 
             e.printStackTrace();
@@ -281,10 +291,7 @@ public class AdminService {
 
     }*/
     
-    public List<LogDTO> getAllLog() {
 
-        return logRepository.findAll().stream().map(LogDTO::new).toList();
-    }
 
 
 }

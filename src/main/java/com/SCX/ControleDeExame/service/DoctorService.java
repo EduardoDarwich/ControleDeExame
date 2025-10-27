@@ -74,6 +74,9 @@ public class DoctorService {
     @Autowired
     ExamsTypeRepository examsTypeRepository;
 
+    @Autowired
+    LogService logService;
+
     //Metodo para registrar um médico
     public void registerDoctor(CreateDoctorDTO data, RequestTokenDTO dataT) {
 
@@ -81,6 +84,7 @@ public class DoctorService {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         var admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
+        var auth = authRepository.findById(admin.getAuthId().getId());
         Clinic clinic = clinicRepository.findById(admin.getClinicId().getId()).orElseThrow(() -> new RuntimeException("Clinica não encontrada"));
 
         //Criando instâncias de usuario e médico
@@ -120,6 +124,7 @@ public class DoctorService {
             //Adicionadno o médico criado a clinica na qual ele está sendo cadastrado
             clinic.getDoctors().add(newDoctor);
             clinicRepository.save(clinic);
+            logService.logAction(auth.get(), "Registrou um novo médico na clinica");
         } catch (Exception e) {
             clinic.getDoctors().remove(newDoctor);
             clinicRepository.save(clinic);
@@ -138,6 +143,7 @@ public class DoctorService {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         var admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
+        var auth = authRepository.findById(admin.getAuthId().getId());
         Clinic clinic = clinicRepository.findById(admin.getClinicId().getId()).orElseThrow(() -> new RuntimeException("Clinica não encontrada"));
 
         Doctor docUser = doctorRepository.findByCrm(data.crm());
@@ -145,6 +151,8 @@ public class DoctorService {
         try {
             clinic.getDoctors().add(docUser);
             clinicRepository.save(clinic);
+            logService.logAction(auth.get(), "Registrou um novo médico na clinica");
+
         } catch (Exception e) {
 
             e.printStackTrace();
@@ -186,10 +194,14 @@ public class DoctorService {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
+        var auth = authRepository.findById(doctor.getAuthId().getId());
         Clinic clinic = clinicRepository.findByName(data.name());
+
+        String msg = "Alterou sua clínica ativa para " + clinic.getName();
 
         doctor.setIdClinic(clinic.getId());
         doctorRepository.save(doctor);
+        logService.logAction(auth.get(), msg);
     }
 
     //Metodo para retornar a clinica ativa do medico
@@ -214,7 +226,7 @@ public class DoctorService {
     }
 
     //Metodo para devolver a consulta atual do medico
-    public GetAppointmentOpenDocDTO returnOpenAppointment(RequestTokenDTO dataT){
+    public GetAppointmentOpenDocDTO returnOpenAppointment(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
@@ -227,6 +239,7 @@ public class DoctorService {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
+
 
         try {
 
@@ -249,6 +262,7 @@ public class DoctorService {
         Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
         Doctor doctor = doctorRepository.findByAuthId_Id(auth.getId());
 
+
         doctor.setAvailable(true);
         doctorRepository.save(doctor);
 
@@ -256,10 +270,12 @@ public class DoctorService {
         appointment.setDateEnd(LocalDateTime.now());
         appointment.setOpenAppointment(false);
         appointmentRepository.save(appointment);
+
+        logService.logAction(auth, "Encerrou uma consulta");
     }
 
     //Metodo para retornar todos os tipos de exame
-    public List<ExamsTypeDTO> getExamsType(){
+    public List<ExamsTypeDTO> getExamsType() {
         return examsTypeRepository.findAll().stream().map(ExamsTypeDTO::new).toList();
     }
 
@@ -289,11 +305,13 @@ public class DoctorService {
             var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
             var id = tokenService.registerUser(idC);
             Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
+            var auth = authRepository.findById(doctor.getAuthId().getId());
             Optional<Clinic> clinic = clinicRepository.findById(doctor.getIdClinic());
             Laboratory laboratory = laboratoryRepository.findByName(data.name());
             Appointment appointment = appointmentRepository.findByDoctorAvaiable(doctor.getId());
             Optional<Patient> patient = patientRepository.findById(appointment.getPatient().getId());
 
+            String msg = "Fez um novo pedido de exame para o laboratório" + laboratory.getName();
 
             ExamsRequest newExamRequest = new ExamsRequest();
             newExamRequest.setDoctorId(doctor);
@@ -313,6 +331,9 @@ public class DoctorService {
             newExam.setRequestId(newExamRequest);
             examsRepository.save(newExam);
 
+            logService.logAction(auth.get(), msg);
+
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -322,7 +343,7 @@ public class DoctorService {
     }
 
     //Metodo para retornar as devoluções dos exames
-    public List<DoctorResultExamDTO> doctorResultExam(RequestTokenDTO dataT){
+    public List<DoctorResultExamDTO> doctorResultExam(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
@@ -330,8 +351,8 @@ public class DoctorService {
         return doctorRepository.findByResultExamDoctor(doctor.getId());
     }
 
-    //Metodo para retornar todas as requisições de exame pendente do medico
-    public List<DoctorRequestExamDTO> doctorRequestExam(RequestTokenDTO dataT){
+    //Metodo para retornar todas as requisições de exame pendentes do medico
+    public List<DoctorRequestExamDTO> doctorRequestExam(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));

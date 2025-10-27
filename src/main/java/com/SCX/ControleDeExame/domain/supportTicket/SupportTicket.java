@@ -5,6 +5,8 @@ import com.SCX.ControleDeExame.domain.auth.Auth;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Table(name = "support_ticket")
@@ -23,6 +25,10 @@ public class SupportTicket {
     private String message;
     private String response;
     private boolean finished;
+    @Column(name = "create_data")
+    private LocalDate createData;
+    @Column(name = "finished_data")
+    private LocalDate finishedData;
 
     @ManyToOne
     @JoinColumn(name = "auth_id", nullable = false, unique = true)

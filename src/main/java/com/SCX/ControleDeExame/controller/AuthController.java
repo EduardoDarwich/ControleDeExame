@@ -1,9 +1,11 @@
 package com.SCX.ControleDeExame.controller;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.*;
+import com.SCX.ControleDeExame.dataTransferObject.logDTO.HistoryDTO;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.service.AuthService;
+import com.SCX.ControleDeExame.service.LogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;
@@ -12,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -26,6 +29,9 @@ public class AuthController {
 
     @Autowired
     AuthService authService;
+
+    @Autowired
+    LogService logService;
 
     //Rota de login
     @PostMapping("/login")
@@ -83,6 +89,12 @@ public class AuthController {
     public ResponseEntity verificUserActive(@RequestBody @Valid AuthVerificDTO data){
         boolean result = authService.verificUserActive(data);
         return ResponseEntity.ok(result);
+    }
+
+    //Rota para retornar o historico do usuario
+    @GetMapping("/getHistory")
+    public ResponseEntity<List<HistoryDTO>> getHistory(@RequestHeader("Authorization") RequestTokenDTO dataT){
+        return ResponseEntity.ok(logService.getHistory(dataT));
     }
 
 

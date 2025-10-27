@@ -55,6 +55,9 @@ public class SecretaryService {
     @Autowired
     DoctorRepository doctorRepository;
 
+    @Autowired
+    LogService logService;
+
 
     public void deleteSecretary(UUID uuid) {
 
@@ -70,6 +73,8 @@ public class SecretaryService {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         var secretary = secretaryRepository.findByAuthId_Id(UUID.fromString(id));
+        var auth = authRepository.findById(secretary.getAuthId().getId());
+
         Clinic clinic = clinicRepository.findById(secretary.getClinicId().getId()).orElseThrow(() -> new RuntimeException("Clinica não encontrada"));
 
         Auth newAuth = new Auth();
@@ -106,6 +111,8 @@ public class SecretaryService {
 
             clinic.getPatients().add(newPatient);
             clinicRepository.save(clinic);
+
+            logService.logAction(auth.get(), "Registrou um novo paciente na clínica");
 
         } catch (Exception e) {
             authRepository.delete(newAuth);
@@ -150,6 +157,7 @@ public class SecretaryService {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         var secretary = secretaryRepository.findByAuthId_Id(UUID.fromString(id));
+        var auth = authRepository.findById(secretary.getAuthId().getId());
 
         Clinic clinic = clinicRepository.findById(secretary.getClinicId().getId()).orElseThrow(() -> new EntityNotFoundException("Clinica não encontrada"));
 
@@ -158,6 +166,8 @@ public class SecretaryService {
         try {
             clinic.getPatients().add(patient);
             clinicRepository.save(clinic);
+
+            logService.logAction(auth.get(), "Registrou um novo paciente na clínica");
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
@@ -201,6 +211,8 @@ public class SecretaryService {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         var secretary = secretaryRepository.findByAuthId_Id(UUID.fromString(id));
+        var authS = authRepository.findById(secretary.getAuthId().getId());
+
         Clinic clinic = clinicRepository.findById(secretary.getClinicId().getId()).orElseThrow(() -> new EntityNotFoundException("Clinica não encontrada"));
 
         Optional<Auth> auth = authRepository.findAuthByUsernameKey(data.email());
@@ -208,6 +220,10 @@ public class SecretaryService {
         Doctor doctor = doctorRepository.findByAuthId_Id(auth.get().getId());
 
         Patient patient = patientRepository.findByCpf(data.cpf());
+
+        Optional<Auth> authP = authRepository.findById(patient.getId());
+
+        String msg = "Abriu uma consulta com o médico " + auth.get().getName() + " e o paciente " + authP.get().getName();
 
         if (!doctor.isAvailable()){
             System.out.println("deu erro");
@@ -222,6 +238,9 @@ public class SecretaryService {
 
             doctor.setAvailable(false);
             doctorRepository.save(doctor);
+
+            logService.logAction(auth.get(), msg);
+
         }
 
 

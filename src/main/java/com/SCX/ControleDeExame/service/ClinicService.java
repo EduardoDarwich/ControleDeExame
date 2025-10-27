@@ -48,6 +48,9 @@ public class ClinicService {
     @Autowired
     EmailService emailService;
 
+    @Autowired
+    LogService logService;
+
     //Metodo para registrar uma clinica
     public Clinic registerClinic(CreateClinicDTO data) {
         Clinic newClinic = new Clinic();
@@ -119,6 +122,7 @@ public class ClinicService {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         var admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
+        var auth = authRepository.findById(admin.getAuthId().getId());
         var clinic = clinicRepository.findById(admin.getClinicId().getId()).orElseThrow(() -> new EntityNotFoundException("Clinica não encontrada"));
 
 
@@ -131,6 +135,8 @@ public class ClinicService {
 
         clinic.getLaboratories().add(newLaboratory);
         clinicRepository.save(clinic);
+
+        logService.logAction(auth.get(), "Registrou um novo laboratório na clinica");
 
     }
 

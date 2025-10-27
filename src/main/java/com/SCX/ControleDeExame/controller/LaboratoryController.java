@@ -67,8 +67,8 @@ public class LaboratoryController {
 
     //Rota para realizar o cadastro do exame
     @PostMapping("/registerExam")
-    public ResponseEntity registerExam (@RequestBody @Valid ExamsDTO data){
-        laboratoryService.registerResultExames(data);
+    public ResponseEntity registerExam (@RequestBody @Valid ExamsDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT){
+        laboratoryService.registerResultExames(data, dataT);
         return ResponseEntity.ok().build();
     }
 }

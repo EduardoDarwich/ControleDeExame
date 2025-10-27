@@ -1,8 +1,10 @@
 package com.SCX.ControleDeExame.domain.log;
 
+import com.SCX.ControleDeExame.domain.auth.Auth;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Table(name = "log")
@@ -17,11 +19,14 @@ public class Log {
     @GeneratedValue
     private UUID id;
     private String userAction;
-    @Column(name = "entity_id")
-    private UUID entityId;
     private String old_value;
     private String new_value;
-    private String hour_event;
+    private LocalDateTime hour_event;
     private String status;
+
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "auth_id", nullable = false, unique = true)
+    private Auth authId;
+
 
 }
