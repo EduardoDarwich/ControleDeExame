@@ -58,6 +58,9 @@ public class SecretaryService {
     @Autowired
     LogService logService;
 
+    @Autowired
+    NotificationService notificationService;
+
 
     public void deleteSecretary(UUID uuid) {
 
@@ -221,9 +224,14 @@ public class SecretaryService {
 
         Patient patient = patientRepository.findByCpf(data.cpf());
 
-        Optional<Auth> authP = authRepository.findById(patient.getId());
+        Optional<Auth> authP = authRepository.findById(patient.getAuthId().getId());
+
+        Optional<Auth> authD = authRepository.findById(doctor.getAuthId().getId());
+
 
         String msg = "Abriu uma consulta com o médico " + auth.get().getName() + " e o paciente " + authP.get().getName();
+
+
 
         if (!doctor.isAvailable()){
             System.out.println("deu erro");
@@ -236,10 +244,17 @@ public class SecretaryService {
             newAppointment.setOpenAppointment(true);
             appointmentRepository.save(newAppointment);
 
+            String msgD = "A consulta " + newAppointment.getId() + " foi agendada com o médico " + authD.get().getName();
+
             doctor.setAvailable(false);
             doctorRepository.save(doctor);
 
             logService.logAction(auth.get(), msg);
+
+            notificationService.send(authP.get(), "foi registrado em uma consulta", "teste");
+            notificationService.send(authD.get(), "foi registrado em uma consulta", "teste");
+
+
 
         }
 

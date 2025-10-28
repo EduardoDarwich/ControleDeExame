@@ -1,9 +1,11 @@
 package com.SCX.ControleDeExame.dataTransferObject.supportTicketDTO;
 
 import com.SCX.ControleDeExame.domain.supportTicket.SupportTicket;
+import lombok.Getter;
 
 import java.util.UUID;
 
+@Getter
 public class ResponseSupportDTO {
     private UUID id;
     private String subject;

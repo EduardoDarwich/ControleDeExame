@@ -97,5 +97,7 @@ public class AuthController {
         return ResponseEntity.ok(logService.getHistory(dataT));
     }
 
+    //Rota para retornar as notificações do usuario
+
 
 }

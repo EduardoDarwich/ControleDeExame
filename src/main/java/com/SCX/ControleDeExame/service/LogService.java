@@ -25,7 +25,7 @@ public class LogService {
     @Autowired
     AuthRepository authRepository;
 
-    //Metodo para criar um registro de historico (testar)
+    //Metodo para criar um registro de historico
     public void logAction(Auth user, String action) {
         var history = new Log();
         history.setAuthId(user);
@@ -34,7 +34,7 @@ public class LogService {
         logRepository.save(history);
     }
 
-    //Metodo para o usuario ver seu histórico (testar)
+    //Metodo para o usuario ver seu histórico
     public List<HistoryDTO> getHistory(RequestTokenDTO dataT) {
 
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");

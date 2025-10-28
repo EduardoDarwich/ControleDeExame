@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -37,7 +38,7 @@ public class SupportTicketService {
     @Autowired
     LogService logService;
 
-    //Metodo para criar um ticket de suporte (testar)
+    //Metodo para criar um ticket de suporte
     public void createTicket (CreateSupportTicketDTO data, RequestTokenDTO dataT){
 
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
@@ -54,25 +55,26 @@ public class SupportTicketService {
 
     }
 
-    //Metodo para responder um ticket de suporte (testar)
+    //Metodo para responder um ticket de suporte
     public void responseTicket (GetTicketByOpenDTO data, RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         var auth = authRepository.findById(UUID.fromString(id));
-        SupportTicket supportTicket = supportTicketRepository.findByAuthId_Id(UUID.fromString(data.id()));
-        String msg = "Respondeu o ticket " + supportTicket.getId();
+        System.out.println("sadasdas" + data.getId());
+        Optional<SupportTicket> supportTicket = supportTicketRepository.findById(UUID.fromString(data.getId()));
+        String msg = "Respondeu o ticket " + supportTicket.get().getId();
 
 
-        supportTicket.setResponse(data.response());
-        supportTicket.setFinished(true);
-        supportTicketRepository.save(supportTicket);
+        supportTicket.get().setResponse(data.getResponse());
+        supportTicket.get().setFinished(true);
+        supportTicketRepository.save(supportTicket.get());
         logService.logAction(auth.get(), msg);
 
 
 
     }
 
-    //Metodo para criar um usuario do suporte (testar)
+    //Metodo para criar um usuario do suporte
     public void registerSupportUser(){
         Role userSupport = roleRepository.findByName("Support");
         String senha = "123456789";
@@ -86,16 +88,18 @@ public class SupportTicketService {
         newAuth.getRoles().add(userSupport);
         authRepository.save(newAuth);
 
+
+
     }
 
-    //Metodo para visualizar os tickets abertos (testar)
+    //Metodo para visualizar os tickets abertos
     public List<GetTicketByOpenDTO> getTicket () {
 
-        return supportTicketRepository.findAll().stream().map(GetTicketByOpenDTO::new).toList();
+        return supportTicketRepository.findByFinishedFalse();
 
     }
 
-    //Metodo para visualizar os tickets do usuario(testar)
+    //Metodo para visualizar os tickets do usuario
     public List<ResponseSupportDTO> getTicketByUser (RequestTokenDTO dataT){
 
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");

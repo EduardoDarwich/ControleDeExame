@@ -1,0 +1,18 @@
+package com.SCX.ControleDeExame.dataTransferObject.notificationDTO;
+
+import lombok.Getter;
+
+import java.util.UUID;
+
+@Getter
+public class GetNotificationUnreadDTO {
+    private String id;
+    private String message;
+    private String readFile;
+
+    public GetNotificationUnreadDTO(UUID id, String message, boolean readFile){
+        this.id = id.toString();
+        this.message = message;
+        this.readFile = readFile ? "Lido" : "Não lido";
+    }
+}

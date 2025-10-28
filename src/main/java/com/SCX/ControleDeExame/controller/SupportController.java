@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/support")
 public class SupportController {
@@ -40,6 +42,17 @@ public class SupportController {
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
 
+    }
 
+    //Rota para mostrar os tickets dos usuarios
+    @GetMapping("/getByUser")
+    public ResponseEntity<List<ResponseSupportDTO>> getTicketByUser (@RequestHeader("Authorization") RequestTokenDTO dataT){
+        return ResponseEntity.ok(supportTicketService.getTicketByUser(dataT));
+    }
+
+    //Rota para mostrar todos os tickets abertos
+    @GetMapping("/getOpen")
+    public ResponseEntity<List<GetTicketByOpenDTO>> getTicketByOpen (){
+        return ResponseEntity.ok(supportTicketService.getTicket());
     }
 }

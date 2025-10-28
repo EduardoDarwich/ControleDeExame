@@ -1,5 +1,6 @@
 package com.SCX.ControleDeExame.repository;
 
+import com.SCX.ControleDeExame.dataTransferObject.supportTicketDTO.GetTicketByOpenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.supportTicketDTO.ResponseSupportDTO;
 import com.SCX.ControleDeExame.domain.appointment.Appointment;
 import com.SCX.ControleDeExame.domain.supportTicket.SupportTicket;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface SupportTicketRepository extends JpaRepository<SupportTicket, UUID> {
-   SupportTicket findByAuthId_Id(UUID id);
+    SupportTicket findByAuthId_Id(UUID id);
 
     @Query("""
             select new com.SCX.ControleDeExame.dataTransferObject.supportTicketDTO.ResponseSupportDTO(
@@ -22,7 +23,16 @@ public interface SupportTicketRepository extends JpaRepository<SupportTicket, UU
             s.finished
             )
             from SupportTicket s
-            where authId = :userId
+            where authId.id = :userId
             """)
     List<ResponseSupportDTO> findByUser(@Param("userId") UUID userId);
+
+    @Query("""
+                select new com.SCX.ControleDeExame.dataTransferObject.supportTicketDTO.GetTicketByOpenDTO(
+                    t.id, t.subject, t.message, t.response
+                )
+                FROM SupportTicket t
+                WHERE t.finished = false
+            """)
+    List<GetTicketByOpenDTO> findByFinishedFalse();
 }

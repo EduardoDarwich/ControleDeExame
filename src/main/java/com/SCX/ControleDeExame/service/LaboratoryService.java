@@ -4,9 +4,11 @@ import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsDTO.ExamsDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.*;
 import com.SCX.ControleDeExame.domain.auth.Auth;
+import com.SCX.ControleDeExame.domain.doctor.Doctor;
 import com.SCX.ControleDeExame.domain.exams.Exams;
 import com.SCX.ControleDeExame.domain.examsRequest.ExamsRequest;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
+import com.SCX.ControleDeExame.domain.patient.Patient;
 import com.SCX.ControleDeExame.domain.role.Role;
 import com.SCX.ControleDeExame.domain.user_lab.UserLab;
 import com.SCX.ControleDeExame.domain.user_lab.UserLabId;
@@ -52,6 +54,15 @@ public class LaboratoryService {
 
     @Autowired
     LogService logService;
+
+    @Autowired
+    NotificationService notificationService;
+
+    @Autowired
+    DoctorRepository doctorRepository;
+
+    @Autowired
+    PatientRepository patientRepository;
 
 
     //Metodo para registrar um usuario administrador para o laboratorio
@@ -184,8 +195,15 @@ public class LaboratoryService {
         var auth = authRepository.findById(UUID.fromString(id));
         Exams exams = examsRepository.findByRequestId_Id(UUID.fromString(data.id()));
         Optional<ExamsRequest> examsRequest = requestExamsRepository.findById(exams.getRequestId().getId());
+        Optional<Doctor> doctor = doctorRepository.findById(examsRequest.get().getDoctorId().getId());
+        Optional<Patient> patient = patientRepository.findById(examsRequest.get().getPatientId().getId());
+        Optional<Auth> authD = authRepository.findById(doctor.get().getAuthId().getId());
+        Optional<Auth> authP = authRepository.findById(patient.get().getAuthId().getId());
+
 
         String msg = "Enviou o resultado do exame " + exams.getId() + " para o sistema";
+        String msgD = "O exame " + exams.getId() + " do paciente " + authP.get().getName() + " foi devolvido";
+        String msgP = "O exame " + exams.getId() + " foi devolvido";
 
         exams.setCid(data.cid());
         exams.setObservation(data.observation());
@@ -198,6 +216,9 @@ public class LaboratoryService {
         requestExamsRepository.save(examsRequest.get());
 
         logService.logAction(auth.get(), msg);
+
+        notificationService.send(authD.get(), "Exame devolvido", msgD);
+        notificationService.send(authP.get(), "Exame devolvido", msgP);
 
     }
 
