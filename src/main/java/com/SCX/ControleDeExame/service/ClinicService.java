@@ -6,6 +6,7 @@ import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.CreateClinicAdminDTO
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.CreateClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestCnpjClinica;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLaboratoryDTO;
+import com.SCX.ControleDeExame.domain.address.Address;
 import com.SCX.ControleDeExame.domain.admin.Admin;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
@@ -51,15 +52,27 @@ public class ClinicService {
     @Autowired
     LogService logService;
 
+    @Autowired
+    AddressRepository addressRepository;
+
     //Metodo para registrar uma clinica
-    public Clinic registerClinic(CreateClinicDTO data) {
+    public void registerClinic(CreateClinicDTO data) {
+        Address address = new Address();
+        address.setCep(data.cep());
+        address.setLogradouro(data.logradouro());
+        address.setComplemento(data.complemento());
+        address.setBairro(data.bairro());
+        address.setUf(data.uf());
+        addressRepository.save(address);
+
         Clinic newClinic = new Clinic();
-        newClinic.setAddress(data.address());
         newClinic.setName(data.name());
         newClinic.setCnpj(data.cnpj());
         newClinic.setTelephone(data.telephone());
+        newClinic.setAddress(address);
+        clinicRepository.save(newClinic);
 
-        return clinicRepository.save(newClinic);
+
     }
 
     //Metodo para criar o primeiro adm da clinica
@@ -125,12 +138,19 @@ public class ClinicService {
         var auth = authRepository.findById(admin.getAuthId().getId());
         var clinic = clinicRepository.findById(admin.getClinicId().getId()).orElseThrow(() -> new EntityNotFoundException("Clinica não encontrada"));
 
+        Address address = new Address();
+        address.setCep(data.cep());
+        address.setLogradouro(data.logradouro());
+        address.setComplemento(data.complemento());
+        address.setBairro(data.bairro());
+        address.setUf(data.uf());
+        addressRepository.save(address);
 
         Laboratory newLaboratory = new Laboratory();
         newLaboratory.setName(data.name());
         newLaboratory.setCnpj(data.cnpj());
-        newLaboratory.setAddress(data.address());
         newLaboratory.setTelephone(data.telephone());
+        newLaboratory.setAddress(address);
         laboratoryRepository.save(newLaboratory);
 
         clinic.getLaboratories().add(newLaboratory);

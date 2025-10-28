@@ -251,8 +251,8 @@ public class SecretaryService {
 
             logService.logAction(auth.get(), msg);
 
-            notificationService.send(authP.get(), "foi registrado em uma consulta", "teste");
-            notificationService.send(authD.get(), "foi registrado em uma consulta", "teste");
+            notificationService.send(authP.get(), "registro", "foi registrado em uma consulta");
+            notificationService.send(authD.get(), "registro", "foi registrado em uma consulta");
 
 
 

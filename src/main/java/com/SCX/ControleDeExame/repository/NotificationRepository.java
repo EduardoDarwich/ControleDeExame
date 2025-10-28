@@ -13,7 +13,7 @@ public interface NotificationRepository extends JpaRepository<Notification, UUID
 
     @Query("""
                 select new com.SCX.ControleDeExame.dataTransferObject.notificationDTO.GetNotificationUnreadDTO(
-                    n.id, n.message, n.readFile
+                    n.id, n.title, n.message, n.readFile
                 )
                 FROM Notification n
                 WHERE n.readFile = false and n.authId = :userId

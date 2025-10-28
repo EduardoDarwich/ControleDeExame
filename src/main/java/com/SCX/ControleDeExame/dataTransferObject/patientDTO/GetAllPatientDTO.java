@@ -6,6 +6,6 @@ public record GetAllPatientDTO( String address) {
 
     public GetAllPatientDTO (Patient patient) {
 
-        this( patient.getAddress());
+        this(patient.getCpf());
     }
 }

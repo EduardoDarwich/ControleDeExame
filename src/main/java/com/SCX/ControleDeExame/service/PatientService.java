@@ -49,7 +49,6 @@ public class PatientService {
         Patient patientUpdate = patientRepository.findById(uuid).orElseThrow(() -> new EntityNotFoundException("paciente não encontrado"));
 
         patientUpdate.setTelephone(data.telephone());
-        patientUpdate.setAddress(data.address());
         patientUpdate.setDate_birth(new Date(data.date_birth()));
         return patientRepository.save(patientUpdate);
 

@@ -28,7 +28,6 @@ public class Patient {
     private Date date_birth;
     private String telephone;
     private String cpf;
-    private String address;
 
     @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "auth_id", nullable = false, unique = true)

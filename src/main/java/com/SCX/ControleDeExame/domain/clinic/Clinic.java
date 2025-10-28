@@ -1,5 +1,6 @@
 package com.SCX.ControleDeExame.domain.clinic;
 
+import com.SCX.ControleDeExame.domain.address.Address;
 import com.SCX.ControleDeExame.domain.admin.Admin;
 import com.SCX.ControleDeExame.domain.appointment.Appointment;
 import com.SCX.ControleDeExame.domain.auth.Auth;
@@ -29,7 +30,6 @@ public class Clinic {
     private UUID id;
     private String name;
     private String cnpj;
-    private String address;
     private String telephone;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -47,6 +47,15 @@ public class Clinic {
             inverseJoinColumns = @JoinColumn(name = "id_doctor")
     )
     private List<Doctor> doctors = new ArrayList<>();
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "add_cli",
+            joinColumns = @JoinColumn(name = "id_clinic"),
+            inverseJoinColumns = @JoinColumn(name = "id_address")
+
+    )
+    private Address address;
 
 
     @ManyToMany(fetch = FetchType.EAGER)
