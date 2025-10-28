@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/consult")
 public class ConsultController {
 
+    //Rota para fazer a verificação do cep
     @PostMapping("/getCep")
     public ViaCepDTO consultCep (@RequestBody @Valid RequestCEPDTO data){
         RestTemplate restTemplate = new RestTemplate();
@@ -21,6 +22,7 @@ public class ConsultController {
 
     }
 
+    //Rota para fazer a verificação do cnpj
     @PostMapping("/getCnpj")
     public CnpjVerifyDTO buscarCnpj(@RequestBody @Valid GetCnpjDTO data) {
         RestTemplate restTemplate = new RestTemplate();
