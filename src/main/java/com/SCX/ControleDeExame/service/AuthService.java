@@ -1,8 +1,16 @@
 package com.SCX.ControleDeExame.service;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.*;
+import com.SCX.ControleDeExame.dataTransferObject.profileDTO.ProfileAdminDTO;
+import com.SCX.ControleDeExame.dataTransferObject.profileDTO.ProfileDoctorDTO;
+import com.SCX.ControleDeExame.dataTransferObject.profileDTO.ProfilePatientDTO;
+import com.SCX.ControleDeExame.dataTransferObject.profileDTO.ProfileSecretaryDTO;
 import com.SCX.ControleDeExame.dataTransferObject.roleDTO.RoleDTO;
+import com.SCX.ControleDeExame.domain.admin.Admin;
 import com.SCX.ControleDeExame.domain.auth.Auth;
+import com.SCX.ControleDeExame.domain.doctor.Doctor;
+import com.SCX.ControleDeExame.domain.patient.Patient;
+import com.SCX.ControleDeExame.domain.secretary.Secretary;
 import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.repository.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -44,6 +52,12 @@ public class AuthService implements UserDetailsService {
     @Autowired
     ClinicRepository clinicRepository;
 
+    @Autowired
+    PatientRepository  patientRepository;
+
+    @Autowired
+    SecretaryRepository secretaryRepository;
+
     //Metodo do Spring security para realizar a consulta do usuario
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -84,6 +98,42 @@ public class AuthService implements UserDetailsService {
             return false;
         }
 
+    }
+
+    //Metodo para devolver os dados do Medico(testar)
+    public ProfileDoctorDTO profileDoc (RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
+
+        return authRepository.findProfileDoctor(doctor.getId());
+    }
+
+    //Metodo para devolver os dados do Admin(testar)
+    public ProfileAdminDTO profileAdmin (RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Admin admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
+
+        return authRepository.findProfileAdmin(admin.getId());
+    }
+
+    //Metodo para devolver os dados do paciente (testar)
+    public ProfilePatientDTO profilePatient(RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Patient patient = patientRepository.findByAuthId_Id(UUID.fromString(id));
+
+        return authRepository.findProfilePatient(patient.getId());
+    }
+
+    //Metodo para devolver os dados da secretaria (testar)
+    public ProfileSecretaryDTO profileSecretary (RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Secretary secretary = secretaryRepository.findByAuthId_Id(UUID.fromString(id));
+
+        return authRepository.findProfileSecretary(secretary.getId());
     }
 
 

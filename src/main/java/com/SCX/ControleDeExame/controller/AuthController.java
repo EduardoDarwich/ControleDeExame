@@ -97,6 +97,30 @@ public class AuthController {
         return ResponseEntity.ok(logService.getHistory(dataT));
     }
 
+    //Rota para retornar os dados do Medico
+    @GetMapping("/getProfileDoctor")
+    public ResponseEntity getProfileDoctor (@RequestHeader("Authorization") RequestTokenDTO dataT){
+        return ResponseEntity.ok(authService.profileDoc(dataT));
+    }
+
+    //Rota para retornar os dados do Paciente
+    @GetMapping("/getProfilePatient")
+    public ResponseEntity getProfilePatient (@RequestHeader("Authorization") RequestTokenDTO dataT){
+        return ResponseEntity.ok(authService.profilePatient(dataT));
+    }
+
+    //Rota para retornar os dados da secretaria
+    @GetMapping("/getProfileSecretary")
+    public ResponseEntity getProfileSecretary (@RequestHeader("Authorization") RequestTokenDTO dataT){
+        return ResponseEntity.ok(authService.profileSecretary(dataT));
+    }
+
+    //Rota para retornar os dados do Admin
+    @GetMapping("/getProfileAdmin")
+    public ResponseEntity getProfileAdmin (@RequestHeader("Authorization") RequestTokenDTO dataT){
+        return ResponseEntity.ok(authService.profileAdmin(dataT));
+    }
+
     //Rota para retornar as notificações do usuario
 
 
