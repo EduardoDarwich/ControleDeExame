@@ -114,6 +114,7 @@ public class DoctorService {
             newDoctor.setCrm(data.crm());
             newDoctor.setAvailable(true);
             newDoctor.setAuthId(newAuth);
+            newDoctor.setSpecialty(data.specialty());
             doctorRepository.save(newDoctor);
 
             //String tokenE = newAuth.getToken();
@@ -278,6 +279,8 @@ public class DoctorService {
     public List<ExamsTypeDTO> getExamsType() {
         return examsTypeRepository.findAll().stream().map(ExamsTypeDTO::new).toList();
     }
+
+
 
     public void deleteDoctor(UUID uuid) {
         Doctor doctor = doctorRepository.findById(uuid).orElseThrow(() -> new EntityNotFoundException("paciente não encontrado"));

@@ -49,7 +49,7 @@ public class PatientService {
         Patient patientUpdate = patientRepository.findById(uuid).orElseThrow(() -> new EntityNotFoundException("paciente não encontrado"));
 
         patientUpdate.setTelephone(data.telephone());
-        patientUpdate.setDate_birth(new Date(data.date_birth()));
+        patientUpdate.setDateBirth(data.date_birth());
         return patientRepository.save(patientUpdate);
 
     }

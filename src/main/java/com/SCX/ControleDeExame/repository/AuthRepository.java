@@ -24,7 +24,7 @@ public interface AuthRepository extends JpaRepository <Auth, UUID> {
             d.crm,
             d.telephone,
             a.name,
-            a.email
+            a.usernameKey
             )
             from Doctor d
             join d.authId a
@@ -37,8 +37,9 @@ public interface AuthRepository extends JpaRepository <Auth, UUID> {
             p.dateBirth,
             p.telephone,
             p.cpf,
-            a.name,
-            a.usernameKey
+            a.usernameKey,
+            a.name
+            
             )
             from Patient p
             join p.authId a
@@ -73,7 +74,7 @@ public interface AuthRepository extends JpaRepository <Auth, UUID> {
             from Secretary s
             join s.clinicId c
             join s.authId a
-            where d.id = :doctorId
+            where s.id = :doctorId
             """)
     ProfileSecretaryDTO findProfileSecretary (@Param("secretaryId") UUID secretaryId);
 

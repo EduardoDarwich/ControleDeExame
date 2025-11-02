@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +26,8 @@ public class Patient {
     @Id
     @GeneratedValue
     private UUID id;
-    private Date date_birth;
+    @Column(name = "date_birth")
+    private LocalDate dateBirth;
     private String telephone;
     private String cpf;
 

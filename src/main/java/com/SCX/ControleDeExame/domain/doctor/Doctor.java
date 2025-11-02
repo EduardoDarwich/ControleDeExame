@@ -26,6 +26,7 @@ public class Doctor {
     private String crm;
     private String telephone;
     private boolean available;
+    private String specialty;
 
     @Column(name = "id_clinic")
     private UUID idClinic;

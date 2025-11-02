@@ -1,6 +1,7 @@
 package com.SCX.ControleDeExame.domain.appointment;
 
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
+import com.SCX.ControleDeExame.domain.consultation.Consultation;
 import com.SCX.ControleDeExame.domain.doctor.Doctor;
 import com.SCX.ControleDeExame.domain.examsRequest.ExamsRequest;
 import com.SCX.ControleDeExame.domain.patient.Patient;
@@ -44,4 +45,7 @@ public class Appointment {
 
     @OneToMany(mappedBy = "appointmentId")
     private List<ExamsRequest> examsRequests = new ArrayList<>();
+
+    @OneToOne(mappedBy = "appointment")
+    private Consultation consultation;
 }

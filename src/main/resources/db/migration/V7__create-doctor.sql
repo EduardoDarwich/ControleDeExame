@@ -6,5 +6,6 @@ crm text not null unique, --crm ligado ao médico
 telephone VARCHAR(20) unique, --Número de telefone ligado ao médico
 available boolean,
 id_clinic UUID,
+specialty text,
 CONSTRAINT fk_auth FOREIGN KEY (auth_id) REFERENCES auth (id) ON DELETE CASCADE --Chave estrangeira ligando um médico a um usuário
 );
