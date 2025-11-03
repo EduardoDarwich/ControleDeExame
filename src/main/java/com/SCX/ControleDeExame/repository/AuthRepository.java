@@ -74,7 +74,7 @@ public interface AuthRepository extends JpaRepository <Auth, UUID> {
             from Secretary s
             join s.clinicId c
             join s.authId a
-            where s.id = :doctorId
+            where s.id = :secretaryId
             """)
     ProfileSecretaryDTO findProfileSecretary (@Param("secretaryId") UUID secretaryId);
 

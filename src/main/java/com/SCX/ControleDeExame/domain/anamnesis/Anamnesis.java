@@ -7,6 +7,8 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Table(name = "anamnesis")
@@ -57,10 +59,10 @@ public class Anamnesis {
     private String bloodPressure;
     @Column(name = "heart_rate")
     private String heartRate;
-    private BigDecimal temperature;
-    private BigDecimal weight;
-    private BigDecimal height;
-    private BigDecimal bmi;
+    private double temperature;
+    private double weight;
+    private double height;
+    private double bmi;
 
     //observações complementares e tratamento inicial
     private String observations;
@@ -69,8 +71,8 @@ public class Anamnesis {
     @Column(name = "treatment_plan")
     private String treatmentPlan;
 
-    @OneToOne(mappedBy = "anamnesis")
-    private AnamnesisCustom anamnesisCustom;
+    @OneToMany(mappedBy = "anamnesis")
+    private List<AnamnesisCustom> anamnesisCustom = new ArrayList<>();
 
 
 

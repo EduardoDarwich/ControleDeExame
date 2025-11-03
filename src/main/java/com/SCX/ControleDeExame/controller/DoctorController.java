@@ -1,7 +1,12 @@
 package com.SCX.ControleDeExame.controller;
 
+import com.SCX.ControleDeExame.dataTransferObject.anamnesisDTO.CalculatorBmiDTO;
+import com.SCX.ControleDeExame.dataTransferObject.anamnesisDTO.CreateAnamnesisDTO;
+import com.SCX.ControleDeExame.dataTransferObject.anamnesisDTO.CreateCustomFieldDTO;
+import com.SCX.ControleDeExame.dataTransferObject.anamnesisDTO.ResultBmiDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestNameClinicDTO;
+import com.SCX.ControleDeExame.dataTransferObject.consultationDTO.CloseConsultationDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.*;
 import com.SCX.ControleDeExame.dataTransferObject.examsDTO.GetByDoctorDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.ExamsRequestDTO;
@@ -12,6 +17,7 @@ import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.repository.AuthRepository;
 import com.SCX.ControleDeExame.service.DoctorService;
 import jakarta.validation.Valid;
+import org.hibernate.annotations.Fetch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -124,11 +130,11 @@ public class DoctorController {
     }
 
     //Rota para fechar uma consulta
-    @PatchMapping("/closeAppointment")
+    /*@PatchMapping("/closeAppointment")
     public ResponseEntity closeAppointment(@RequestHeader("Authorization") RequestTokenDTO dataT){
         doctorService.closeAppointment(dataT);
         return ResponseEntity.ok().build();
-    }
+    }*/
 
     //Rota para retornar os laboratórios disponiveis na clinica que o medico está ativo
     @GetMapping("/getLabDocCli")
@@ -146,6 +152,40 @@ public class DoctorController {
     @GetMapping("/getExamsResult")
     public ResponseEntity<List<DoctorResultExamDTO>> examsResult(@RequestHeader("Authorization") RequestTokenDTO dataT){
         return ResponseEntity.ok(doctorService.doctorResultExam(dataT));
+    }
+
+    //Rota para o iniciar uma consulta
+    @PostMapping("/openConsultation")
+    public ResponseEntity openConsultation(@RequestHeader("Authorization") RequestTokenDTO dataT){
+        doctorService.openConsultation(dataT);
+        return ResponseEntity.ok().build();
+    }
+
+    //Rota para fechar uma consulta
+    @PatchMapping("/closeConsultation")
+    public ResponseEntity closeConsultation(@RequestHeader("Authorization") RequestTokenDTO dataT, @RequestBody @Valid CloseConsultationDTO data){
+        doctorService.closeConsultation(dataT, data);
+        return ResponseEntity.ok().build();
+    }
+
+    //Rota para registrar uma anamnese
+    @PostMapping("/registerAnamnese")
+    public ResponseEntity registerAnamnese(@RequestHeader("Authorization") RequestTokenDTO dataT, @RequestBody @Valid CreateAnamnesisDTO data){
+        doctorService.registerNewAnamnese(dataT, data);
+        return ResponseEntity.ok().build();
+    }
+
+    //Rota para calcular o imc
+    @PostMapping("/bmiCalculator")
+    public ResponseEntity<ResultBmiDTO> bmiCalculator(@RequestBody @Valid CalculatorBmiDTO data){
+        return ResponseEntity.ok(doctorService.calculatorBmi(data));
+    }
+
+    //Rota para criar campos personalizados na anamnese
+    @PostMapping("/createCustomField")
+    public ResponseEntity createCustomField( @RequestHeader("Authorization") RequestTokenDTO dataT, @RequestBody @Valid CreateCustomFieldDTO data){
+        doctorService.createCustomField(dataT, data);
+        return ResponseEntity.ok().build();
     }
 
 

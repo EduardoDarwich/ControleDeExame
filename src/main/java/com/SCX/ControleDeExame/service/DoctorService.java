@@ -1,19 +1,25 @@
 package com.SCX.ControleDeExame.service;
 
+import com.SCX.ControleDeExame.dataTransferObject.anamnesisDTO.CalculatorBmiDTO;
+import com.SCX.ControleDeExame.dataTransferObject.anamnesisDTO.CreateAnamnesisDTO;
+import com.SCX.ControleDeExame.dataTransferObject.anamnesisDTO.CreateCustomFieldDTO;
+import com.SCX.ControleDeExame.dataTransferObject.anamnesisDTO.ResultBmiDTO;
 import com.SCX.ControleDeExame.dataTransferObject.appointmentDTO.GetAppointmentOpenDocDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestNameClinicDTO;
+import com.SCX.ControleDeExame.dataTransferObject.consultationDTO.CloseConsultationDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.*;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.ExamsRequestDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsTypeDTO.ExamsTypeDTO;
-import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryRequestExamDTO;
+import com.SCX.ControleDeExame.domain.anamnesis.Anamnesis;
+import com.SCX.ControleDeExame.domain.anamnesis.AnamnesisCustom;
 import com.SCX.ControleDeExame.domain.appointment.Appointment;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
+import com.SCX.ControleDeExame.domain.consultation.Consultation;
 import com.SCX.ControleDeExame.domain.doctor.Doctor;
 import com.SCX.ControleDeExame.domain.exams.Exams;
 import com.SCX.ControleDeExame.domain.examsRequest.ExamsRequest;
-import com.SCX.ControleDeExame.domain.examsType.ExamsType;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.domain.patient.Patient;
 import com.SCX.ControleDeExame.domain.role.Role;
@@ -24,9 +30,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -76,6 +85,15 @@ public class DoctorService {
 
     @Autowired
     LogService logService;
+
+    @Autowired
+    ConsultationRepository consultationRepository;
+
+    @Autowired
+    AnamnesisRepository anamnesisRepository;
+
+    @Autowired
+    AnamnesisCustomRepository anamnesisCustomRepository;
 
     //Metodo para registrar um médico
     public void registerDoctor(CreateDoctorDTO data, RequestTokenDTO dataT) {
@@ -213,7 +231,6 @@ public class DoctorService {
 
         try {
 
-
             Optional<Clinic> clinic = clinicRepository.findById(doctor.getIdClinic());
 
             return new RequestNameClinicDTO(clinic.get().getName());
@@ -256,13 +273,8 @@ public class DoctorService {
         }
     }
 
-    //Metodo para encerrar uma consulta
-    public void closeAppointment(RequestTokenDTO dataT) {
-        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
-        var id = tokenService.registerUser(idC);
-        Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
-        Doctor doctor = doctorRepository.findByAuthId_Id(auth.getId());
-
+    //Metodo para encerrar um atendimento
+    public void closeAppointment(Doctor doctor) {
 
         doctor.setAvailable(true);
         doctorRepository.save(doctor);
@@ -272,12 +284,116 @@ public class DoctorService {
         appointment.setOpenAppointment(false);
         appointmentRepository.save(appointment);
 
-        logService.logAction(auth, "Encerrou uma consulta");
     }
 
     //Metodo para retornar todos os tipos de exame
     public List<ExamsTypeDTO> getExamsType() {
         return examsTypeRepository.findAll().stream().map(ExamsTypeDTO::new).toList();
+    }
+
+    //Metodo para abrir uma consulta
+    public void openConsultation (RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
+        Doctor doctor = doctorRepository.findByAuthId_Id(auth.getId());
+        Appointment appointment = appointmentRepository.findByDoctorAvaiable(doctor.getId());
+        Optional<Clinic> clinic = clinicRepository.findById(doctor.getIdClinic());
+
+        Consultation newConsultation = new Consultation();
+        newConsultation.setAppointment(appointment);
+        newConsultation.setInit(LocalTime.now());
+        consultationRepository.save(newConsultation);
+
+    }
+
+    //Metodo para fechar uma consulta
+    public void closeConsultation (RequestTokenDTO dataT, CloseConsultationDTO data){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
+        Doctor doctor = doctorRepository.findByAuthId_Id(auth.getId());
+        Appointment appointment = appointmentRepository.findByDoctorAvaiable(doctor.getId());
+        Optional<Consultation> consultationOPT = consultationRepository.findById(appointment.getConsultation().getId());
+        Consultation consultation = consultationOPT.get();
+
+        LocalTime init = consultation.getInit();
+        LocalTime close = LocalTime.now();
+        long duracaoMinutos = Duration.between(init,close).toMinutes();
+
+
+        consultation.setClosed(LocalTime.now());
+        consultation.setReturns(data.returns());
+        consultation.setDuration((int)duracaoMinutos);
+        consultation.setFinished(true);
+        consultationRepository.save(consultation);
+
+        closeAppointment(doctor);
+    }
+
+    //Metodo para registrar uma anamnese
+    public void registerNewAnamnese (RequestTokenDTO dataT, CreateAnamnesisDTO data){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
+        Doctor doctor = doctorRepository.findByAuthId_Id(auth.getId());
+        Appointment appointment = appointmentRepository.findByDoctorAvaiable(doctor.getId());
+        Optional<Consultation> consultationOPT = consultationRepository.findById(appointment.getConsultation().getId());
+        Consultation consultation = consultationOPT.get();
+
+        Anamnesis newAnamnesis = new Anamnesis();
+        newAnamnesis.setConsultation(consultation);
+        newAnamnesis.setDateCreate(LocalDate.now());
+        newAnamnesis.setMainComplaint(data.mainComplaint());
+        newAnamnesis.setHistoryOfCurrentIllness(data.historyOfCurrentIllness());
+        newAnamnesis.setPersonalMedicalHistory(data.personalMedicalHistory());
+        newAnamnesis.setFamilyHistory(data.familyHistory());
+        newAnamnesis.setAllergies(data.allergies());
+        newAnamnesis.setUseMedications(data.useMedications());
+        newAnamnesis.setPreviousHospitalizations(data.previousHospitalizations());
+        newAnamnesis.setPreviousSurgeries(data.previousSurgeries());
+        newAnamnesis.setDiet(data.diet());
+        newAnamnesis.setSleep(data.sleep());
+        newAnamnesis.setPhysicalActivity(data.physicalActivity());
+        newAnamnesis.setSmoking(data.smoking());
+        newAnamnesis.setAlcoholism(data.alcoholism());
+        newAnamnesis.setBloodPressure(data.bloodPressure());
+        newAnamnesis.setHeartRate(data.heartRate());
+        newAnamnesis.setTemperature(data.temperature());
+        newAnamnesis.setWeight(data.weight());
+        newAnamnesis.setHeight(data.height());
+        newAnamnesis.setBmi(data.bmi());
+        newAnamnesis.setObservations(data.observations());
+        newAnamnesis.setDiagnosticHypothesis(data.diagnosticHypothesis());
+        newAnamnesis.setTreatmentPlan(data.treatmentPlan());
+        anamnesisRepository.save(newAnamnesis);
+    }
+
+    //Metodo para calcular o imc
+    public ResultBmiDTO calculatorBmi (CalculatorBmiDTO data){
+        double weight = data.weight();
+        double height = data.height();
+
+        return new ResultBmiDTO(weight / Math.pow(height,2));
+    }
+
+    //Metodo para criar campos personalizados
+    public void createCustomField (RequestTokenDTO dataT, CreateCustomFieldDTO data){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
+        Doctor doctor = doctorRepository.findByAuthId_Id(auth.getId());
+        Appointment appointment = appointmentRepository.findByDoctorAvaiable(doctor.getId());
+        Optional<Consultation> consultationOPT = consultationRepository.findById(appointment.getConsultation().getId());
+        Consultation consultation = consultationOPT.get();
+        Optional<Anamnesis> anamnesisOPT = anamnesisRepository.findById(consultation.getAnamnesis().getId());
+        Anamnesis anamnesis = anamnesisOPT.get();
+
+        AnamnesisCustom newAnamnesisCustom = new AnamnesisCustom();
+        newAnamnesisCustom.setAnamnesis(anamnesis);
+        newAnamnesisCustom.setFieldValue(data.fieldValue());
+        newAnamnesisCustom.setFieldName(data.fieldName());
+        anamnesisCustomRepository.save(newAnamnesisCustom);
     }
 
 

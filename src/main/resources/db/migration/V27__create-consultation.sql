@@ -5,6 +5,6 @@ init time,
 closed time,
 returns boolean, --controle se é uma consulta necessita de um retorno ou não
 finished boolean, --controle se a consulta ja foi finalizada ou não
-duration time, --controle do tempo de duração da consulta
+duration int, --controle do tempo de duração da consulta
 foreign key (appointment_id) references appointment(id)
 );

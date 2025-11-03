@@ -24,7 +24,7 @@ public class Consultation {
     private Appointment appointment;
     private LocalTime init;
     private LocalTime closed;
-    private LocalTime duration;
+    private Integer duration;
     private boolean returns;
     private boolean finished;
 

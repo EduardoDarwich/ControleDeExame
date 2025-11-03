@@ -16,7 +16,7 @@ public class AnamnesisCustom {
     @Id
     @GeneratedValue
     private UUID id;
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "anamnesis_id", nullable = false, unique = true)
     private Anamnesis anamnesis;
     @Column(name = "field_name")
