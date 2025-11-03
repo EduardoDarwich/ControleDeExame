@@ -5,6 +5,7 @@ import com.SCX.ControleDeExame.dataTransferObject.anamnesisDTO.CreateAnamnesisDT
 import com.SCX.ControleDeExame.dataTransferObject.anamnesisDTO.CreateCustomFieldDTO;
 import com.SCX.ControleDeExame.dataTransferObject.anamnesisDTO.ResultBmiDTO;
 import com.SCX.ControleDeExame.dataTransferObject.appointmentDTO.GetAppointmentOpenDocDTO;
+import com.SCX.ControleDeExame.dataTransferObject.appointmentDTO.ReturnAppointmentsPatDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestNameClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.consultationDTO.CloseConsultationDTO;
@@ -27,6 +28,7 @@ import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -377,6 +379,18 @@ public class DoctorService {
         return new ResultBmiDTO(weight / Math.pow(height,2));
     }
 
+    //Metodo para retornar todos os atendimentos do paciente
+    public List<ReturnAppointmentsPatDTO> getAppointmentPat (RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
+        Appointment appointment = appointmentRepository.findByDoctorAvaiable(doctor.getId());
+        Patient patient = appointment.getPatient();
+
+        return appointmentRepository.findAppointmentByPatient(patient.getId());
+    }
+
+
     //Metodo para criar campos personalizados
     public void createCustomField (RequestTokenDTO dataT, CreateCustomFieldDTO data){
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
@@ -395,7 +409,6 @@ public class DoctorService {
         newAnamnesisCustom.setFieldName(data.fieldName());
         anamnesisCustomRepository.save(newAnamnesisCustom);
     }
-
 
 
     public void deleteDoctor(UUID uuid) {

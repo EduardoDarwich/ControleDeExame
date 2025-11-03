@@ -4,6 +4,7 @@ import com.SCX.ControleDeExame.dataTransferObject.anamnesisDTO.CalculatorBmiDTO;
 import com.SCX.ControleDeExame.dataTransferObject.anamnesisDTO.CreateAnamnesisDTO;
 import com.SCX.ControleDeExame.dataTransferObject.anamnesisDTO.CreateCustomFieldDTO;
 import com.SCX.ControleDeExame.dataTransferObject.anamnesisDTO.ResultBmiDTO;
+import com.SCX.ControleDeExame.dataTransferObject.appointmentDTO.ReturnAppointmentsPatDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestNameClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.consultationDTO.CloseConsultationDTO;
@@ -186,6 +187,12 @@ public class DoctorController {
     public ResponseEntity createCustomField( @RequestHeader("Authorization") RequestTokenDTO dataT, @RequestBody @Valid CreateCustomFieldDTO data){
         doctorService.createCustomField(dataT, data);
         return ResponseEntity.ok().build();
+    }
+
+    //Rota para Listar todos os atendimentos passados do paciente
+    @GetMapping("/getAppointmentsPat")
+    public ResponseEntity<List<ReturnAppointmentsPatDTO>> getAppointmentsPat (@RequestHeader("Authorization") RequestTokenDTO dataT){
+        return ResponseEntity.ok(doctorService.getAppointmentPat(dataT));
     }
 
 

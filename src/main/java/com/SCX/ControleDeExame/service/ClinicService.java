@@ -115,7 +115,7 @@ public class ClinicService {
                 clinicRepository.save(clinic);
 
                 //String tokenE = newAuth.getToken();
-                //String url = "http://localhost:5173/firstLogin" + tokenE;
+                //String url = "http://localhost:5173/firstLogin/" + tokenE;
 
                 //emailService.sendEmail(newAuth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
 
