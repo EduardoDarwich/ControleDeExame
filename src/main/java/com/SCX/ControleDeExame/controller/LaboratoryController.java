@@ -2,9 +2,10 @@
 package com.SCX.ControleDeExame.controller;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
-import com.SCX.ControleDeExame.dataTransferObject.examsDTO.ExamsDTO;
+import com.SCX.ControleDeExame.dataTransferObject.fileDTO.UploadDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.*;
 import com.SCX.ControleDeExame.service.ClinicService;
+import com.SCX.ControleDeExame.service.ExamsFileService;
 import com.SCX.ControleDeExame.service.LaboratoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,6 +25,8 @@ public class LaboratoryController {
     LaboratoryService laboratoryService;
     @Autowired
     ClinicService clinicService;
+    @Autowired
+    ExamsFileService examsFileService;
 
     //Rota para registrar um laboratorio
     @PostMapping("/register")
@@ -65,10 +69,10 @@ public class LaboratoryController {
         return ResponseEntity.ok(laboratoryService.laboratoryRequestExam(dataT));
     }
 
-    //Rota para realizar o cadastro do exame
-    @PostMapping("/registerExam")
-    public ResponseEntity registerExam (@RequestBody @Valid ExamsDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT){
-        laboratoryService.registerResultExames(data, dataT);
+    //Rota para realizar o upload do resultado do exame (testar)
+    @PostMapping("/uploadExam")
+    public ResponseEntity registerExam (@RequestBody @Valid UploadDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT) throws IOException {
+        examsFileService.uploadFile(data, dataT);
         return ResponseEntity.ok().build();
     }
 }

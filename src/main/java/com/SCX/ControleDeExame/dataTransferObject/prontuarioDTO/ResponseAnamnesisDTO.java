@@ -1,6 +1,10 @@
-package com.SCX.ControleDeExame.dataTransferObject.anamnesisDTO;
+package com.SCX.ControleDeExame.dataTransferObject.prontuarioDTO;
 
-public record CreateAnamnesisDTO(
+import com.SCX.ControleDeExame.dataTransferObject.anamnesisDTO.CreateCustomFieldDTO;
+
+import java.util.List;
+
+public record ResponseAnamnesisDTO(
         String mainComplaint,
         String historyOfCurrentIllness,
         String personalMedicalHistory,
@@ -22,6 +26,7 @@ public record CreateAnamnesisDTO(
         double bmi,
         String observations,
         String diagnosticHypothesis,
-        String treatmentPlan
+        String treatmentPlan,
+        List<CreateCustomFieldDTO> customFields
 ) {
 }

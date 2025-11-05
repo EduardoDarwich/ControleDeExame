@@ -2,16 +2,14 @@ package com.SCX.ControleDeExame.service;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorResultExamDTO;
-import com.SCX.ControleDeExame.dataTransferObject.patientDTO.GetAllPatientDTO;
-import com.SCX.ControleDeExame.dataTransferObject.patientDTO.GetPatientByCPFDTO;
-import com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientDTO;
-import com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientRequestExamDTO;
+import com.SCX.ControleDeExame.dataTransferObject.patientDTO.*;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.patient.Patient;
 import com.SCX.ControleDeExame.domain.role.Role;
 import com.SCX.ControleDeExame.domain.role.RoleEnum;
 import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.repository.AuthRepository;
+import com.SCX.ControleDeExame.repository.ExamsFileRepository;
 import com.SCX.ControleDeExame.repository.PatientRepository;
 import com.SCX.ControleDeExame.repository.RoleRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -37,6 +35,9 @@ public class PatientService {
     RoleRepository roleRepository;
     @Autowired
     TokenService tokenService;
+
+    @Autowired
+    ExamsFileRepository examsFileRepository;
 
     public void deletePatient(UUID uuid) {
 
@@ -69,12 +70,12 @@ public class PatientService {
     }
 
     //Metodo para retornar todos os exames devolvidos
-    public List<DoctorResultExamDTO> patientResultExam(RequestTokenDTO dataT){
+    public List<ExamsFileDTO> patientResultExam(RequestTokenDTO dataT){
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Patient patient = patientRepository.findByAuthId_Id(UUID.fromString(id));
 
-        return patientRepository.findResultExamByPatient(patient.getId());
+        return examsFileRepository.findByPatient_Id(patient.getId());
     }
 
     public Patient getPatientById(RequestTokenDTO data) {

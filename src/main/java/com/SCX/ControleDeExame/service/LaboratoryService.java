@@ -189,7 +189,7 @@ public class LaboratoryService {
     }
 
     //Metodo para registrar os resultados do exame no sistema
-    public void registerResultExames(ExamsDTO data, RequestTokenDTO dataT) {
+   /* public void registerResultExames(ExamsDTO data, RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         var auth = authRepository.findById(UUID.fromString(id));
@@ -220,7 +220,7 @@ public class LaboratoryService {
         notificationService.send(authD.get(), "Exame devolvido", msgD);
         notificationService.send(authP.get(), "Exame devolvido", msgP);
 
-    }
+    }*/
 
 
     public void deleteLaboratory(UUID uuid) {

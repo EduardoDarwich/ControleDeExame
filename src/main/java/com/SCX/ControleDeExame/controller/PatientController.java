@@ -2,6 +2,7 @@ package com.SCX.ControleDeExame.controller;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorResultExamDTO;
+import com.SCX.ControleDeExame.dataTransferObject.patientDTO.ExamsFileDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientRequestExamDTO;
 import com.SCX.ControleDeExame.domain.patient.Patient;
@@ -58,7 +59,7 @@ public class PatientController {
 
     //Rota para devolver os exames do paciente
     @GetMapping("/getExamsResult")
-    public ResponseEntity<List<DoctorResultExamDTO>> examsResult(@RequestHeader("Authorization") RequestTokenDTO dataT){
+    public ResponseEntity<List<ExamsFileDTO>> examsResult(@RequestHeader("Authorization") RequestTokenDTO dataT){
         return ResponseEntity.ok(patientService.patientResultExam(dataT));
     }
 

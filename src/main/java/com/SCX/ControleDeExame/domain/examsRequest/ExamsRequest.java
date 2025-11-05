@@ -1,11 +1,10 @@
 package com.SCX.ControleDeExame.domain.examsRequest;
 
-import com.SCX.ControleDeExame.domain.appointment.Appointment;
-import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
 import com.SCX.ControleDeExame.domain.consultation.Consultation;
 import com.SCX.ControleDeExame.domain.doctor.Doctor;
 import com.SCX.ControleDeExame.domain.exams.Exams;
+import com.SCX.ControleDeExame.domain.examsFile.ExamsFile;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.domain.patient.Patient;
 import jakarta.persistence.*;
@@ -59,5 +58,8 @@ public class ExamsRequest {
 
     @OneToOne(mappedBy = "requestId", cascade = CascadeType.ALL)
     private Exams exams;
+
+    @OneToOne(mappedBy = "examsRequest", cascade = CascadeType.ALL)
+    private ExamsFile examsFile;
 }
 

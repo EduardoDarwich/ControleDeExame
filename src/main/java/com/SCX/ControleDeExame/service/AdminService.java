@@ -256,7 +256,10 @@ public class AdminService {
         return clinicRepository.findLabByClinic(clinic.getId());
     }
 
- /*   //Metodo para desativar um usuario da secretaria(testar)
+   /* //Metodo para listar todas as secretarias da clinica(testar)
+    public List<>
+
+    //Metodo para desativar um usuario da secretaria(testar)
     public void disableSecretary(RequestSecretaryEmailDTO data) {
         String email = data.Email();
         Secretary secretary = secretaryRepository.findByEmail(email);

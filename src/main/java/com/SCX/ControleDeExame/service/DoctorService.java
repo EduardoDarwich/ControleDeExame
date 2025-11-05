@@ -1,9 +1,7 @@
 package com.SCX.ControleDeExame.service;
 
-import com.SCX.ControleDeExame.dataTransferObject.anamnesisDTO.CalculatorBmiDTO;
-import com.SCX.ControleDeExame.dataTransferObject.anamnesisDTO.CreateAnamnesisDTO;
-import com.SCX.ControleDeExame.dataTransferObject.anamnesisDTO.CreateCustomFieldDTO;
-import com.SCX.ControleDeExame.dataTransferObject.anamnesisDTO.ResultBmiDTO;
+import com.SCX.ControleDeExame.dataTransferObject.anamnesisDTO.*;
+import com.SCX.ControleDeExame.dataTransferObject.appointmentDTO.GetAppointmentIdDTO;
 import com.SCX.ControleDeExame.dataTransferObject.appointmentDTO.GetAppointmentOpenDocDTO;
 import com.SCX.ControleDeExame.dataTransferObject.appointmentDTO.ReturnAppointmentsPatDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
@@ -12,6 +10,10 @@ import com.SCX.ControleDeExame.dataTransferObject.consultationDTO.CloseConsultat
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.*;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.ExamsRequestDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsTypeDTO.ExamsTypeDTO;
+import com.SCX.ControleDeExame.dataTransferObject.prontuarioDTO.ResponseAnamnesisDTO;
+import com.SCX.ControleDeExame.dataTransferObject.prontuarioDTO.ReturnDiagnosticDTO;
+import com.SCX.ControleDeExame.dataTransferObject.prontuarioDTO.ReturnExamsRequestsDTO;
+import com.SCX.ControleDeExame.dataTransferObject.prontuarioDTO.ReturnExamsResultsDTO;
 import com.SCX.ControleDeExame.domain.anamnesis.Anamnesis;
 import com.SCX.ControleDeExame.domain.anamnesis.AnamnesisCustom;
 import com.SCX.ControleDeExame.domain.appointment.Appointment;
@@ -28,19 +30,19 @@ import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 //Classe contendo a logica da entidade do médico
 @Service
@@ -329,6 +331,7 @@ public class DoctorService {
         consultation.setReturns(data.returns());
         consultation.setDuration((int)duracaoMinutos);
         consultation.setFinished(true);
+        consultation.setDiagnosis(data.diagnosis());
         consultationRepository.save(consultation);
 
         closeAppointment(doctor);
@@ -392,8 +395,8 @@ public class DoctorService {
     }
 
 
-    //Metodo para criar campos personalizados
-    public void createCustomField (RequestTokenDTO dataT, CreateCustomFieldDTO data){
+    //Metodo para criar campos personalizados (testar)
+    public void createCustomField (RequestTokenDTO dataT, List< CreateCustomFieldDTO> data){
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
@@ -404,11 +407,14 @@ public class DoctorService {
         Optional<Anamnesis> anamnesisOPT = anamnesisRepository.findById(consultation.getAnamnesis().getId());
         Anamnesis anamnesis = anamnesisOPT.get();
 
-        AnamnesisCustom newAnamnesisCustom = new AnamnesisCustom();
-        newAnamnesisCustom.setAnamnesis(anamnesis);
-        newAnamnesisCustom.setFieldValue(data.fieldValue());
-        newAnamnesisCustom.setFieldName(data.fieldName());
-        anamnesisCustomRepository.save(newAnamnesisCustom);
+        data.forEach(item -> {
+            AnamnesisCustom newAnamnesisCustom = new AnamnesisCustom();
+            newAnamnesisCustom.setAnamnesis(anamnesis);
+            newAnamnesisCustom.setFieldValue(item.fieldValue());
+            newAnamnesisCustom.setFieldName(item.fieldName());
+            anamnesisCustomRepository.save(newAnamnesisCustom);
+        });
+
     }
 
 
@@ -460,10 +466,6 @@ public class DoctorService {
             requestExamsRepository.save(newExamRequest);
 
 
-            Exams newExam = new Exams();
-            newExam.setRequestId(newExamRequest);
-            examsRepository.save(newExam);
-
             logService.logAction(auth.get(), msg);
 
 
@@ -509,4 +511,81 @@ public class DoctorService {
 
         return doctorRepository.findDocIsConsult(doctor.getId());
     }
+
+    //Metodo para retornar a anamnese da consulta(testar)
+    public ResponseAnamnesisDTO getAnamneseByConsult (GetAppointmentIdDTO data){
+        Optional<Appointment> appointment = appointmentRepository.findById(UUID.fromString(data.id()));
+        Optional<Consultation> consultation = consultationRepository.findById(appointment.get().getConsultation().getId());
+        Optional<Anamnesis> anamnesisOPT = anamnesisRepository.findByIdWithCustomFields(consultation.get().getAnamnesis().getId());
+        Anamnesis anamnesis = anamnesisOPT.get();
+        List<CreateCustomFieldDTO> createCustomFieldDTOS = anamnesis.getAnamnesisCustom()
+                .stream()
+                .map(cf -> new CreateCustomFieldDTO(
+                        cf.getFieldName(),
+                        cf.getFieldValue()
+                )).toList();
+
+        return new ResponseAnamnesisDTO(
+                anamnesis.getMainComplaint(),
+                anamnesis.getHistoryOfCurrentIllness(),
+                anamnesis.getPersonalMedicalHistory(),
+                anamnesis.getFamilyHistory(),
+                anamnesis.getAllergies(),
+                anamnesis.getUseMedications(),
+                anamnesis.getPreviousHospitalizations(),
+                anamnesis.getPreviousSurgeries(),
+                anamnesis.getDiet(),
+                anamnesis.getSleep(),
+                anamnesis.getPhysicalActivity(),
+                anamnesis.isSmoking(),
+                anamnesis.isAlcoholism(),
+                anamnesis.getBloodPressure(),
+                anamnesis.getHeartRate(),
+                anamnesis.getTemperature(),
+                anamnesis.getWeight(),
+                anamnesis.getHeight(),
+                anamnesis.getBmi(),
+                anamnesis.getObservations(),
+                anamnesis.getDiagnosticHypothesis(),
+                anamnesis.getTreatmentPlan(),
+                createCustomFieldDTOS
+        );
+
+    }
+
+    //Metodo para retornar o diagnostico relacionado a consulta se houver (testar)
+    public ReturnDiagnosticDTO returnDiagnostic (GetAppointmentIdDTO data){
+        Optional<Appointment> appointment = appointmentRepository.findById(UUID.fromString(data.id()));
+        Optional<Consultation> consultation = consultationRepository.findById(appointment.get().getConsultation().getId());
+
+        return new ReturnDiagnosticDTO(consultation.get().getDiagnosis());
+    }
+
+    //Metodo para retornar os pedidos de exames relacinados a consulta se houver (testar)
+    public ReturnExamsRequestsDTO returnExamsRequests (GetAppointmentIdDTO data){
+        Optional<Appointment> appointment = appointmentRepository.findById(UUID.fromString(data.id()));
+        Optional<Consultation> consultation = consultationRepository.findById(appointment.get().getConsultation().getId());
+
+        return new ReturnExamsRequestsDTO (consultation.get().getExamsRequests());
+
+
+    }
+
+    //Metodo para retornar os resutados dos exames relacionados a consulta se houver (testar)
+    public ReturnExamsResultsDTO returnExamsResults (GetAppointmentIdDTO data){
+        Optional<Appointment> appointment = appointmentRepository.findById(UUID.fromString(data.id()));
+        Optional<Consultation> consultation = consultationRepository.findById(appointment.get().getConsultation().getId());
+        List<ExamsRequest> examsRequests = consultation.get().getExamsRequests();
+
+        List<Exams> todosExames = examsRequests.stream()
+                .map(ExamsRequest::getExams) // transforma cada ExamsRequest em seu Exam
+                .filter(Objects::nonNull)     // remove os nulls (casos sem exame)
+                .collect(Collectors.toList());
+
+        return new ReturnExamsResultsDTO(todosExames);
+    }
+
+
+
+
 }

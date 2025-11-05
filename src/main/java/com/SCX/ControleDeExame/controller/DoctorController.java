@@ -9,16 +9,13 @@ import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestNameClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.consultationDTO.CloseConsultationDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.*;
-import com.SCX.ControleDeExame.dataTransferObject.examsDTO.GetByDoctorDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.ExamsRequestDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsTypeDTO.ExamsTypeDTO;
-import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryRequestExamDTO;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 
 import com.SCX.ControleDeExame.repository.AuthRepository;
 import com.SCX.ControleDeExame.service.DoctorService;
 import jakarta.validation.Valid;
-import org.hibernate.annotations.Fetch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -184,7 +181,7 @@ public class DoctorController {
 
     //Rota para criar campos personalizados na anamnese
     @PostMapping("/createCustomField")
-    public ResponseEntity createCustomField( @RequestHeader("Authorization") RequestTokenDTO dataT, @RequestBody @Valid CreateCustomFieldDTO data){
+    public ResponseEntity createCustomField( @RequestHeader("Authorization") RequestTokenDTO dataT, @RequestBody @Valid List<CreateCustomFieldDTO> data){
         doctorService.createCustomField(dataT, data);
         return ResponseEntity.ok().build();
     }
@@ -198,9 +195,8 @@ public class DoctorController {
     //Rota para verificar se o medico está em consulta
     @GetMapping("/verifyDocIsConsult")
     public ResponseEntity verifyDocIsConsult( @RequestHeader("Authorization") RequestTokenDTO dataT){
-        ;
+
         return ResponseEntity.ok(doctorService.verifyDocIsConsult(dataT));
     }
-
 
 }

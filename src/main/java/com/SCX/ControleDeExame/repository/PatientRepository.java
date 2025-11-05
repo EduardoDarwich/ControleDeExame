@@ -39,7 +39,7 @@ public interface PatientRepository extends JpaRepository <Patient, UUID> {
             """)
     List<PatientRequestExamDTO> findRequestExamByPatient(@Param("patientId") UUID patientId);
 
-    @Query("""
+  /*  @Query("""
             select new com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorResultExamDTO(
             ex.cid,
             ex.result_value,
@@ -50,7 +50,11 @@ public interface PatientRepository extends JpaRepository <Patient, UUID> {
             join e.exams ex
             where p.id = :patientId
             """)
-    List<DoctorResultExamDTO> findResultExamByPatient (@Param("patientId") UUID patientId);
+    List<DoctorResultExamDTO> findResultExamByPatient (@Param("patientId") UUID patientId);*/
+
+
+
+
 }
 
 

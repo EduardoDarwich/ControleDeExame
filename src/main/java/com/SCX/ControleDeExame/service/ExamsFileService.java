@@ -4,11 +4,10 @@ import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.fileDTO.UploadDTO;
 import com.SCX.ControleDeExame.domain.appointment.Appointment;
 import com.SCX.ControleDeExame.domain.auth.Auth;
-import com.SCX.ControleDeExame.domain.clinic.Clinic;
 import com.SCX.ControleDeExame.domain.consultation.Consultation;
 import com.SCX.ControleDeExame.domain.doctor.Doctor;
 import com.SCX.ControleDeExame.domain.examsRequest.ExamsRequest;
-import com.SCX.ControleDeExame.domain.filePath.FilePath;
+import com.SCX.ControleDeExame.domain.examsFile.ExamsFile;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.domain.patient.Patient;
 import com.SCX.ControleDeExame.domain.user_lab.UserLab;
@@ -17,17 +16,13 @@ import com.SCX.ControleDeExame.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,10 +31,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class FilePathService {
+public class ExamsFileService {
 
     @Autowired
-    FilePathRepository filePathRepository;
+    ExamsFileRepository examsFileRepository;
 
     @Autowired
     TokenService tokenService;
@@ -71,11 +66,9 @@ public class FilePathService {
     @Autowired
     ConsultationRepository consultationRepository;
 
-
-
     private final String uploadDir = "uploads";
 
-    public FilePath uploadFile(UploadDTO data, RequestTokenDTO dataT) throws IOException {
+    public ExamsFile uploadFile(UploadDTO data, RequestTokenDTO dataT) throws IOException {
         // Garante que a pasta exista
         File dir = new File(uploadDir);
         if (!dir.exists()) dir.mkdirs();
@@ -97,17 +90,19 @@ public class FilePathService {
         Path filePath = Paths.get(uploadDir, uniqueFilename);
 
 
-
         // Salva o arquivo
         Files.copy(data.file().getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
         // Salva os dados no banco
-        FilePath entity = new FilePath();
+        ExamsFile entity = new ExamsFile();
         entity.setExamsRequest(examsRequest.get());
+        entity.setPatient(patient.get());
+        entity.setDoctor(doctor.get());
+        entity.setLaboratory(laboratory.get());
         entity.setFileName(uniqueFilename);
-        entity.setOriginalName(filePath.toString());
+        entity.setFilePath(filePath.toString());
 
-        return filePathRepository.save(entity);
+        return examsFileRepository.save(entity);
     }
 
     public ResponseEntity<Resource> downloadFile(String filename) throws IOException {

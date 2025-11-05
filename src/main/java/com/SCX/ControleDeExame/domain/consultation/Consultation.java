@@ -26,6 +26,7 @@ public class Consultation {
     @JoinColumn(name = "appointment_id", nullable = false, unique = true)
     private Appointment appointment;
     private LocalTime init;
+    private String diagnosis;
     private LocalTime closed;
     private Integer duration;
     private boolean returns;
