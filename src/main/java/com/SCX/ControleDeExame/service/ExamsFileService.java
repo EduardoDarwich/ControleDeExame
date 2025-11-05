@@ -78,7 +78,7 @@ public class ExamsFileService {
         UserLab userLab = userLabRepository.findByAuthId_Id(UUID.fromString(id));
         var auth = authRepository.findById(userLab.getAuthId().getId());
         Optional<Laboratory> laboratory = laboratoryRepository.findById(userLab.getLaboratoryId().getId());
-        System.out.println("chegou aqui" + data.examsReqId());
+
         Optional<ExamsRequest> examsRequest = requestExamsRepository.findById(UUID.fromString(data.examsReqId()));
         Optional<Consultation> consultation = consultationRepository.findById(examsRequest.get().getConsultation().getId());
         Optional<Appointment> appointment = appointmentRepository.findById(consultation.get().getAppointment().getId());

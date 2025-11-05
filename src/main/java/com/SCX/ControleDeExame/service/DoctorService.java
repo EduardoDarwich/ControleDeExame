@@ -10,6 +10,7 @@ import com.SCX.ControleDeExame.dataTransferObject.consultationDTO.CloseConsultat
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.*;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.ExamsRequestDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsTypeDTO.ExamsTypeDTO;
+import com.SCX.ControleDeExame.dataTransferObject.patientDTO.ExamsFileDTO;
 import com.SCX.ControleDeExame.dataTransferObject.prontuarioDTO.ResponseAnamnesisDTO;
 import com.SCX.ControleDeExame.dataTransferObject.prontuarioDTO.ReturnDiagnosticDTO;
 import com.SCX.ControleDeExame.dataTransferObject.prontuarioDTO.ReturnExamsRequestsDTO;
@@ -22,6 +23,7 @@ import com.SCX.ControleDeExame.domain.clinic.Clinic;
 import com.SCX.ControleDeExame.domain.consultation.Consultation;
 import com.SCX.ControleDeExame.domain.doctor.Doctor;
 import com.SCX.ControleDeExame.domain.exams.Exams;
+import com.SCX.ControleDeExame.domain.examsFile.ExamsFile;
 import com.SCX.ControleDeExame.domain.examsRequest.ExamsRequest;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.domain.patient.Patient;
@@ -566,7 +568,15 @@ public class DoctorService {
         Optional<Appointment> appointment = appointmentRepository.findById(UUID.fromString(data.id()));
         Optional<Consultation> consultation = consultationRepository.findById(appointment.get().getConsultation().getId());
 
-        return new ReturnExamsRequestsDTO (consultation.get().getExamsRequests());
+        List<ExamsRequestDTO> examsRequestDTOS = consultation.get().getExamsRequests()
+                .stream()
+                .map(er -> new ExamsRequestDTO(
+                        er.getExamType(),
+                        er.getSampleType(),
+                        er.getComplement(),
+                        "mano ignora isso"
+                )).toList();
+        return new ReturnExamsRequestsDTO (examsRequestDTOS);
 
 
     }
@@ -575,14 +585,15 @@ public class DoctorService {
     public ReturnExamsResultsDTO returnExamsResults (GetAppointmentIdDTO data){
         Optional<Appointment> appointment = appointmentRepository.findById(UUID.fromString(data.id()));
         Optional<Consultation> consultation = consultationRepository.findById(appointment.get().getConsultation().getId());
-        List<ExamsRequest> examsRequests = consultation.get().getExamsRequests();
 
-        List<Exams> todosExames = examsRequests.stream()
-                .map(ExamsRequest::getExams) // transforma cada ExamsRequest em seu Exam
-                .filter(Objects::nonNull)     // remove os nulls (casos sem exame)
-                .collect(Collectors.toList());
+        List<ExamsFileDTO> ExamsFile = consultation.get().getExamsRequests()
+                .stream()
+                .map(er -> new ExamsFileDTO(
+                        er.getExamsFile().getFileName()
 
-        return new ReturnExamsResultsDTO(todosExames);
+                )).toList();
+
+        return new ReturnExamsResultsDTO(ExamsFile);
     }
 
 
