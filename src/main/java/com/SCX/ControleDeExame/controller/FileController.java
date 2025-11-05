@@ -43,5 +43,32 @@ public class FileController {
             @RequestParam(required = false) String displayName) throws IOException {
         return filePathService.downloadFile(filename);
     }
+
+    @GetMapping("/preview/{filename}")
+    public ResponseEntity<Resource> previewFile(@PathVariable String filename) throws IOException {
+        final String uploadDir = "uploads";
+        Path filePath = Path.of(uploadDir, filename);
+
+        if (!Files.exists(filePath)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Resource resource = new UrlResource(filePath.toUri());
+
+        if (!resource.exists() || !resource.isReadable()) {
+            throw new RuntimeException("Não foi possível ler o arquivo: " + filename);
+        }
+
+        String contentType = Files.probeContentType(filePath);
+        if (contentType == null) {
+            contentType = "application/pdf";
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
+                .body(resource);
+    }
+
 }
 
