@@ -3,6 +3,7 @@ package com.SCX.ControleDeExame.domain.examsRequest;
 import com.SCX.ControleDeExame.domain.appointment.Appointment;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
+import com.SCX.ControleDeExame.domain.consultation.Consultation;
 import com.SCX.ControleDeExame.domain.doctor.Doctor;
 import com.SCX.ControleDeExame.domain.exams.Exams;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
@@ -53,8 +54,8 @@ public class ExamsRequest {
     private Laboratory laboratoryId;
 
     @ManyToOne()
-    @JoinColumn(name = "appointment_id" , nullable = false, unique = true)
-    private Appointment appointmentId;
+    @JoinColumn(name = "consultation_id" , nullable = false, unique = true)
+    private Consultation consultation;
 
     @OneToOne(mappedBy = "requestId", cascade = CascadeType.ALL)
     private Exams exams;

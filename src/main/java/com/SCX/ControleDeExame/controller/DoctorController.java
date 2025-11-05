@@ -195,7 +195,12 @@ public class DoctorController {
         return ResponseEntity.ok(doctorService.getAppointmentPat(dataT));
     }
 
-
+    //Rota para verificar se o medico está em consulta
+    @GetMapping("/verifyDocIsConsult")
+    public ResponseEntity verifyDocIsConsult( @RequestHeader("Authorization") RequestTokenDTO dataT){
+        ;
+        return ResponseEntity.ok(doctorService.verifyDocIsConsult(dataT));
+    }
 
 
 }

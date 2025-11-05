@@ -135,6 +135,7 @@ public class DoctorService {
             newDoctor.setAvailable(true);
             newDoctor.setAuthId(newAuth);
             newDoctor.setSpecialty(data.specialty());
+            newDoctor.setIdClinic(clinic.getId());
             doctorRepository.save(newDoctor);
 
             //String tokenE = newAuth.getToken();
@@ -245,7 +246,7 @@ public class DoctorService {
 
     }
 
-    //Metodo para devolver a consulta atual do medico
+    //Metodo para devolver o atendimento atual do medico
     public GetAppointmentOpenDocDTO returnOpenAppointment(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
@@ -450,7 +451,7 @@ public class DoctorService {
             newExamRequest.setClinicId(clinic.get());
             newExamRequest.setPatientId(patient.get());
             newExamRequest.setLaboratoryId(laboratory);
-            newExamRequest.setAppointmentId(appointment);
+            newExamRequest.setConsultation(appointment.getConsultation());
             newExamRequest.setExamType(data.exam_type());
             newExamRequest.setSampleType(data.sample_type());
             newExamRequest.setStatus("Pendente");
@@ -498,5 +499,14 @@ public class DoctorService {
 
     //Metodo para buscar exames associados a um paciente
     public void getByPatientName() {
+    }
+
+    //Metodo para verificar se o medico está em consulta ou não
+    public boolean verifyDocIsConsult (RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
+
+        return doctorRepository.findDocIsConsult(doctor.getId());
     }
 }

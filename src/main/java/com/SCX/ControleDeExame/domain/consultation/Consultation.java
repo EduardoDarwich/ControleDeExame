@@ -2,10 +2,13 @@ package com.SCX.ControleDeExame.domain.consultation;
 
 import com.SCX.ControleDeExame.domain.anamnesis.Anamnesis;
 import com.SCX.ControleDeExame.domain.appointment.Appointment;
+import com.SCX.ControleDeExame.domain.examsRequest.ExamsRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Table(name = "consultation")
@@ -30,5 +33,8 @@ public class Consultation {
 
     @OneToOne(mappedBy = "consultation")
     private Anamnesis anamnesis;
+
+    @OneToMany(mappedBy = "consultation")
+    private List<ExamsRequest> examsRequests = new ArrayList<>();
 
 }

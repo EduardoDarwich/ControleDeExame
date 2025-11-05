@@ -43,8 +43,6 @@ public class Appointment {
     @JoinColumn(name = "id_cli", nullable = false, unique = true)
     private Clinic clinic;
 
-    @OneToMany(mappedBy = "appointmentId")
-    private List<ExamsRequest> examsRequests = new ArrayList<>();
 
     @OneToOne(mappedBy = "appointment")
     private Consultation consultation;

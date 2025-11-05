@@ -28,6 +28,15 @@ public interface DoctorRepository extends JpaRepository <Doctor, UUID> {
     List<ResponseClinicDocDTO> findClinicByDoctor(@Param("doctorId") UUID doctorId);
 
     @Query("""
+            select count(c) > 0
+            from Consultation c
+            join c.appointment a
+            join a.doctor d
+            where d.id = :doctorId and c.finished = false
+            """)
+    boolean findDocIsConsult(@Param("doctorId") UUID doctorId);
+
+    @Query("""
             select new com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseDocCliLabDTO(l.name)
             from Laboratory l
             join l.clinics c
