@@ -173,20 +173,20 @@ public class ExamsFileService {
             PdfWriter.getInstance(document, out);
             document.open();
 
-            // 🔹 Título principal
+            //Título principal
             Font titleFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
             Paragraph title = new Paragraph("Requisição de exame", titleFont);
             title.setAlignment(Element.ALIGN_CENTER);
             title.setSpacingAfter(20);
             document.add(title);
 
-            // 🔹 Subtítulo
+            //Subtítulo
             Font subtitleFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
             Paragraph subtitle = new Paragraph("Requisição de exame", subtitleFont);
             subtitle.setSpacingAfter(10);
             document.add(subtitle);
 
-            // 🔹 Tabela com informações
+            //Tabela com informações
             PdfPTable table = new PdfPTable(2);
             table.setWidthPercentage(100);
             table.setSpacingBefore(10f);
@@ -215,7 +215,7 @@ public class ExamsFileService {
 
             document.add(table);
 
-            // 🔹 Espaçamento e rodapé
+            //Espaçamento e rodapé
             document.add(new Paragraph("\n"));
             Paragraph footer = new Paragraph("Gerado automaticamente pelo sistema de exames.", new Font(Font.FontFamily.HELVETICA, 10, Font.ITALIC));
             footer.setAlignment(Element.ALIGN_CENTER);
