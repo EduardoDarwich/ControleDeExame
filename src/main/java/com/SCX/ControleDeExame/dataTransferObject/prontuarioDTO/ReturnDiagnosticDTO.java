@@ -1,4 +1,4 @@
 package com.SCX.ControleDeExame.dataTransferObject.prontuarioDTO;
 
-public record ReturnDiagnosticDTO (String diagnostic) {
+public record ReturnDiagnosticDTO (String diagnostic, String prescription) {
 }

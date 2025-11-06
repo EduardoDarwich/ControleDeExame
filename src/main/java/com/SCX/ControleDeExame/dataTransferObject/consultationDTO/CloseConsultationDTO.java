@@ -1,4 +1,4 @@
 package com.SCX.ControleDeExame.dataTransferObject.consultationDTO;
 
-public record CloseConsultationDTO(boolean returns, String diagnosis) {
+public record CloseConsultationDTO(boolean returns, String diagnosis, String prescription) {
 }

@@ -31,6 +31,7 @@ public class Consultation {
     private Integer duration;
     private boolean returns;
     private boolean finished;
+    private String prescription;
 
     @OneToOne(mappedBy = "consultation")
     private Anamnesis anamnesis;

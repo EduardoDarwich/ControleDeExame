@@ -334,6 +334,7 @@ public class DoctorService {
         consultation.setDuration((int)duracaoMinutos);
         consultation.setFinished(true);
         consultation.setDiagnosis(data.diagnosis());
+        consultation.setPrescription(data.prescription());
         consultationRepository.save(consultation);
 
         closeAppointment(doctor);
@@ -397,7 +398,7 @@ public class DoctorService {
     }
 
 
-    //Metodo para criar campos personalizados (testar)
+    //Metodo para criar campos personalizados
     public void createCustomField (RequestTokenDTO dataT, List< CreateCustomFieldDTO> data){
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
@@ -514,7 +515,7 @@ public class DoctorService {
         return doctorRepository.findDocIsConsult(doctor.getId());
     }
 
-    //Metodo para retornar a anamnese da consulta(testar)
+    //Metodo para retornar a anamnese da consulta
     public ResponseAnamnesisDTO getAnamneseByConsult (GetAppointmentIdDTO data){
         Optional<Appointment> appointment = appointmentRepository.findById(UUID.fromString(data.id()));
         Optional<Consultation> consultation = consultationRepository.findById(appointment.get().getConsultation().getId());
@@ -555,15 +556,15 @@ public class DoctorService {
 
     }
 
-    //Metodo para retornar o diagnostico relacionado a consulta se houver (testar)
+    //Metodo para retornar o diagnostico relacionado a consulta se houver
     public ReturnDiagnosticDTO returnDiagnostic (GetAppointmentIdDTO data){
         Optional<Appointment> appointment = appointmentRepository.findById(UUID.fromString(data.id()));
         Optional<Consultation> consultation = consultationRepository.findById(appointment.get().getConsultation().getId());
 
-        return new ReturnDiagnosticDTO(consultation.get().getDiagnosis());
+        return new ReturnDiagnosticDTO(consultation.get().getDiagnosis(), consultation.get().getPrescription());
     }
 
-    //Metodo para retornar os pedidos de exames relacinados a consulta se houver (testar)
+    //Metodo para retornar os pedidos de exames relacinados a consulta se houver
     public ReturnExamsRequestsDTO returnExamsRequests (GetAppointmentIdDTO data){
         Optional<Appointment> appointment = appointmentRepository.findById(UUID.fromString(data.id()));
         Optional<Consultation> consultation = consultationRepository.findById(appointment.get().getConsultation().getId());
@@ -581,7 +582,7 @@ public class DoctorService {
 
     }
 
-    //Metodo para retornar os resutados dos exames relacionados a consulta se houver (testar)
+    //Metodo para retornar os resutados dos exames relacionados a consulta se houver
     public ReturnExamsResultsDTO returnExamsResults (GetAppointmentIdDTO data){
         Optional<Appointment> appointment = appointmentRepository.findById(UUID.fromString(data.id()));
         Optional<Consultation> consultation = consultationRepository.findById(appointment.get().getConsultation().getId());

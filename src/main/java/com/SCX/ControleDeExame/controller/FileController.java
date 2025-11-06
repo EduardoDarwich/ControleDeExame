@@ -1,10 +1,13 @@
 package com.SCX.ControleDeExame.controller;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
+import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.GetExamsRequestIdDTO;
 import com.SCX.ControleDeExame.dataTransferObject.fileDTO.UploadDTO;
 import com.SCX.ControleDeExame.domain.examsFile.ExamsFile;
 import com.SCX.ControleDeExame.service.ExamsFileService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -13,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,6 +28,7 @@ public class FileController {
     @Autowired
     ExamsFileService examsFileService;
 
+    //Rota para fazer um upload de um pdf no sistema
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@ModelAttribute UploadDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT) {
         try {
@@ -35,6 +40,7 @@ public class FileController {
         }
     }
 
+    //Rota para fazer um dowoad ao clicar
     @GetMapping("/download/{filename:.+}")
     public ResponseEntity<Resource> downloadFile(
             @PathVariable String filename,
@@ -42,6 +48,7 @@ public class FileController {
         return examsFileService.downloadFile(filename);
     }
 
+    //Rota para ter uma preview antes de baixar ao clicar
     @GetMapping("/preview/{filename}")
     public ResponseEntity<Resource> previewFile(@PathVariable String filename) throws IOException {
         final String uploadDir = "uploads";
@@ -68,5 +75,30 @@ public class FileController {
                 .body(resource);
     }
 
+    @PostMapping(value = "/examsRequestPDF", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> gerarPdf(@RequestBody GetExamsRequestIdDTO data) {
+        try {
+
+            ByteArrayInputStream pdfStream = examsFileService.generateExamRequestPdf(data);
+
+
+            byte[] pdfBytes = pdfStream.readAllBytes();
+
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("inline", "exame_" + data.id() + ".pdf");
+
+            // Retorna o PDF
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .body(pdfBytes);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }
 
