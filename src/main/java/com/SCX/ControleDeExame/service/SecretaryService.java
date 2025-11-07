@@ -61,6 +61,9 @@ public class SecretaryService {
     @Autowired
     NotificationService notificationService;
 
+    @Autowired
+    EmailService emailService;
+
 
     public void deleteSecretary(UUID uuid) {
 
@@ -107,10 +110,7 @@ public class SecretaryService {
             newPatient.setAuthId(newAuth);
             patientRepository.save(newPatient);
 
-            //String tokenE = newAuth.getToken();
-            //String url = "http://localhost:5173/firstLogin" + tokenE;
-
-            //emailService.sendEmail(newAuth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
+            emailService.firtLoginEmail(newAuth);
 
             clinic.getPatients().add(newPatient);
             clinicRepository.save(clinic);

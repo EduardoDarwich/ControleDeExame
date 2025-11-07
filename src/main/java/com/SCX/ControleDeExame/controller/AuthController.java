@@ -40,7 +40,14 @@ public class AuthController {
         try {
             var passUser = new UsernamePasswordAuthenticationToken(data.usernameKey(), data.password_key());
             var auth = this.authenticationManager.authenticate(passUser);
+            Auth auth1 = (Auth) auth.getPrincipal();
+
+            if (!auth1.getActive()){
+               return ResponseEntity.badRequest().build() ;
+            }
             var token = tokenService.generateToken((Auth) auth.getPrincipal());
+
+
 
             return ResponseEntity.ok(new LoginResponseDTO(token));
 

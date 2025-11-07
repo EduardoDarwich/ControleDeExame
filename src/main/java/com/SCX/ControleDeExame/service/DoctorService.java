@@ -142,10 +142,7 @@ public class DoctorService {
             newDoctor.setIdClinic(clinic.getId());
             doctorRepository.save(newDoctor);
 
-            //String tokenE = newAuth.getToken();
-            //String url = "http://localhost:5173/firstLogin" + tokenE;
-
-            //emailService.sendEmail(newAuth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
+            //emailService.firtLoginEmail(newAuth);
 
             //Adicionadno o médico criado a clinica na qual ele está sendo cadastrado
             clinic.getDoctors().add(newDoctor);

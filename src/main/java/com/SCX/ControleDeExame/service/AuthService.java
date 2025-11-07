@@ -136,7 +136,6 @@ public class AuthService implements UserDetailsService {
         return authRepository.findProfileSecretary(secretary.getId());
     }
 
-
     //Metodo para devolver o perfil do usuario(nome, role e email)
     public PerfilDTO perfil(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");

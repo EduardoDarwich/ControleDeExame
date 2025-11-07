@@ -88,6 +88,8 @@ public class LaboratoryService {
         authRepository.save(newAuth);
 
 
+
+
         try {
             UserLabId userLabId = new UserLabId(newAuth.getId(), laboratory.getId());
             UserLab userLab = new UserLab();
@@ -97,10 +99,7 @@ public class LaboratoryService {
             userLab.setEmail(data.email());
             userLabRepository.save(userLab);
 
-            //String tokenE = newAuth.getToken();
-            //String url = "http://localhost:5173/firstLogin" + tokenE;
-
-            //emailService.sendEmail(newAuth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
+            emailService.firtLoginEmail(newAuth);
 
         } catch (Exception e) {
 
@@ -139,6 +138,8 @@ public class LaboratoryService {
         newAuth.getRoles().add(laboratoryUser);
         authRepository.save(newAuth);
 
+        emailService.firtLoginEmail(newAuth);
+
         UserLabId userLabId = new UserLabId(newAuth.getId(), laboratory.getId());
 
         try {
@@ -151,10 +152,7 @@ public class LaboratoryService {
 
             logService.logAction(auth.get(), "Registrou um novo usuario para o laboratório");
 
-            //String tokenE = newAuth.getToken();
-            //String url = "http://localhost:5173/firstLogin" + tokenE;
-
-            //emailService.sendEmail(newAuth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
+            emailService.firtLoginEmail(newAuth);
 
         } catch (Exception e) {
             authRepository.delete(newAuth);
