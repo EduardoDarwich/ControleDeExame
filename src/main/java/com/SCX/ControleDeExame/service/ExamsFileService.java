@@ -199,7 +199,7 @@ public class ExamsFileService {
 
             // Cada linha da tabela mostra um campo e seu valor
             table.addCell("ID do Pedido");
-            table.addCell(exam.getId().toString());
+            table.addCell(exam.getCodVerific());
 
             table.addCell("Tipo do Exame");
             table.addCell(exam.getExamType() != null ? exam.getExamType() : "-");

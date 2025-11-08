@@ -451,6 +451,9 @@ public class DoctorService {
             Appointment appointment = appointmentRepository.findByDoctorAvaiable(doctor.getId());
             Optional<Patient> patient = patientRepository.findById(appointment.getPatient().getId());
 
+            String uuid = UUID.randomUUID().toString().replace("-", "");
+            String cod = "REQ-" + uuid.substring(0, 6).toUpperCase();
+
             String msg = "Fez um novo pedido de exame para o laboratório" + laboratory.getName();
 
             ExamsRequest newExamRequest = new ExamsRequest();
@@ -464,6 +467,7 @@ public class DoctorService {
             newExamRequest.setStatus("Pendente");
             newExamRequest.setComplement(data.complement());
             newExamRequest.setRequestDate(LocalDateTime.now());
+            newExamRequest.setCodVerific(cod);
             requestExamsRepository.save(newExamRequest);
 
 

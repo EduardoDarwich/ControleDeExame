@@ -29,6 +29,8 @@ public class ExamsRequest {
     @Column(name = "sample_type")
     private String sampleType;
     private String complement;
+    @Column(name = "cod_verific")
+    private  String codVerific;
     @Column(name = "request_date")
     private LocalDateTime requestDate;
     @Column(name = "executed_date")

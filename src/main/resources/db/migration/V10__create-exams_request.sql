@@ -9,7 +9,8 @@ laboratory_id uuid not null,
 complement text, -- possiveis complementos para o exame
 exam_type text, --Tipo do exame
 sample_type text, --Tipo de amostra
-status text default 'pendente', --Informa o status do exame,
+status text default 'pendente', --Informa o status do exame
+cod_verific text unique,
 request_date timestamp, --data que o pedido foi feito
 executed_date timestamp, --data que o pedido foi entregue
 foreign key (doctor_id) references doctor(id), --definindo a chave estrangeira de médico
