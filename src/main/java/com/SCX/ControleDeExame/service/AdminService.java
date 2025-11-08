@@ -5,6 +5,7 @@ import com.SCX.ControleDeExame.dataTransferObject.adminDTO.ResponseAdminClinicDT
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseLabCliDTO;
+import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseSecretaryCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryVerificDTO;
 import com.SCX.ControleDeExame.dataTransferObject.logDTO.LogDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.RequestSecretaryCpfDTO;
@@ -255,43 +256,53 @@ public class AdminService {
         return clinicRepository.findLabByClinic(clinic.getId());
     }
 
-   /* //Metodo para listar todas as secretarias da clinica(testar)
-    public List<>
+    //Metodo para listar todas as secretarias da clinica(testar)
+    public List<ResponseSecretaryCliDTO> responseSecretaryCli (RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        var admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
+        Clinic clinic = clinicRepository.findById(admin.getClinicId().getId()).orElseThrow(() -> new RuntimeException("Clinica não encontrada"));
+
+        return clinicRepository.findSecretaryByClinic(clinic.getId());
+
+    }
 
     //Metodo para desativar um usuario da secretaria(testar)
     public void disableSecretary(RequestSecretaryEmailDTO data) {
-        String email = data.Email();
-        Secretary secretary = secretaryRepository.findByEmail(email);
-        Auth auth = authRepository.findById(secretary.getAuthId().getId()).orElseThrow();
+        Optional<Auth> authOPT = authRepository.findAuthByUsernameKey(data.Email());
+        Auth auth = authOPT.get();
         auth.setActive(false);
-
+        authRepository.save(auth);
     }
 
     //Metodo para ativar um usuário da secretaria(testar)
     public void enableSecretary(RequestSecretaryEmailDTO data) {
-        String email = data.Email();
-        Secretary secretary = secretaryRepository.findByEmail(email);
-        Auth auth = authRepository.findById(secretary.getAuthId().getId()).orElseThrow();
+        Optional<Auth> authOPT = authRepository.findAuthByUsernameKey(data.Email());
+        Auth auth = authOPT.get();
         auth.setActive(true);
+        authRepository.save(auth);
     }
 
-    //Metodo para ativar um usuario do laboratorio(testar)
+    //Metodo para desativar um laboratorio(testar)
+    public void disableLaboratory(LaboratoryVerificDTO data) {
+        String cnpj = data.cnpj();
+        Laboratory laboratory = laboratoryRepository.findByCnpj(cnpj);
+        laboratory.setActive(false);
+        laboratoryRepository.save(laboratory);
+
+
+    }
+
+    //Metodo para ativar um laboratorio(testar)
     public void enableLaboratory(LaboratoryVerificDTO data) {
         String cnpj = data.cnpj();
         Laboratory laboratory = laboratoryRepository.findByCnpj(cnpj);
-        Auth auth = authRepository.findById(laboratory.getAuthId().getId()).orElseThrow();
-        auth.setActive(true);
+        laboratory.setActive(true);
+        laboratoryRepository.save(laboratory);
 
     }
 
-    //Metodo para desativar um usuario do laboratorio(testar)
-    public void disableLaboratory(GetLaboratoryCNPJDTO data) {
-        String cnpj = data.cnpj();
-        Laboratory laboratory = laboratoryRepository.findByCnpj(cnpj);
-        Auth auth = authRepository.findById(laboratory.getAuthId().getId()).orElseThrow();
-        auth.setActive(false);
 
-    }*/
     
 
 

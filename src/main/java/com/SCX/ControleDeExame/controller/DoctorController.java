@@ -10,6 +10,7 @@ import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestNameClinicDTO
 import com.SCX.ControleDeExame.dataTransferObject.consultationDTO.CloseConsultationDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.*;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.ExamsRequestDTO;
+import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.GetExamsRequestIdDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsTypeDTO.ExamsTypeDTO;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 
@@ -68,9 +69,9 @@ public class DoctorController {
 
     //Rota para fazer uma requisição de exames
     @PostMapping("/requestExm")
-    public ResponseEntity requestExam (@RequestBody @Valid ExamsRequestDTO data, @RequestHeader("Authorization")RequestTokenDTO dataT){
-        doctorService.requestExams(data, dataT);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<GetExamsRequestIdDTO> requestExam (@RequestBody @Valid ExamsRequestDTO data, @RequestHeader("Authorization")RequestTokenDTO dataT){
+
+        return ResponseEntity.ok(doctorService.requestExams(data, dataT));
     }
 
     //Rota para verificar se o médico ja está cadastrado na clinica

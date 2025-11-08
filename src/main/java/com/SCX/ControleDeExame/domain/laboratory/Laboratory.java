@@ -26,6 +26,7 @@ public class Laboratory {
     private String name;
     private String cnpj;
     private String telephone;
+    private boolean active;
 
     @OneToMany(mappedBy = "laboratoryId")
     private List<UserLab> userLabs = new ArrayList<>();

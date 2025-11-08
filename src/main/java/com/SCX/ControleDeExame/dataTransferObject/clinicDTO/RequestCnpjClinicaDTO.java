@@ -1,4 +1,4 @@
 package com.SCX.ControleDeExame.dataTransferObject.clinicDTO;
 
-public record RequestCnpjClinica(String cnpj) {
+public record RequestCnpjClinicaDTO(String cnpj) {
 }

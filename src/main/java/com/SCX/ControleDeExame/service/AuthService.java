@@ -64,12 +64,14 @@ public class AuthService implements UserDetailsService {
         return authRepository.findByUsernameKey(username);
     }
 
+    //Metodo para deletar um usuário
     public void deletAuth(UUID uuid) {
 
         Auth auth = authRepository.findById(uuid).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
         authRepository.delete(auth);
     }
 
+    //Metodo para realização do primeiro login do usuário
     public void firstLogin(FistLoginPasswordDTO data, FirstLoginTokenDTO dataT) {
 
         Auth auth = authRepository.findByToken(dataT.token());
@@ -100,7 +102,7 @@ public class AuthService implements UserDetailsService {
 
     }
 
-    //Metodo para devolver os dados do Medico(testar)
+    //Metodo para devolver os dados do Medico
     public ProfileDoctorDTO profileDoc (RequestTokenDTO dataT){
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
@@ -109,7 +111,7 @@ public class AuthService implements UserDetailsService {
         return authRepository.findProfileDoctor(doctor.getId());
     }
 
-    //Metodo para devolver os dados do Admin(testar)
+    //Metodo para devolver os dados do Admin
     public ProfileAdminDTO profileAdmin (RequestTokenDTO dataT){
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
@@ -118,7 +120,7 @@ public class AuthService implements UserDetailsService {
         return authRepository.findProfileAdmin(admin.getId());
     }
 
-    //Metodo para devolver os dados do paciente (testar)
+    //Metodo para devolver os dados do paciente
     public ProfilePatientDTO profilePatient(RequestTokenDTO dataT){
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
@@ -127,7 +129,7 @@ public class AuthService implements UserDetailsService {
         return authRepository.findProfilePatient(patient.getId());
     }
 
-    //Metodo para devolver os dados da secretaria (testar)
+    //Metodo para devolver os dados da secretaria
     public ProfileSecretaryDTO profileSecretary (RequestTokenDTO dataT){
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
@@ -150,6 +152,10 @@ public class AuthService implements UserDetailsService {
         Auth user = (Auth) authRepository.findByUsernameKey(data.email());
         return user.getActive();
     }
+
+
+
+
 
 
 }

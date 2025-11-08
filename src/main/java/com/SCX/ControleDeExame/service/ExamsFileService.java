@@ -40,6 +40,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -101,13 +102,15 @@ public class ExamsFileService {
         Optional<Patient> patient = patientRepository.findById(appointment.get().getPatient().getId());
         Optional<Doctor> doctor = doctorRepository.findById(appointment.get().getDoctor().getId());
 
-        // Cria nome único com IDs
+        // Cria nome único com Ids
         String uniqueFilename = patient.get().getId() + "_" + doctor.get().getId() + "_" + laboratory.get().getId() + "_" + UUID.randomUUID() + "_" + data.file().getOriginalFilename();
         Path filePath = Paths.get(uploadDir, uniqueFilename);
 
 
         // Salva o arquivo
         Files.copy(data.file().getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        examsRequest.get().setStatus("Entregue");
 
         // Salva os dados no banco
         ExamsFile entity = new ExamsFile();
@@ -117,6 +120,7 @@ public class ExamsFileService {
         entity.setLaboratory(laboratory.get());
         entity.setFileName(uniqueFilename);
         entity.setFilePath(filePath.toString());
+        entity.setUploadDate(LocalDateTime.now());
 
         return examsFileRepository.save(entity);
     }

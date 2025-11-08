@@ -128,7 +128,6 @@ public class AuthController {
         return ResponseEntity.ok(authService.profileAdmin(dataT));
     }
 
-    //Rota para retornar as notificações do usuario
 
 
 }

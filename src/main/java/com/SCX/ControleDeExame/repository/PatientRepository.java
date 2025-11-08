@@ -1,16 +1,13 @@
 package com.SCX.ControleDeExame.repository;
 
-import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorRequestExamDTO;
-import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorResultExamDTO;
+import com.SCX.ControleDeExame.dataTransferObject.patientDTO.ResponsePatSystDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientRequestExamDTO;
-import com.SCX.ControleDeExame.domain.doctor.Doctor;
 import com.SCX.ControleDeExame.domain.patient.Patient;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface PatientRepository extends JpaRepository <Patient, UUID> {
@@ -39,18 +36,14 @@ public interface PatientRepository extends JpaRepository <Patient, UUID> {
             """)
     List<PatientRequestExamDTO> findRequestExamByPatient(@Param("patientId") UUID patientId);
 
-  /*  @Query("""
-            select new com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorResultExamDTO(
-            ex.cid,
-            ex.result_value,
-            ex.observation
-            )
+    @Query("""
+            select new com.SCX.ControleDeExame.dataTransferObject.patientDTO.ResponsePatSystDTO(a.name, a.active, a.usernameKey)
             from Patient p
-            join p.examsRequests e
-            join e.exams ex
-            where p.id = :patientId
+            join p.authId a
             """)
-    List<DoctorResultExamDTO> findResultExamByPatient (@Param("patientId") UUID patientId);*/
+    List<ResponsePatSystDTO> findPatBySyst();
+
+
 
 
 

@@ -31,6 +31,7 @@ public class Clinic {
     private String name;
     private String cnpj;
     private String telephone;
+    private boolean active;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

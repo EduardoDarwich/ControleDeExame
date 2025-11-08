@@ -9,6 +9,7 @@ import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestNameClinicDTO
 import com.SCX.ControleDeExame.dataTransferObject.consultationDTO.CloseConsultationDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.*;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.ExamsRequestDTO;
+import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.GetExamsRequestIdDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsTypeDTO.ExamsTypeDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.ExamsFileDTO;
 import com.SCX.ControleDeExame.dataTransferObject.prontuarioDTO.ResponseAnamnesisDTO;
@@ -439,7 +440,7 @@ public class DoctorService {
     }*/
 
     //Metodo para fazer a requisição de um exame
-    public void requestExams(ExamsRequestDTO data, RequestTokenDTO dataT) {
+    public GetExamsRequestIdDTO requestExams(ExamsRequestDTO data, RequestTokenDTO dataT) {
         try {
             var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
             var id = tokenService.registerUser(idC);
@@ -467,6 +468,8 @@ public class DoctorService {
 
 
             logService.logAction(auth.get(), msg);
+
+            return new GetExamsRequestIdDTO(newExamRequest.getId().toString());
 
 
 

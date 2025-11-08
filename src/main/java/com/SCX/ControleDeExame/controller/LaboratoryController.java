@@ -71,7 +71,7 @@ public class LaboratoryController {
 
     //Rota para realizar o upload do resultado do exame (testar)
     @PostMapping("/uploadExam")
-    public ResponseEntity registerExam (@RequestBody @Valid UploadDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT) throws IOException {
+    public ResponseEntity registerExam (@ModelAttribute UploadDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT) throws IOException {
         examsFileService.uploadFile(data, dataT);
         return ResponseEntity.ok().build();
     }

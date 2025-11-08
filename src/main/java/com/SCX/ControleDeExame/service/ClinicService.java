@@ -2,9 +2,7 @@ package com.SCX.ControleDeExame.service;
 
 import com.SCX.ControleDeExame.dataTransferObject.adminDTO.CreateFirstAdmDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
-import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.CreateClinicAdminDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.CreateClinicDTO;
-import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestCnpjClinica;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLaboratoryDTO;
 import com.SCX.ControleDeExame.domain.address.Address;
 import com.SCX.ControleDeExame.domain.admin.Admin;
@@ -12,7 +10,6 @@ import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.domain.role.Role;
-import com.SCX.ControleDeExame.domain.user_lab.UserLab;
 import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.repository.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -70,6 +66,7 @@ public class ClinicService {
         newClinic.setCnpj(data.cnpj());
         newClinic.setTelephone(data.telephone());
         newClinic.setAddress(address);
+        newClinic.setActive(true);
         clinicRepository.save(newClinic);
 
 
@@ -151,6 +148,7 @@ public class ClinicService {
         newLaboratory.setCnpj(data.cnpj());
         newLaboratory.setTelephone(data.telephone());
         newLaboratory.setAddress(address);
+        newLaboratory.setActive(true);
         laboratoryRepository.save(newLaboratory);
 
         clinic.getLaboratories().add(newLaboratory);

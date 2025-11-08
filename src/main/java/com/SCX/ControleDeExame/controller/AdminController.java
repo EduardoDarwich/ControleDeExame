@@ -5,8 +5,10 @@ import com.SCX.ControleDeExame.dataTransferObject.adminDTO.ResponseAdminClinicDT
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseLabCliDTO;
+import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseSecretaryCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryVerificDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.RequestSecretaryCpfDTO;
+import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.RequestSecretaryEmailDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.SecretaryDTO;
 import com.SCX.ControleDeExame.domain.secretary.Secretary;
 import com.SCX.ControleDeExame.service.AdminService;
@@ -82,5 +84,41 @@ public class AdminController {
     public ResponseEntity<List<ResponseLabCliDTO>> getLabCli (@RequestHeader("Authorization") RequestTokenDTO dataT){
         return ResponseEntity.ok(adminService.labCli(dataT));
     }
+
+    //Rota para listar todas as secretárias da clinica
+    @GetMapping("/getSecretary")
+    public ResponseEntity<List<ResponseSecretaryCliDTO>> getSecretaryCli (@RequestHeader("Authorization") RequestTokenDTO dataT){
+        return ResponseEntity.ok(adminService.responseSecretaryCli(dataT));
+    }
+
+    //Rota para desativar um usuario da secretaria
+    @PatchMapping("/disableSecretary")
+    public ResponseEntity disableSecretary (RequestSecretaryEmailDTO data){
+        adminService.disableSecretary(data);
+        return ResponseEntity.ok().build();
+    }
+
+    //Rota para ativar um usuario da secretaria
+    @PatchMapping("/enableSecretary")
+    public ResponseEntity enableSecretary (RequestSecretaryEmailDTO data){
+        adminService.enableSecretary(data);
+        return ResponseEntity.ok().build();
+    }
+
+    //Rota para desativar um laboratorio
+    @PatchMapping("/disableLaboratory")
+    public ResponseEntity disableLaboratory (LaboratoryVerificDTO data){
+        adminService.disableLaboratory(data);
+        return ResponseEntity.ok().build();
+    }
+
+    //Rota para ativar um laboratorio
+    @PatchMapping("/enableLaboratory")
+    public ResponseEntity enableLaboratory (LaboratoryVerificDTO data){
+        adminService.enableLaboratory(data);
+        return ResponseEntity.ok().build();
+    }
+
+
 
 }

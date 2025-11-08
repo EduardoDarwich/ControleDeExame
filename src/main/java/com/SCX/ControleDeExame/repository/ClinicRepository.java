@@ -1,9 +1,6 @@
 package com.SCX.ControleDeExame.repository;
 
-import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliConsultDTO;
-import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliDTO;
-import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseLabCliDTO;
-import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponsePatCliDTO;
+import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.*;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -61,6 +58,15 @@ public interface ClinicRepository extends JpaRepository<Clinic, UUID> {
     List<ResponsePatCliDTO> findPatByClinic(@Param("clinicId") UUID clinicId);
 
     @Query("""
+            select new com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseSecretaryCliDTO(a.name, a.active, a.usernameKey)
+            from Secretary s
+            join s.clinics c
+            join s.authId a
+            where c.id = :clinicId
+            """)
+    List<ResponseSecretaryCliDTO> findSecretaryByClinic(@Param("clinicId") UUID clinicId);
+
+    @Query("""
             select new com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseLabCliDTO(l.cnpj, l.name)
             from Laboratory l
             join l.clinics c
@@ -76,6 +82,12 @@ public interface ClinicRepository extends JpaRepository<Clinic, UUID> {
             where c.id = :clinicId and d.idClinic = :clinicId and d.available = true
             """)
     List<ResponseDocCliConsultDTO> findDocConsultByClinic(@Param("clinicId") UUID clinicId);
+
+    @Query("""
+            select new com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RespnseLabCliDTO(c.name, c.cnpj)
+            from Clinic c
+            """)
+    List<ResponseLabCliDTO> findAllClinicByCnpj();
 
 
 }
