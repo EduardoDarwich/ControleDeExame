@@ -10,12 +10,11 @@ import com.SCX.ControleDeExame.domain.admin.Admin;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
+import com.SCX.ControleDeExame.domain.role.Role;
 import com.SCX.ControleDeExame.domain.secretary.Secretary;
-import com.SCX.ControleDeExame.repository.AuthRepository;
-import com.SCX.ControleDeExame.repository.ClinicRepository;
-import com.SCX.ControleDeExame.repository.LaboratoryRepository;
-import com.SCX.ControleDeExame.repository.PatientRepository;
+import com.SCX.ControleDeExame.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
@@ -36,6 +35,9 @@ public class AdminSystemService {
 
     @Autowired
     AuthRepository authRepository;
+
+    @Autowired
+    RoleRepository roleRepository;
 
 
     //Metodo para desativar uma clinica (testar)
@@ -102,6 +104,24 @@ public class AdminSystemService {
         Auth auth = authOPT.get();
         auth.setActive(true);
         authRepository.save(auth);
+    }
+
+    //Metodo para criar um usuario do suporte
+    public void registerFirstAdmin(){
+        Role userSupport = roleRepository.findByName("AdminSystem");
+        String senha = "123456789";
+        String encryptedPassword = new BCryptPasswordEncoder().encode(senha);
+
+        Auth newAuth = new Auth();
+        newAuth.setPassword_key(encryptedPassword);
+        newAuth.setUsernameKey("firstAdmin@gmail.com");
+        newAuth.setName("Goku");
+        newAuth.setActive(true);
+        newAuth.getRoles().add(userSupport);
+        authRepository.save(newAuth);
+
+
+
     }
 
 }

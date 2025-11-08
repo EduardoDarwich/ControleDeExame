@@ -9,11 +9,9 @@ import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.repository.ClinicRepository;
 import com.SCX.ControleDeExame.service.AdminSystemService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -85,6 +83,15 @@ public class AdminSystemController {
     public ResponseEntity disableAcmCli (RequestSecretaryEmailDTO data){
         adminSystemService.disableAdmClinic(data);
         return ResponseEntity.ok().build();
+    }
+
+    //Rota para criar um usuario do suporte
+    @PostMapping("/registerUser")
+    public ResponseEntity registerUserAdm() {
+        adminSystemService.registerFirstAdmin();
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+
     }
 
 
