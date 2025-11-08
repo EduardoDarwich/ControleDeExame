@@ -85,7 +85,7 @@ public class AdminSystemController {
         return ResponseEntity.ok().build();
     }
 
-    //Rota para criar um usuario do suporte
+    //Rota para criar um usuario admSystem
     @PostMapping("/registerUser")
     public ResponseEntity registerUserAdm() {
         adminSystemService.registerFirstAdmin();
