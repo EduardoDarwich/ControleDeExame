@@ -1,4 +1,4 @@
-package com.SCX.ControleDeExame.dataTransferObject.patientDTO;
+package com.SCX.ControleDeExame.dataTransferObject.adminSystemDTO;
 
 public class ResponsePatSystDTO {
     private String name;

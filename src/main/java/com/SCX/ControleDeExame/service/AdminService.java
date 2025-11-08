@@ -300,6 +300,8 @@ public class AdminService {
         laboratory.setActive(true);
         laboratoryRepository.save(laboratory);
 
+
+
     }
 
 

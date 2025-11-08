@@ -14,10 +14,12 @@ import com.SCX.ControleDeExame.repository.PatientRepository;
 import com.SCX.ControleDeExame.repository.RoleRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -77,6 +79,31 @@ public class PatientService {
 
         return examsFileRepository.findByPatient_Id(patient.getId());
     }
+
+    //Metodo para desativar um paciente e anonimizar os dados (testar)
+    public void disablePat (RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Optional<Auth> authOPT = authRepository.findById(UUID.fromString(id));
+        Auth auth = authOPT.get();
+        Patient patient = patientRepository.findByAuthId_Id(auth.getId());
+
+        Auth authDisable = new Auth();
+        authDisable.setActive(false);
+        authDisable.setName("Nome totalmente anonimo");
+        authDisable.setUsernameKey("Email totalmente anonimo");
+        authRepository.save(authDisable);
+
+        Patient patientDisable = new Patient();
+
+        patientDisable.setDateBirth(LocalDate.now());
+        patientDisable.setTelephone("xxxxxxxxx");
+        patientDisable.setCpf("xxxxxxxxx");
+        patientRepository.save(patientDisable);
+
+    }
+
+
 
     public Patient getPatientById(RequestTokenDTO data) {
         return patientRepository.findById(UUID.fromString(data.Token())).orElseThrow(() -> new EntityNotFoundException("paciente não encontrado"));

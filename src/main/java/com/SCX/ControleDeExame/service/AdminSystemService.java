@@ -1,23 +1,18 @@
 package com.SCX.ControleDeExame.service;
 
+import com.SCX.ControleDeExame.dataTransferObject.adminSystemDTO.ResponseCliSystDTO;
+import com.SCX.ControleDeExame.dataTransferObject.adminSystemDTO.ResponseLabSystDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestCnpjClinicaDTO;
-import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliDTO;
-import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseLabCliDTO;
-import com.SCX.ControleDeExame.dataTransferObject.patientDTO.ResponsePatSystDTO;
-import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.RequestSecretaryCpfDTO;
+import com.SCX.ControleDeExame.dataTransferObject.adminSystemDTO.ResponsePatSystDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.RequestSecretaryEmailDTO;
-import com.SCX.ControleDeExame.domain.admin.Admin;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
-import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.domain.role.Role;
-import com.SCX.ControleDeExame.domain.secretary.Secretary;
 import com.SCX.ControleDeExame.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,13 +54,13 @@ public class AdminSystemService {
     }
 
     //Metodo para listar todas as clinicas do sistema (testar)
-    public List<ResponseLabCliDTO> listAllClinics (){
+    public List<ResponseCliSystDTO> listAllClinics (){
 
         return clinicRepository.findAllClinicByCnpj();
     }
 
     //Metodo para listar todos os laboratorios do sistema (testar)
-    public List<ResponseLabCliDTO> listAllLaboratory (){
+    public List<ResponseLabSystDTO> listAllLaboratory (){
 
         return laboratoryRepository.findAllLaboratoryByCnpj();
     }

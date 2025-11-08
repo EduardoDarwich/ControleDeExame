@@ -1,5 +1,6 @@
 package com.SCX.ControleDeExame.repository;
 
+import com.SCX.ControleDeExame.dataTransferObject.adminSystemDTO.ResponseLabSystDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseLabCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.ResponseClinicDocDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryRequestExamDTO;
@@ -51,10 +52,10 @@ public interface LaboratoryRepository extends JpaRepository<Laboratory, UUID> {
     List<LaboratoryRequestExamDTO> findRequestExamByLaboratory(@Param("laboratoryId") UUID laboratoryId);
 
     @Query("""
-            select new com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseLabCliDTO(l.name, l.cnpj)
+            select new com.SCX.ControleDeExame.dataTransferObject.adminSystemDTO.ResponseLabSystDTO(l.name, l.cnpj, l.active)
             FROM Laboratory l
             """)
-    List<ResponseLabCliDTO> findAllLaboratoryByCnpj();
+    List<ResponseLabSystDTO> findAllLaboratoryByCnpj();
 
 
 }
