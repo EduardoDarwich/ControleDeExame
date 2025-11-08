@@ -60,7 +60,7 @@ public interface ClinicRepository extends JpaRepository<Clinic, UUID> {
     @Query("""
             select new com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseSecretaryCliDTO(a.name, a.active, a.usernameKey)
             from Secretary s
-            join s.clinics c
+            join s.clinicId c
             join s.authId a
             where c.id = :clinicId
             """)
@@ -84,7 +84,7 @@ public interface ClinicRepository extends JpaRepository<Clinic, UUID> {
     List<ResponseDocCliConsultDTO> findDocConsultByClinic(@Param("clinicId") UUID clinicId);
 
     @Query("""
-            select new com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RespnseLabCliDTO(c.name, c.cnpj)
+            select new com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseLabCliDTO(c.name, c.cnpj)
             from Clinic c
             """)
     List<ResponseLabCliDTO> findAllClinicByCnpj();

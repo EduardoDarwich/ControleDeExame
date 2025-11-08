@@ -51,7 +51,7 @@ public interface LaboratoryRepository extends JpaRepository<Laboratory, UUID> {
     List<LaboratoryRequestExamDTO> findRequestExamByLaboratory(@Param("laboratoryId") UUID laboratoryId);
 
     @Query("""
-            select new com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RespnseLabCliDTO(l.name, l.cnpj)
+            select new com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseLabCliDTO(l.name, l.cnpj)
             FROM Laboratory l
             """)
     List<ResponseLabCliDTO> findAllLaboratoryByCnpj();
