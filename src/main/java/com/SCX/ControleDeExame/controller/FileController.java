@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 @RestController
 @RequestMapping("/files")
@@ -32,7 +33,7 @@ public class FileController {
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@ModelAttribute UploadDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT) {
         try {
-            ExamsFile savedFile = examsFileService.uploadFile(data, dataT);
+            examsFileService.uploadFile(data, dataT);
             return ResponseEntity.ok("Arquivo enviado com sucesso");
         } catch (IOException e) {
             e.printStackTrace();

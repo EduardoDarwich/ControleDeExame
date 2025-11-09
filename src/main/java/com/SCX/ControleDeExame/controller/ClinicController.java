@@ -1,6 +1,7 @@
 package com.SCX.ControleDeExame.controller;
 
 import com.SCX.ControleDeExame.dataTransferObject.adminDTO.CreateFirstAdmDTO;
+import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.CreateClinicDTO;
 import com.SCX.ControleDeExame.service.ClinicService;
 import jakarta.validation.Valid;
@@ -29,6 +30,13 @@ public class ClinicController {
         clinicService.createFirstAdmin(data);
 
         return ResponseEntity.ok().build();
+    }
+
+    //Rota para verificar se uma clinica do usuario está ativo ou não
+    @GetMapping("/getCliActive")
+    public ResponseEntity<Boolean> getCliActive (RequestTokenDTO dataT){
+
+        return ResponseEntity.ok(clinicService.verificCliActive(dataT));
     }
 
 

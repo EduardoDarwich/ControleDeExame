@@ -63,4 +63,11 @@ public class PatientController {
         return ResponseEntity.ok(patientService.patientResultExam(dataT));
     }
 
+    //Rota para anonmizar os dados de um paciente
+    @PatchMapping("/anonimizePat")
+    public ResponseEntity anonimizePat (RequestTokenDTO dataT){
+        patientService.disablePat(dataT);
+        return ResponseEntity.ok().build();
+    }
+
 }

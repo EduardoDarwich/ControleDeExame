@@ -119,6 +119,20 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
+    //Rota para desativar um usuario do laboratorio
+    @PatchMapping("/disableUserLab")
+    public ResponseEntity disableuserLab (RequestSecretaryEmailDTO data){
+        adminService.disableLabUser(data);
+        return ResponseEntity.ok().build();
+    }
+
+    //Rota para ativar um usuario do laboratorio
+    @PatchMapping("/enableUserLab")
+    public ResponseEntity enableuserLab (RequestSecretaryEmailDTO data){
+        adminService.enableLabUser(data);
+        return ResponseEntity.ok().build();
+    }
+
 
 
 }

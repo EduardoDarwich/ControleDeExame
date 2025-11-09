@@ -300,9 +300,23 @@ public class AdminService {
         laboratory.setActive(true);
         laboratoryRepository.save(laboratory);
 
+    }
 
+    //Metodo para desativar um usuario do laboratorio(testar)
+    public void disableLabUser (RequestSecretaryEmailDTO data){
+       Auth auth = (Auth) authRepository.findByUsernameKey(data.Email());
+       auth.setActive(false);
+       authRepository.save(auth);
 
     }
+
+    //Metodo para ativar um usuario do laboratorio(testar)
+    public void enableLabUser (RequestSecretaryEmailDTO data){
+        Auth auth = (Auth) authRepository.findByUsernameKey(data.Email());
+        auth.setActive(true);
+        authRepository.save(auth);
+    }
+
 
 
     

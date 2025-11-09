@@ -4,12 +4,14 @@ import com.SCX.ControleDeExame.dataTransferObject.adminDTO.CreateFirstAdmDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.CreateClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.CreateLaboratoryDTO;
+import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.RequestSecretaryEmailDTO;
 import com.SCX.ControleDeExame.domain.address.Address;
 import com.SCX.ControleDeExame.domain.admin.Admin;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.domain.role.Role;
+import com.SCX.ControleDeExame.domain.secretary.Secretary;
 import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.repository.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -50,6 +52,9 @@ public class ClinicService {
 
     @Autowired
     AddressRepository addressRepository;
+
+    @Autowired
+    SecretaryRepository secretaryRepository;
 
     //Metodo para registrar uma clinica
     public void registerClinic(CreateClinicDTO data) {
@@ -157,6 +162,21 @@ public class ClinicService {
         logService.logAction(auth.get(), "Registrou um novo laboratório na clinica");
 
     }
+
+    //Metodo para retornar se a clinica de um usuario está ativa ou não (testar)
+    public boolean verificCliActive (RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        if (adminRepository.findByAuthId_Id(UUID.fromString(id)) != null){
+            Admin admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
+            return admin.getClinicId().isActive();
+        } else {
+            Secretary secretary = secretaryRepository.findByAuthId_Id(UUID.fromString(id));
+            return secretary.getClinicId().isActive();
+        }
+
+    }
+
 
 
 }

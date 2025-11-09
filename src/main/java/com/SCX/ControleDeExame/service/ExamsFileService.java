@@ -34,6 +34,7 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.Paragraph;
 
 import com.itextpdf.text.Font;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.ByteArrayInputStream;
@@ -89,7 +90,7 @@ public class ExamsFileService {
     private final String uploadDir = "uploads";
 
     //Metodo para enviar o pdf de um exame para o sistema
-    public ExamsFile uploadFile(UploadDTO data, RequestTokenDTO dataT) throws IOException {
+    public void uploadFile(UploadDTO data, RequestTokenDTO dataT) throws IOException {
         // Garante que a pasta exista
         File dir = new File(uploadDir);
         if (!dir.exists()) dir.mkdirs();
@@ -100,19 +101,23 @@ public class ExamsFileService {
         var auth = authRepository.findById(userLab.getAuthId().getId());
         Optional<Laboratory> laboratory = laboratoryRepository.findById(userLab.getLaboratoryId().getId());
 
-        Optional<ExamsRequest> examsRequest = requestExamsRepository.findById(UUID.fromString(data.examsReqId()));
+        List<MultipartFile> files = data.file();
+
+        for ( MultipartFile file: files){
+
+        Optional<ExamsRequest> examsRequest = Optional.ofNullable(requestExamsRepository.findByCodVerific(data.examsReqId()));
         Optional<Consultation> consultation = consultationRepository.findById(examsRequest.get().getConsultation().getId());
         Optional<Appointment> appointment = appointmentRepository.findById(consultation.get().getAppointment().getId());
         Optional<Patient> patient = patientRepository.findById(appointment.get().getPatient().getId());
         Optional<Doctor> doctor = doctorRepository.findById(appointment.get().getDoctor().getId());
 
         // Cria nome único com Ids
-        String uniqueFilename = patient.get().getId() + "_" + doctor.get().getId() + "_" + laboratory.get().getId() + "_" + UUID.randomUUID() + "_" + data.file().getOriginalFilename();
+        String uniqueFilename = patient.get().getId() + "_" + doctor.get().getId() + "_" + laboratory.get().getId() + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
         Path filePath = Paths.get(uploadDir, uniqueFilename);
 
 
         // Salva o arquivo
-        Files.copy(data.file().getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
         examsRequest.get().setStatus("Entregue");
 
@@ -126,7 +131,7 @@ public class ExamsFileService {
         entity.setFilePath(filePath.toString());
         entity.setUploadDate(LocalDateTime.now());
 
-        return examsFileRepository.save(entity);
+        examsFileRepository.save(entity);}
     }
 
     //Metodo para Baixar o pdf ao clicar

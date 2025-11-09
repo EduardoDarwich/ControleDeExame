@@ -70,4 +70,11 @@ public class LaboratoryController {
         examsFileService.uploadFile(data, dataT);
         return ResponseEntity.ok().build();
     }
+
+    //Rota para verificar se um laboratorio do usuario está ativo ou não
+    @GetMapping("/getLabActive")
+    public ResponseEntity<Boolean> getLabActive (RequestTokenDTO dataT){
+
+        return ResponseEntity.ok(laboratoryService.verificLabActive(dataT));
+    }
 }

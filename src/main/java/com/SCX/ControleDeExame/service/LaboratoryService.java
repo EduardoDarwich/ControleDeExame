@@ -3,6 +3,7 @@ package com.SCX.ControleDeExame.service;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsDTO.ExamsDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.*;
+import com.SCX.ControleDeExame.domain.admin.Admin;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.doctor.Doctor;
 import com.SCX.ControleDeExame.domain.exams.Exams;
@@ -10,6 +11,7 @@ import com.SCX.ControleDeExame.domain.examsRequest.ExamsRequest;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.domain.patient.Patient;
 import com.SCX.ControleDeExame.domain.role.Role;
+import com.SCX.ControleDeExame.domain.secretary.Secretary;
 import com.SCX.ControleDeExame.domain.user_lab.UserLab;
 import com.SCX.ControleDeExame.domain.user_lab.UserLabId;
 import com.SCX.ControleDeExame.infra.security.TokenService;
@@ -172,6 +174,17 @@ public class LaboratoryService {
         Laboratory laboratory = laboratoryOPT.get();
 
         return laboratoryRepository.findClinicByLaboratory(laboratory.getId());
+    }
+
+    //Metodo para retornar se o laboratorio de um usuario está ativo ou não (testar)
+    public boolean verificLabActive (RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        UserLab userLab = userLabRepository.findByAuthId_Id(UUID.fromString(id));
+
+        return userLab.getLaboratoryId().isActive();
+
+
     }
 
 

@@ -1,7 +1,11 @@
 package com.SCX.ControleDeExame.controller;
 
+import com.SCX.ControleDeExame.dataTransferObject.adminSystemDTO.UpdateAdminDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.*;
+import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.UpdateDocDTO;
 import com.SCX.ControleDeExame.dataTransferObject.logDTO.HistoryDTO;
+import com.SCX.ControleDeExame.dataTransferObject.patientDTO.UpdatePatDTO;
+import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.UpdateSecretaryDTO;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.service.AuthService;
@@ -128,6 +132,33 @@ public class AuthController {
         return ResponseEntity.ok(authService.profileAdmin(dataT));
     }
 
+    //Rota para atualizar os dados do paciente
+    @PatchMapping("/updatePat")
+    public ResponseEntity updatePat (@RequestHeader("Authorization") RequestTokenDTO dataT, UpdatePatDTO data){
+        authService.updatePaciente(dataT, data);
+        return ResponseEntity.ok().build();
+    }
+
+    //Rota para atualizar os dados do medico
+    @PatchMapping("/updateDoc")
+    public ResponseEntity updateDoc (@RequestHeader("Authorization") RequestTokenDTO dataT, UpdateDocDTO data){
+        authService.updateDoctor(dataT, data);
+        return ResponseEntity.ok().build();
+    }
+
+    //Rota para atualizar os dados do secretary
+    @PatchMapping("/updateSecretary")
+    public ResponseEntity updateSecretary (@RequestHeader("Authorization") RequestTokenDTO dataT, UpdateSecretaryDTO data){
+        authService.updateSecretary(dataT, data);
+        return ResponseEntity.ok().build();
+    }
+
+    //Rota para atualizar os dados do admin
+    @PatchMapping("/updateAdmin")
+    public ResponseEntity updateAdmin (@RequestHeader("Authorization") RequestTokenDTO dataT, UpdateAdminDTO data){
+        authService.updateAdmin(dataT, data);
+        return ResponseEntity.ok().build();
+    }
 
 
 }

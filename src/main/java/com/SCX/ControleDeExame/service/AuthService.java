@@ -1,11 +1,16 @@
 package com.SCX.ControleDeExame.service;
 
+import com.SCX.ControleDeExame.dataTransferObject.adminSystemDTO.UpdateAdminDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.*;
+import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.UpdateDocDTO;
+import com.SCX.ControleDeExame.dataTransferObject.fileDTO.UploadDTO;
+import com.SCX.ControleDeExame.dataTransferObject.patientDTO.UpdatePatDTO;
 import com.SCX.ControleDeExame.dataTransferObject.profileDTO.ProfileAdminDTO;
 import com.SCX.ControleDeExame.dataTransferObject.profileDTO.ProfileDoctorDTO;
 import com.SCX.ControleDeExame.dataTransferObject.profileDTO.ProfilePatientDTO;
 import com.SCX.ControleDeExame.dataTransferObject.profileDTO.ProfileSecretaryDTO;
 import com.SCX.ControleDeExame.dataTransferObject.roleDTO.RoleDTO;
+import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.UpdateSecretaryDTO;
 import com.SCX.ControleDeExame.domain.admin.Admin;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.doctor.Doctor;
@@ -151,6 +156,52 @@ public class AuthService implements UserDetailsService {
     public boolean verificUserActive(AuthVerificDTO data) {
         Auth user = (Auth) authRepository.findByUsernameKey(data.email());
         return user.getActive();
+    }
+
+    //Metodo para atualizar os dados do paciente (testar)
+    public void updatePaciente (RequestTokenDTO dataT, UpdatePatDTO data){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Patient patient = patientRepository.findByAuthId_Id(UUID.fromString(id));
+
+        patient.setTelephone(data.telephone());
+        patient.setDateBirth(data.birth());
+        patientRepository.save(patient);
+    }
+
+    //Metodo para atualizar os dados do medico (testar)
+    public void updateDoctor (RequestTokenDTO dataT, UpdateDocDTO data){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
+
+        doctor.setTelephone(data.telephone());
+        doctorRepository.save(doctor);
+
+    }
+
+    //Metodo para atualizar os dados do secretaria (testar)
+    public void updateSecretary (RequestTokenDTO dataT, UpdateSecretaryDTO data){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Secretary secretary = secretaryRepository.findByAuthId_Id(UUID.fromString(id));
+
+        secretary.setTelephone(data.telephone());
+
+        secretaryRepository.save(secretary);
+
+    }
+
+    //Metodo para atualizar os dados do admin (testar)
+    public void updateAdmin (RequestTokenDTO dataT, UpdateAdminDTO data){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Admin admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
+
+        admin.setTelephone(data.telephone());
+
+        adminRepository.save(admin);
+
     }
 
 
