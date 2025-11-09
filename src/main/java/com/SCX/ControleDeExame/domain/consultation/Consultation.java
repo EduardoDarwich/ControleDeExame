@@ -36,7 +36,7 @@ public class Consultation {
     @OneToOne(mappedBy = "consultation")
     private Anamnesis anamnesis;
 
-    @OneToMany(mappedBy = "consultation")
-    private List<ExamsRequest> examsRequests = new ArrayList<>();
+    @OneToOne(mappedBy = "consultation")
+    private ExamsRequest examsRequests ;
 
 }

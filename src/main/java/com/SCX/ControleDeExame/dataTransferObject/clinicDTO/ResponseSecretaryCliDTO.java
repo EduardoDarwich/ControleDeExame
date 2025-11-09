@@ -1,5 +1,8 @@
 package com.SCX.ControleDeExame.dataTransferObject.clinicDTO;
 
+import lombok.Getter;
+
+@Getter
 public class ResponseSecretaryCliDTO {
     private String name;
     private String status;

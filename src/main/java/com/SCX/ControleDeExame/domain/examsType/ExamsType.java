@@ -1,11 +1,12 @@
 package com.SCX.ControleDeExame.domain.examsType;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.SCX.ControleDeExame.domain.exams.Exams;
+import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
+import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Table(name = "exams_type")
@@ -21,5 +22,8 @@ public class ExamsType {
     @GeneratedValue
     private UUID id;
     private String name;
+
+
+
 
 }

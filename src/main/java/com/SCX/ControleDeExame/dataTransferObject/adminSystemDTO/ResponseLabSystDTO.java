@@ -1,12 +1,15 @@
 package com.SCX.ControleDeExame.dataTransferObject.adminSystemDTO;
 
+import lombok.Getter;
+
+@Getter
 public class ResponseLabSystDTO {
 
     private String cnpj;
     private String name;
     private String status;
 
-    public ResponseLabSystDTO(String cnpj, String name, boolean active){
+    public ResponseLabSystDTO(String name, String cnpj, boolean active){
         this.cnpj = cnpj;
         this.name = name;
         this.status = active ? "Ativo" : "Inativo";

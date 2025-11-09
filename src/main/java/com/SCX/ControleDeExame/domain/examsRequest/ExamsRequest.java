@@ -11,6 +11,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Table(name = "exams_request")
@@ -50,18 +52,15 @@ public class ExamsRequest {
     @JoinColumn(name = "patient_id", nullable = false, unique = true)
     private Patient patientId;
 
-    @ManyToOne()
-    @JoinColumn(name = "laboratory_id", nullable = false, unique = true)
-    private Laboratory laboratoryId;
-
-    @ManyToOne()
+    @OneToOne()
     @JoinColumn(name = "consultation_id" , nullable = false, unique = true)
     private Consultation consultation;
 
-    @OneToOne(mappedBy = "requestId", cascade = CascadeType.ALL)
-    private Exams exams;
+    @OneToMany(mappedBy = "examsRequest", cascade = CascadeType.ALL)
+    private List<Exams> exams = new ArrayList<>();
 
-    @OneToOne(mappedBy = "examsRequest", cascade = CascadeType.ALL)
-    private ExamsFile examsFile;
+    @OneToMany(mappedBy = "examsRequest", cascade = CascadeType.ALL)
+    private List<ExamsFile> examsFile = new ArrayList<>();
+
 }
 

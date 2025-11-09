@@ -63,11 +63,6 @@ public class LaboratoryController {
         return ResponseEntity.ok(laboratoryService.clinicsLaboratory(dataT));
     }
 
-    //Rota para listar as requisições de exame que o laboratorio tem e estão pendentes
-    @GetMapping("/getRequestExamPendent")
-    public ResponseEntity<List<LaboratoryRequestExamDTO>> requestExamLab (@RequestHeader("Authorization") RequestTokenDTO dataT){
-        return ResponseEntity.ok(laboratoryService.laboratoryRequestExam(dataT));
-    }
 
     //Rota para realizar o upload do resultado do exame (testar)
     @PostMapping("/uploadExam")

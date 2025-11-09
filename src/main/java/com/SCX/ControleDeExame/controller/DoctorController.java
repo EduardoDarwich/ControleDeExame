@@ -9,6 +9,7 @@ import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestNameClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.consultationDTO.CloseConsultationDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.*;
+import com.SCX.ControleDeExame.dataTransferObject.examsDTO.CreateExamDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.ExamsRequestDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.GetExamsRequestIdDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsTypeDTO.ExamsTypeDTO;
@@ -147,11 +148,6 @@ public class DoctorController {
         return ResponseEntity.ok(doctorService.getExamsType());
     }
 
-    //Rota para retornar todas as devoluções de exame do medico pela clinica que ele está ativo
-    @GetMapping("/getExamsResult")
-    public ResponseEntity<List<DoctorResultExamDTO>> examsResult(@RequestHeader("Authorization") RequestTokenDTO dataT){
-        return ResponseEntity.ok(doctorService.doctorResultExam(dataT));
-    }
 
     //Rota para o iniciar uma consulta
     @PostMapping("/openConsultation")
@@ -198,6 +194,13 @@ public class DoctorController {
     public ResponseEntity verifyDocIsConsult( @RequestHeader("Authorization") RequestTokenDTO dataT){
 
         return ResponseEntity.ok(doctorService.verifyDocIsConsult(dataT));
+    }
+
+    //Rota para criar os exames
+    @PostMapping("/createExams")
+    public ResponseEntity createExams( @RequestHeader("Authorization") RequestTokenDTO dataT, @RequestBody @Valid List<CreateExamDTO> data){
+        doctorService.createExam(dataT, data);
+        return ResponseEntity.ok().build();
     }
 
 }

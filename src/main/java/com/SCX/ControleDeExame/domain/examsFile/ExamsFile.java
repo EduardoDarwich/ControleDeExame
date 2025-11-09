@@ -22,7 +22,7 @@ public class ExamsFile {
     @GeneratedValue
     private UUID id;
 
-    @OneToOne()
+    @ManyToOne()
     @JoinColumn(name = "exams_request_id")
     private ExamsRequest examsRequest;
 
@@ -46,5 +46,6 @@ public class ExamsFile {
 
     @Column(name = "upload_date")
     private LocalDateTime uploadDate;
+
 
 }

@@ -31,9 +31,6 @@ public class Laboratory {
     @OneToMany(mappedBy = "laboratoryId")
     private List<UserLab> userLabs = new ArrayList<>();
 
-    @OneToMany(mappedBy = "laboratoryId")
-    private List<ExamsRequest> examsRequests = new ArrayList<>();
-
     @ManyToMany(mappedBy = "laboratories")
     private List<Clinic> clinics = new ArrayList<>();
 

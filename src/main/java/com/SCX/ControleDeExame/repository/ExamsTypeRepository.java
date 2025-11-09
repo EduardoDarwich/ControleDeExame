@@ -7,5 +7,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ExamsTypeRepository extends JpaRepository<ExamsType, UUID> {
+    ExamsType findByName(String name);
 
 }

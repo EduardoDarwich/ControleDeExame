@@ -174,17 +174,7 @@ public class LaboratoryService {
         return laboratoryRepository.findClinicByLaboratory(laboratory.getId());
     }
 
-    //Metodo para ver todas as requisições de exame do laboratorio
-    public List<LaboratoryRequestExamDTO> laboratoryRequestExam(RequestTokenDTO dataT) {
-        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
-        var id = tokenService.registerUser(idC);
-        Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
-        UserLab userLab = userLabRepository.findByAuthId_Id(UUID.fromString(id));
-        Optional<Laboratory> laboratoryOPT = laboratoryRepository.findById(userLab.getLaboratoryId().getId());
-        Laboratory laboratory = laboratoryOPT.get();
 
-        return laboratoryRepository.findRequestExamByLaboratory(laboratory.getId());
-    }
 
     //Metodo para registrar os resultados do exame no sistema
    /* public void registerResultExames(ExamsDTO data, RequestTokenDTO dataT) {

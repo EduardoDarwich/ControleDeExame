@@ -19,7 +19,6 @@ public interface PatientRepository extends JpaRepository <Patient, UUID> {
             select new com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientRequestExamDTO(
             da.name,
             c.name,
-            l.name,
             e.status,
             e.complement,
             e.examType,
@@ -31,7 +30,6 @@ public interface PatientRepository extends JpaRepository <Patient, UUID> {
             join e.doctorId d
             join d.authId da
             join e.clinicId c
-            join e.laboratoryId l
             where p.id = :patientId and e.status = 'Pendente'
             """)
     List<PatientRequestExamDTO> findRequestExamByPatient(@Param("patientId") UUID patientId);

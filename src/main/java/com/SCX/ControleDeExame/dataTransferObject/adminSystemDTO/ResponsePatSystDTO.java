@@ -1,5 +1,8 @@
 package com.SCX.ControleDeExame.dataTransferObject.adminSystemDTO;
 
+import lombok.Getter;
+
+@Getter
 public class ResponsePatSystDTO {
     private String name;
     private String status;

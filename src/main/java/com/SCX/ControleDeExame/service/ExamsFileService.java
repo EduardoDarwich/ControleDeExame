@@ -5,8 +5,10 @@ import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.GetExamsReques
 import com.SCX.ControleDeExame.dataTransferObject.fileDTO.UploadDTO;
 import com.SCX.ControleDeExame.domain.appointment.Appointment;
 import com.SCX.ControleDeExame.domain.auth.Auth;
+import com.SCX.ControleDeExame.domain.clinic.Clinic;
 import com.SCX.ControleDeExame.domain.consultation.Consultation;
 import com.SCX.ControleDeExame.domain.doctor.Doctor;
+import com.SCX.ControleDeExame.domain.exams.Exams;
 import com.SCX.ControleDeExame.domain.examsRequest.ExamsRequest;
 import com.SCX.ControleDeExame.domain.examsFile.ExamsFile;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
@@ -15,8 +17,10 @@ import com.SCX.ControleDeExame.domain.user_lab.UserLab;
 import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.repository.*;
 import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.draw.LineSeparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -141,8 +145,6 @@ public class ExamsFileService {
         String fileName = nameP.replaceAll("\\s+", "_") + ".pdf";
 
 
-
-
         if (!Files.exists(filePath)) {
             return ResponseEntity.notFound().build();
         }
@@ -167,62 +169,167 @@ public class ExamsFileService {
 
     //Metodo para transformar a requisição de exames em um pdf(testar)
     public ByteArrayInputStream generateExamRequestPdf(GetExamsRequestIdDTO data) {
-        Document document = new Document(PageSize.A4);
+        Document document = new Document(PageSize.A4, 36, 36, 36, 36); // margens
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        Optional<ExamsRequest> examOPT = requestExamsRepository.findById(UUID.fromString(data.id()));
-        ExamsRequest exam = examOPT.get();
+        Optional<ExamsRequest> examsRequestOPT = Optional.ofNullable(requestExamsRepository.findByCodVerific(data.id()));
+        ExamsRequest examsRequest = examsRequestOPT.get();
+        List<Exams> exams = examsRequest.getExams();
+        Consultation consultation = examsRequest.getConsultation();
+        Clinic clinic = consultation.getAppointment().getClinic();
+
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
         try {
             PdfWriter.getInstance(document, out);
             document.open();
 
-            //Título principal
-            Font titleFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
-            Paragraph title = new Paragraph("Requisição de exame", titleFont);
+            // === FONTES ===
+            Font headerFont = new Font(Font.FontFamily.HELVETICA, 11, Font.BOLD);
+            Font normalFont = new Font(Font.FontFamily.HELVETICA, 10);
+            Font smallFont = new Font(Font.FontFamily.HELVETICA, 9);
+            Font titleFont = new Font(Font.FontFamily.HELVETICA, 14, Font.BOLD);
+
+            // === CABEÇALHO ===
+            PdfPTable header = new PdfPTable(2);
+            header.setWidthPercentage(100);
+            header.setWidths(new float[]{3, 2});
+
+            PdfPCell prefeitura = new PdfPCell();
+            prefeitura.setBorder(Rectangle.NO_BORDER);
+            prefeitura.addElement(new Paragraph("PREFEITURA DE MOGI DAS CRUZES", headerFont));
+            prefeitura.addElement(new Paragraph("SECRETARIA MUNICIPAL DE SAÚDE", smallFont));
+            prefeitura.addElement(new Paragraph("UNIDADE DE ATENDIMENTO: UNIDADE 01", smallFont));
+            prefeitura.addElement(new Paragraph("ENDEREÇO: RUA DOS PALMARES", smallFont));
+
+            PdfPCell logoCell = new PdfPCell();
+            logoCell.setBorder(Rectangle.NO_BORDER);
+            logoCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+            // Se quiser adicionar um logotipo:
+            // Image logo = Image.getInstance("caminho/para/logo.png");
+            // logo.scaleToFit(70, 70);
+            // logoCell.addElement(logo);
+            logoCell.addElement(new Paragraph(" ", normalFont)); // espaço reservado
+
+            header.addCell(prefeitura);
+            header.addCell(logoCell);
+            document.add(header);
+
+            // Linha separadora
+            document.add(new Paragraph("\n"));
+            LineSeparator line = new LineSeparator();
+            line.setLineColor(BaseColor.GRAY);
+            document.add(new Chunk(line));
+
+            // === TÍTULO ===
+            Paragraph title = new Paragraph("FICHA DE REQUISIÇÃO DE SERVIÇOS AUXILIARES E EXAMES", titleFont);
             title.setAlignment(Element.ALIGN_CENTER);
-            title.setSpacingAfter(20);
+            title.setSpacingBefore(10);
+            title.setSpacingAfter(10);
             document.add(title);
 
-            //Subtítulo
-            Font subtitleFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
-            Paragraph subtitle = new Paragraph("Requisição de exame", subtitleFont);
-            subtitle.setSpacingAfter(10);
-            document.add(subtitle);
+            // === INFORMAÇÕES GERAIS ===
+            PdfPTable infoTable = new PdfPTable(2);
+            infoTable.setWidthPercentage(100);
+            infoTable.setSpacingAfter(8f);
+            infoTable.setWidths(new float[]{2, 2});
 
-            //Tabela com informações
-            PdfPTable table = new PdfPTable(2);
-            table.setWidthPercentage(100);
-            table.setSpacingBefore(10f);
+            addCell(infoTable, "Data/Hora: " + LocalDateTime.now().format(fmt), normalFont);
+            addCell(infoTable, "Nº do Atendimento: " + consultation.getAppointment().getConsultation().getExamsRequests().getCodVerific(), normalFont);
 
-            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            document.add(infoTable);
 
-            // Cada linha da tabela mostra um campo e seu valor
-            table.addCell("ID do Pedido");
-            table.addCell(exam.getCodVerific());
+            // === DADOS DO PACIENTE ===
+            Paragraph patientSection = new Paragraph("Dados do Paciente", headerFont);
+            patientSection.setSpacingBefore(5);
+            document.add(patientSection);
 
-            table.addCell("Tipo do Exame");
-            table.addCell(exam.getExamType() != null ? exam.getExamType() : "-");
+            PdfPTable patientTable = new PdfPTable(3);
+            patientTable.setWidthPercentage(100);
+            patientTable.setWidths(new float[]{2, 2, 2});
 
-            table.addCell("Tipo da Amostra");
-            table.addCell(exam.getSampleType() != null ? exam.getSampleType() : "-");
-
-            table.addCell("Status");
-            table.addCell(exam.getStatus() != null ? exam.getStatus() : "-");
-
-            table.addCell("Complemento");
-            table.addCell(exam.getComplement() != null ? exam.getComplement() : "-");
-
-            table.addCell("Data do Pedido");
-            table.addCell(exam.getRequestDate() != null ? exam.getRequestDate().format(fmt) : "-");
+            addCell(patientTable, "Nome: " + consultation.getAppointment().getPatient().getAuthId().getName().toUpperCase(), normalFont);
+            addCell(patientTable, "CPF: " + consultation.getAppointment().getPatient().getCpf(), normalFont);
+            addCell(patientTable, "Telefone: " + consultation.getAppointment().getPatient().getTelephone(), normalFont);
 
 
-            document.add(table);
+            document.add(patientTable);
 
-            //Espaçamento e rodapé
+            // === SEÇÃO DE SOLICITAÇÃO ===
+            Paragraph sectionSolic = new Paragraph("Informações do Pedido", headerFont);
+            sectionSolic.setSpacingBefore(10);
+            document.add(sectionSolic);
+
+            PdfPTable solicitTable = new PdfPTable(2);
+            solicitTable.setWidthPercentage(100);
+            solicitTable.setWidths(new float[]{3, 2});
+
+            addCell(solicitTable,"Estabelecimento solicitante:  " + clinic.getName().toUpperCase(), normalFont);
+            addCell(solicitTable, "Profissional Solicitante:   " + consultation.getAppointment().getDoctor().getAuthId().getName().toUpperCase(), normalFont);
+
+            document.add(solicitTable);
+
+            // === LISTA DE EXAMES ===
+            Paragraph examsSection = new Paragraph("EXAMES / PROCEDIMENTOS SOLICITADOS", headerFont);
+            examsSection.setSpacingBefore(10);
+            examsSection.setSpacingAfter(5);
+            document.add(examsSection);
+
+            PdfPTable examsTable = new PdfPTable(3);
+            examsTable.setWidthPercentage(100);
+            examsTable.setWidths(new float[]{2, 3, 4});
+
+            PdfPCell c1 = new PdfPCell(new Phrase("CID", headerFont));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setBackgroundColor(new BaseColor(200, 200, 200));
+            examsTable.addCell(c1);
+
+            PdfPCell c2 = new PdfPCell(new Phrase("EXAME / PROCEDIMENTO", headerFont));
+            c2.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c2.setBackgroundColor(new BaseColor(200, 200, 200));
+            examsTable.addCell(c2);
+
+            PdfPCell c3 = new PdfPCell(new Phrase("JUSTIFICATIVA", headerFont));
+            c3.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c3.setBackgroundColor(new BaseColor(200, 200, 200));
+            examsTable.addCell(c3);
+
+            for(Exams exams1: exams){
+                addExamRow(examsTable, exams1.getCid(), exams1.getExamsType(), exams1.getJustify());
+            }
+
+            document.add(examsTable);
+
+            // === ASSINATURA DO MÉDICO ===
+            document.add(new Paragraph("\n\n\n")); // espaço antes da linha
+
+            // Cria uma linha para assinatura
+            LineSeparator signatureLine = new LineSeparator();
+            signatureLine.setLineColor(BaseColor.BLACK);
+            signatureLine.setLineWidth(0.8f);
+            signatureLine.setPercentage(40f); // tamanho da linha (40% da largura da página)
+            signatureLine.setAlignment(Element.ALIGN_CENTER);
+
+            document.add(new Chunk(signatureLine)); // adiciona a linha
+
+            // Nome e CRM do médico
+            Paragraph doctorInfo = new Paragraph(
+                    consultation.getAppointment().getDoctor().getAuthId().getName().toUpperCase() + "\n" + "CRM: " + consultation.getAppointment().getDoctor().getCrm(),
+                    new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD)
+            );
+            doctorInfo.setAlignment(Element.ALIGN_CENTER);
+            doctorInfo.setSpacingBefore(5);
+            document.add(doctorInfo);
+
+            // === RODAPÉ ===
             document.add(new Paragraph("\n"));
-            Paragraph footer = new Paragraph("Gerado automaticamente pelo sistema de exames.", new Font(Font.FontFamily.HELVETICA, 10, Font.ITALIC));
+            document.add(new Chunk(line));
+            Paragraph footer = new Paragraph(
+                    "Gerado automaticamente pelo Sistema de Exames - " + LocalDateTime.now().format(fmt),
+                    smallFont
+            );
             footer.setAlignment(Element.ALIGN_CENTER);
+            footer.setSpacingBefore(5);
             document.add(footer);
 
             document.close();
@@ -233,5 +340,28 @@ public class ExamsFileService {
 
         return new ByteArrayInputStream(out.toByteArray());
     }
+
+    // Mtodo auxiliar para adicionar células genéricas
+    private void addCell(PdfPTable table, String text, Font font) {
+        PdfPCell cell = new PdfPCell(new Phrase(text, font));
+        cell.setPadding(5);
+        table.addCell(cell);
+    }
+
+    // Mtodo auxiliar para adicionar linha de exame
+    private void addExamRow(PdfPTable table, String exam, String justification, String cid) {
+        PdfPCell examCell = new PdfPCell(new Phrase(exam));
+        examCell.setPadding(5);
+        table.addCell(examCell);
+
+        PdfPCell justCell = new PdfPCell(new Phrase(justification));
+        justCell.setPadding(5);
+        table.addCell(justCell);
+
+        PdfPCell cidCell = new PdfPCell(new Phrase(cid));
+        cidCell.setPadding(5);
+        table.addCell(cidCell);
+    }
+
 
 }

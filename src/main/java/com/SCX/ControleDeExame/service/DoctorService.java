@@ -8,6 +8,8 @@ import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestNameClinicDTO;
 import com.SCX.ControleDeExame.dataTransferObject.consultationDTO.CloseConsultationDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.*;
+import com.SCX.ControleDeExame.dataTransferObject.examsDTO.CreateExamDTO;
+import com.SCX.ControleDeExame.dataTransferObject.examsDTO.ExamsDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.ExamsRequestDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.GetExamsRequestIdDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsTypeDTO.ExamsTypeDTO;
@@ -26,6 +28,7 @@ import com.SCX.ControleDeExame.domain.doctor.Doctor;
 import com.SCX.ControleDeExame.domain.exams.Exams;
 import com.SCX.ControleDeExame.domain.examsFile.ExamsFile;
 import com.SCX.ControleDeExame.domain.examsRequest.ExamsRequest;
+import com.SCX.ControleDeExame.domain.examsType.ExamsType;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.domain.patient.Patient;
 import com.SCX.ControleDeExame.domain.role.Role;
@@ -447,23 +450,21 @@ public class DoctorService {
             Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
             var auth = authRepository.findById(doctor.getAuthId().getId());
             Optional<Clinic> clinic = clinicRepository.findById(doctor.getIdClinic());
-            Laboratory laboratory = laboratoryRepository.findByName(data.name());
             Appointment appointment = appointmentRepository.findByDoctorAvaiable(doctor.getId());
             Optional<Patient> patient = patientRepository.findById(appointment.getPatient().getId());
 
             String uuid = UUID.randomUUID().toString().replace("-", "");
             String cod = "REQ-" + uuid.substring(0, 6).toUpperCase();
 
-            String msg = "Fez um novo pedido de exame para o laboratório" + laboratory.getName();
+            String msg = "Fez um novo pedido de exame ";
+
+
 
             ExamsRequest newExamRequest = new ExamsRequest();
             newExamRequest.setDoctorId(doctor);
             newExamRequest.setClinicId(clinic.get());
             newExamRequest.setPatientId(patient.get());
-            newExamRequest.setLaboratoryId(laboratory);
             newExamRequest.setConsultation(appointment.getConsultation());
-            newExamRequest.setExamType(data.exam_type());
-            newExamRequest.setSampleType(data.sample_type());
             newExamRequest.setStatus("Pendente");
             newExamRequest.setComplement(data.complement());
             newExamRequest.setRequestDate(LocalDateTime.now());
@@ -484,14 +485,28 @@ public class DoctorService {
         }
     }
 
-    //Metodo para retornar as devoluções dos exames
-    public List<DoctorResultExamDTO> doctorResultExam(RequestTokenDTO dataT) {
+    //Metodo para criar um exame para a requisição de exames (testar)
+    public void createExam ( RequestTokenDTO dataT, List<CreateExamDTO> data){
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
-        Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
+        Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
+        Doctor doctor = doctorRepository.findByAuthId_Id(auth.getId());
+        Appointment appointment = appointmentRepository.findByDoctorAvaiable(doctor.getId());
+        Optional<Consultation> consultationOPT = consultationRepository.findById(appointment.getConsultation().getId());
+        Consultation consultation = consultationOPT.get();
+        ExamsRequest examsRequest = consultation.getExamsRequests();
 
-        return doctorRepository.findByResultExamDoctor(doctor.getId());
+        data.forEach(item -> {
+            Exams newExams = new Exams();
+            newExams.setCid(item.cid());
+            newExams.setExamsRequest(examsRequest);
+            newExams.setExamsType(item.examType());
+            newExams.setJustify(item.justify());
+            examsRepository.save(newExams);
+        });
+
     }
+
 
     //Metodo para retornar todas as requisições de exame pendentes do medico
     public List<DoctorRequestExamDTO> doctorRequestExam(RequestTokenDTO dataT) {
@@ -568,35 +583,38 @@ public class DoctorService {
         return new ReturnDiagnosticDTO(consultation.get().getDiagnosis(), consultation.get().getPrescription());
     }
 
-    //Metodo para retornar os pedidos de exames relacinados a consulta se houver
+    //Metodo para retornar os exames pedidos relacinados a consulta se houver
     public ReturnExamsRequestsDTO returnExamsRequests (GetAppointmentIdDTO data){
         Optional<Appointment> appointment = appointmentRepository.findById(UUID.fromString(data.id()));
         Optional<Consultation> consultation = consultationRepository.findById(appointment.get().getConsultation().getId());
 
-        List<ExamsRequestDTO> examsRequestDTOS = consultation.get().getExamsRequests()
+        List<CreateExamDTO> exams = consultation.get().getExamsRequests().getExams()
                 .stream()
-                .map(er -> new ExamsRequestDTO(
-                        er.getExamType(),
-                        er.getSampleType(),
-                        er.getComplement(),
-                        "mano ignora isso"
+                .map(er -> new CreateExamDTO(
+                        er.getJustify(),
+                        er.getCid(),
+                        er.getExamsType()
                 )).toList();
-        return new ReturnExamsRequestsDTO (examsRequestDTOS);
+        return new ReturnExamsRequestsDTO (exams);
 
 
     }
 
-    //Metodo para retornar os resutados dos exames relacionados a consulta se houver
+    //Metodo para retornar os resutados dos exames relacionados a consulta se houver (testar)
     public ReturnExamsResultsDTO returnExamsResults (GetAppointmentIdDTO data){
         Optional<Appointment> appointment = appointmentRepository.findById(UUID.fromString(data.id()));
         Optional<Consultation> consultation = consultationRepository.findById(appointment.get().getConsultation().getId());
+        ExamsRequest examsRequest = consultation.get().getExamsRequests();
 
-        List<ExamsFileDTO> ExamsFile = consultation.get().getExamsRequests()
+        List<ExamsFileDTO> ExamsFile = examsRequest.getExamsFile()
                 .stream()
                 .map(er -> new ExamsFileDTO(
-                        er.getExamsFile().getFileName()
+                        er.getFileName()
 
                 )).toList();
+
+
+
 
         return new ReturnExamsResultsDTO(ExamsFile);
     }
