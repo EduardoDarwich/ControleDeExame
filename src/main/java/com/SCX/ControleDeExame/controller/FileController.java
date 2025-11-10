@@ -97,8 +97,9 @@ public class FileController {
                     .body(pdfBytes);
 
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(("Erro ao gerar PDF: " + e.getMessage()).getBytes());
         }
     }
 }
