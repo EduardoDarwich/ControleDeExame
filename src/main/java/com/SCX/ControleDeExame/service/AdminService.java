@@ -178,7 +178,7 @@ public class AdminService {
         newAuth.getRoles().add(secretary);
         authRepository.save(newAuth);
 
-        //emailService.firtLoginEmail(newAuth);
+        emailService.firtLoginEmail(newAuth);
 
         try {
             newSecretary.setCpf(data.cpf());

@@ -9,7 +9,7 @@ RUN mvn clean package -DskipTests
 # Etapa 2: imagem final
 FROM eclipse-temurin:23-jdk-alpine
 WORKDIR /app
-RUN mkdir -p /app/uploads
+RUN mkdir -p /app/uploads -p /app/uploads && chmod 777 /app/uploads
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]

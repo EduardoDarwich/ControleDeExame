@@ -110,7 +110,7 @@ public class SecretaryService {
             newPatient.setAuthId(newAuth);
             patientRepository.save(newPatient);
 
-            //emailService.firtLoginEmail(newAuth);
+            emailService.firtLoginEmail(newAuth);
 
             clinic.getPatients().add(newPatient);
             clinicRepository.save(clinic);

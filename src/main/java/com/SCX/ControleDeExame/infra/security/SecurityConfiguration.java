@@ -29,10 +29,6 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
 
-                        .requestMatchers(HttpMethod.POST, "/patient/register").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/laboratory/register/User").hasRole("LaboratoryAdimin")
-
 
                         .requestMatchers(HttpMethod.POST, "admin/registerAdmin").hasRole("Admin")
                         .requestMatchers(HttpMethod.POST, "admin/registerSecretary").hasRole("Admin")
@@ -66,7 +62,7 @@ public class SecurityConfiguration {
 
 
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/first-login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/first-login/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/auth/perfil").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/verificUserExists").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/verificUserActive").permitAll()
@@ -81,16 +77,73 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.PATCH, "/auth/updateAdmin").hasRole("Admin")
 
 
-                        .requestMatchers(HttpMethod.PATCH, "/clinic/updateAdmin").hasRole("Admin")
+                        .requestMatchers(HttpMethod.POST, "/clinic/create").hasRole("AdminSystem")
+                        .requestMatchers(HttpMethod.POST, "/clinic/firstAdm").hasRole("AdminSystem")
+                        .requestMatchers(HttpMethod.GET, "/clinic/getCliActive").hasRole("AdminSystem")
 
 
+                        .requestMatchers(HttpMethod.POST, "/consult/getCep").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/consult/getCnpj").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/doctor/register").hasRole("Admin")
+                        .requestMatchers(HttpMethod.POST, "/doctor/requestExm").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.POST, "/doctor/searchDoc").hasRole("Admin")
+                        .requestMatchers(HttpMethod.GET, "/doctor/getRequestExamPendent").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.POST, "/doctor/getByCrm").hasRole("Admin")
+                        .requestMatchers(HttpMethod.GET, "/doctor/getAppointmentOpen").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.POST, "/doctor/transferDoctor").hasRole("Admin")
+                        .requestMatchers(HttpMethod.GET, "/doctor/clinicsDoctor").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.PATCH, "/doctor/updateClinicDocPresent").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.GET, "/doctor/getClinicActive").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.GET, "/doctor/getLabDocCli").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.GET, "/doctor/getExamsType").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.POST, "/doctor/openConsultation").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.PATCH, "/doctor/closeConsultation").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.POST, "/doctor/registerAnamnese").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.POST, "/doctor/bmiCalculator").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.POST, "/doctor/createCustomField").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.GET, "/doctor/getAppointmentsPat").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.GET, "/doctor/verifyDocIsConsult").hasRole("Secretary")
+                        .requestMatchers(HttpMethod.POST, "/doctor/createExams").hasRole("Doctor")
 
 
+                        .requestMatchers(HttpMethod.POST, "/files/upload").hasRole("LaboratoryUser")
+                        .requestMatchers(HttpMethod.GET, "/files/download/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/files/preview/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/files/examsRequestPDF").permitAll()
 
 
+                        .requestMatchers(HttpMethod.POST, "/laboratory/register").hasRole("Admin")
+                        .requestMatchers(HttpMethod.POST, "/laboratory/register/Adm").hasRole("Admin")
+                        .requestMatchers(HttpMethod.POST, "/laboratory/register/User").hasRole("LaboratoryAdmin")
+                        .requestMatchers(HttpMethod.GET, "/laboratory/clinicsLab").hasRole("LaboratoryAdmin")
+                        .requestMatchers(HttpMethod.POST, "/laboratory/uploadExam").hasRole("LaboratoryUser")
+                        .requestMatchers(HttpMethod.GET, "/laboratory/getLabActive").permitAll()
 
+                        .requestMatchers(HttpMethod.GET, "/notification/getNoRead").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/notification/markRead").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/patient/GetAllPatient").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/patient/getRequestExamPendent").hasRole("Patient")
+                        .requestMatchers(HttpMethod.GET, "/patient/getExamsResult").hasRole("Patient")
+                        .requestMatchers(HttpMethod.PATCH, "/patient/anonimizePat").hasRole("Patient")
+
+                        .requestMatchers(HttpMethod.POST, "/prontuario/getAnamneseConsult").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.POST, "/prontuario/getDiagnostic").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.POST, "/prontuario/getExamsRequest").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.POST, "/prontuario/getExams").hasRole("Doctor")
+
+                        .requestMatchers(HttpMethod.PATCH, "/resetPassword/generateToken").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/resetPassword/resetPassword/**").permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/secretary/registerPatient").hasRole("Secretary")
+                        .requestMatchers(HttpMethod.GET, "/secretary/verificPatCli").hasRole("Secretary")
+                        .requestMatchers(HttpMethod.GET, "/secretary/verificPatSyst").hasRole("Secretary")
+                        .requestMatchers(HttpMethod.GET, "/secretary/transferPat").hasRole("Secretary")
+                        .requestMatchers(HttpMethod.GET, "/secretary/clinicSecretary").hasRole("Secretary")
+                        .requestMatchers(HttpMethod.GET, "/secretary/getPatientsCli").hasRole("Secretary")
+                        .requestMatchers(HttpMethod.GET, "/secretary/getDocsAvailable").hasRole("Secretary")
+                        .requestMatchers(HttpMethod.GET, "/secretary/openAppointment").hasRole("Secretary")
+
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
