@@ -103,7 +103,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/doctor/bmiCalculator").hasRole("Doctor")
                         .requestMatchers(HttpMethod.POST, "/doctor/createCustomField").hasRole("Doctor")
                         .requestMatchers(HttpMethod.GET, "/doctor/getAppointmentsPat").hasRole("Doctor")
-                        .requestMatchers(HttpMethod.GET, "/doctor/verifyDocIsConsult").hasRole("Secretary")
+                        .requestMatchers(HttpMethod.GET, "/doctor/verifyDocIsConsult").hasRole("Doctor")
                         .requestMatchers(HttpMethod.POST, "/doctor/createExams").hasRole("Doctor")
 
 
