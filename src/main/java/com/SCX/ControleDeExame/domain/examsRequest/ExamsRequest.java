@@ -38,6 +38,8 @@ public class ExamsRequest {
     @Column(name = "executed_date")
     private LocalDateTime executedDate;
     private String status;
+    @Column(name = "count_exm")
+    private int countExm;
 
 
     @ManyToOne()

@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 //Classe contendo a logica da entidade do médico
@@ -469,6 +470,7 @@ public class DoctorService {
             newExamRequest.setComplement(data.complement());
             newExamRequest.setRequestDate(LocalDateTime.now());
             newExamRequest.setCodVerific(cod);
+            newExamRequest.setCountExm(0);
             requestExamsRepository.save(newExamRequest);
 
 
@@ -496,6 +498,7 @@ public class DoctorService {
         Consultation consultation = consultationOPT.get();
         ExamsRequest examsRequest = consultation.getExamsRequests();
 
+
         data.forEach(item -> {
             Exams newExams = new Exams();
             newExams.setCid(item.cid());
@@ -503,6 +506,8 @@ public class DoctorService {
             newExams.setExamsType(item.examType());
             newExams.setJustify(item.justify());
             examsRepository.save(newExams);
+
+
         });
 
     }

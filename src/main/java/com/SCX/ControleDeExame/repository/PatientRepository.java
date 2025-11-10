@@ -23,7 +23,8 @@ public interface PatientRepository extends JpaRepository <Patient, UUID> {
             e.complement,
             e.examType,
             e.sampleType,
-            e.requestDate
+            e.requestDate,
+            e.Id
             )
             from Patient p
             join p.examsRequests e

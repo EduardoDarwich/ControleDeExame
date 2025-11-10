@@ -100,16 +100,22 @@ public class ExamsFileService {
         UserLab userLab = userLabRepository.findByAuthId_Id(UUID.fromString(id));
         var auth = authRepository.findById(userLab.getAuthId().getId());
         Optional<Laboratory> laboratory = laboratoryRepository.findById(userLab.getLaboratoryId().getId());
-
-        List<MultipartFile> files = data.file();
-
-        for ( MultipartFile file: files){
-
         Optional<ExamsRequest> examsRequest = Optional.ofNullable(requestExamsRepository.findByCodVerific(data.examsReqId()));
         Optional<Consultation> consultation = consultationRepository.findById(examsRequest.get().getConsultation().getId());
         Optional<Appointment> appointment = appointmentRepository.findById(consultation.get().getAppointment().getId());
         Optional<Patient> patient = patientRepository.findById(appointment.get().getPatient().getId());
         Optional<Doctor> doctor = doctorRepository.findById(appointment.get().getDoctor().getId());
+        List<Exams> exams = examsRequest.get().getExams();
+        int count = exams.size();
+
+
+
+        List<MultipartFile> files = data.file();
+
+        for ( MultipartFile file: files){
+
+            int contador = examsRequest.get().getCountExm();
+
 
         // Cria nome único com Ids
         String uniqueFilename = patient.get().getId() + "_" + doctor.get().getId() + "_" + laboratory.get().getId() + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
@@ -119,7 +125,11 @@ public class ExamsFileService {
         // Salva o arquivo
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
+
+        if(count == examsRequest.get().getCountExm()){
         examsRequest.get().setStatus("Entregue");
+        requestExamsRepository.save(examsRequest.get());
+        }
 
         // Salva os dados no banco
         ExamsFile entity = new ExamsFile();
@@ -131,7 +141,16 @@ public class ExamsFileService {
         entity.setFilePath(filePath.toString());
         entity.setUploadDate(LocalDateTime.now());
 
-        examsFileRepository.save(entity);}
+        examsFileRepository.save(entity);
+
+        examsRequest.get().setCountExm(contador + 1);
+        requestExamsRepository.save(examsRequest.get());
+
+
+
+
+
+        }
     }
 
     //Metodo para Baixar o pdf ao clicar
@@ -182,6 +201,8 @@ public class ExamsFileService {
         List<Exams> exams = examsRequest.getExams();
         Consultation consultation = examsRequest.getConsultation();
         Clinic clinic = consultation.getAppointment().getClinic();
+
+
 
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
