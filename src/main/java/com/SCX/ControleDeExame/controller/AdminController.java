@@ -93,42 +93,42 @@ public class AdminController {
 
     //Rota para desativar um usuario da secretaria
     @PatchMapping("/disableSecretary")
-    public ResponseEntity disableSecretary (RequestSecretaryEmailDTO data){
+    public ResponseEntity disableSecretary ( @RequestBody @Valid RequestSecretaryEmailDTO data){
         adminService.disableSecretary(data);
         return ResponseEntity.ok().build();
     }
 
     //Rota para ativar um usuario da secretaria
     @PatchMapping("/enableSecretary")
-    public ResponseEntity enableSecretary (RequestSecretaryEmailDTO data){
+    public ResponseEntity enableSecretary ( @RequestBody @Valid RequestSecretaryEmailDTO data){
         adminService.enableSecretary(data);
         return ResponseEntity.ok().build();
     }
 
     //Rota para desativar um laboratorio
     @PatchMapping("/disableLaboratory")
-    public ResponseEntity disableLaboratory (LaboratoryVerificDTO data){
+    public ResponseEntity disableLaboratory ( @RequestBody @Valid LaboratoryVerificDTO data){
         adminService.disableLaboratory(data);
         return ResponseEntity.ok().build();
     }
 
     //Rota para ativar um laboratorio
     @PatchMapping("/enableLaboratory")
-    public ResponseEntity enableLaboratory (LaboratoryVerificDTO data){
+    public ResponseEntity enableLaboratory ( @RequestBody @Valid LaboratoryVerificDTO data){
         adminService.enableLaboratory(data);
         return ResponseEntity.ok().build();
     }
 
     //Rota para desativar um usuario do laboratorio
     @PatchMapping("/disableUserLab")
-    public ResponseEntity disableuserLab (RequestSecretaryEmailDTO data){
+    public ResponseEntity disableuserLab (@RequestBody @Valid RequestSecretaryEmailDTO data){
         adminService.disableLabUser(data);
         return ResponseEntity.ok().build();
     }
 
     //Rota para ativar um usuario do laboratorio
     @PatchMapping("/enableUserLab")
-    public ResponseEntity enableuserLab (RequestSecretaryEmailDTO data){
+    public ResponseEntity enableuserLab (@RequestBody @Valid RequestSecretaryEmailDTO data){
         adminService.enableLabUser(data);
         return ResponseEntity.ok().build();
     }
