@@ -177,7 +177,7 @@ public class ExamsFileService {
         Document document = new Document(PageSize.A4, 36, 36, 36, 36); // margens
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        Optional<ExamsRequest> examsRequestOPT = Optional.ofNullable(requestExamsRepository.findByCodVerific(data.id()));
+        Optional<ExamsRequest> examsRequestOPT = requestExamsRepository.findById(UUID.fromString(data.id()));
         ExamsRequest examsRequest = examsRequestOPT.get();
         List<Exams> exams = examsRequest.getExams();
         Consultation consultation = examsRequest.getConsultation();
