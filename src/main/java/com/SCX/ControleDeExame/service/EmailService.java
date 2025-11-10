@@ -15,8 +15,9 @@ public class EmailService {
     @Autowired
     private JavaMailSender javaMailSender;
     //Definindo remetente do email através da variável de ambiente
-    @Value("${spring.mail.username}")
+    @Value("${MAIL_FROM:eduardo.darwich23@gmail.com}")
     private String remetente;
+
     //Metodo para enviar email
     public String sendEmail (String destinatario, String assunto, String mensagem){
         //Try catch
