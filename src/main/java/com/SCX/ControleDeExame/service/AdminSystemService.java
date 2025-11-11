@@ -4,9 +4,11 @@ import com.SCX.ControleDeExame.dataTransferObject.adminSystemDTO.ResponseCliSyst
 import com.SCX.ControleDeExame.dataTransferObject.adminSystemDTO.ResponseLabSystDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestCnpjClinicaDTO;
 import com.SCX.ControleDeExame.dataTransferObject.adminSystemDTO.ResponsePatSystDTO;
+import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryVerificDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.RequestSecretaryEmailDTO;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
+import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.domain.role.Role;
 import com.SCX.ControleDeExame.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +38,7 @@ public class AdminSystemService {
 
 
     //Metodo para desativar uma clinica (testar)
-    public void disableClinic (RequestCnpjClinicaDTO data){
+    public void disableClinic(RequestCnpjClinicaDTO data) {
         Clinic clinic = clinicRepository.findByCnpj(data.cnpj());
 
         clinic.setActive(false);
@@ -45,7 +47,7 @@ public class AdminSystemService {
     }
 
     //Metodo para ativar uma clinica (testar)
-    public void enableClinic (RequestCnpjClinicaDTO data){
+    public void enableClinic(RequestCnpjClinicaDTO data) {
         Clinic clinic = clinicRepository.findByCnpj(data.cnpj());
 
         clinic.setActive(true);
@@ -54,39 +56,39 @@ public class AdminSystemService {
     }
 
     //Metodo para listar todas as clinicas do sistema (testar)
-    public List<ResponseCliSystDTO> listAllClinics (){
+    public List<ResponseCliSystDTO> listAllClinics() {
 
         return clinicRepository.findAllClinicByCnpj();
     }
 
     //Metodo para listar todos os laboratorios do sistema (testar)
-    public List<ResponseLabSystDTO> listAllLaboratory (){
+    public List<ResponseLabSystDTO> listAllLaboratory() {
 
         return laboratoryRepository.findAllLaboratoryByCnpj();
     }
 
     //Metodo para listar todos os pacientes do sistema (testar)
-    public List<ResponsePatSystDTO> listAllPat(){
+    public List<ResponsePatSystDTO> listAllPat() {
         return patientRepository.findPatBySyst();
     }
 
     //Metodo para retornar quantos laboratorios tem cadastrados no sistema (testar)
-    public long countLabs(){
+    public long countLabs() {
         return laboratoryRepository.count();
     }
 
     //Metodo para retornar quantos pacientes tem cadastrados no sistema (testar)
-    public long countPats(){
+    public long countPats() {
         return patientRepository.count();
     }
 
     //Metodo para retornar quantas clinicas tem cadastrados no sistema (testar)
-    public long countClinic(){
+    public long countClinic() {
         return clinicRepository.count();
     }
 
     //Metodo para desativar um adm de uma clinica (testar)
-    public void disableAdmClinic (RequestSecretaryEmailDTO data){
+    public void disableAdmClinic(RequestSecretaryEmailDTO data) {
         Optional<Auth> authOPT = authRepository.findAuthByUsernameKey(data.Email());
         Auth auth = authOPT.get();
         auth.setActive(false);
@@ -94,7 +96,7 @@ public class AdminSystemService {
     }
 
     //Metodo para ativar um adm de uma clinica (testar)
-    public void enableAdmClinic (RequestSecretaryEmailDTO data){
+    public void enableAdmClinic(RequestSecretaryEmailDTO data) {
         Optional<Auth> authOPT = authRepository.findAuthByUsernameKey(data.Email());
         Auth auth = authOPT.get();
         auth.setActive(true);
@@ -102,7 +104,7 @@ public class AdminSystemService {
     }
 
     //Metodo para criar um usuario do suporte
-    public void registerFirstAdmin(){
+    public void registerFirstAdmin() {
         Role userSupport = roleRepository.findByName("AdminSystem");
         String senha = "123456789";
         String encryptedPassword = new BCryptPasswordEncoder().encode(senha);
@@ -115,8 +117,20 @@ public class AdminSystemService {
         newAuth.getRoles().add(userSupport);
         authRepository.save(newAuth);
 
+    }
 
+    //Metodo para desativar um laboratorio (testar)
+    public void disableLab(LaboratoryVerificDTO data) {
+        Laboratory laboratory = laboratoryRepository.findByCnpj(data.cnpj());
+        laboratory.setActive(false);
+        laboratoryRepository.save(laboratory);
+    }
 
+    //Metodo para ativar um laboratorio (testar)
+    public void enableLab(LaboratoryVerificDTO data) {
+        Laboratory laboratory = laboratoryRepository.findByCnpj(data.cnpj());
+        laboratory.setActive(true);
+        laboratoryRepository.save(laboratory);
     }
 
 }

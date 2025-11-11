@@ -312,6 +312,8 @@ public class AdminService {
 
         String cnpj = data.cnpj();
         Laboratory laboratory = laboratoryRepository.findByCnpj(cnpj);
+        laboratory.getClinics().remove(clinic);
+        laboratoryRepository.save(laboratory);
 
         clinic.getLaboratories().add(laboratory);
         clinicRepository.save(clinic);

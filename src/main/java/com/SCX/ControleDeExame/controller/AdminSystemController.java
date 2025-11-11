@@ -5,6 +5,7 @@ import com.SCX.ControleDeExame.dataTransferObject.adminSystemDTO.ResponseLabSyst
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.RequestCnpjClinicaDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseLabCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.adminSystemDTO.ResponsePatSystDTO;
+import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryVerificDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.RequestSecretaryEmailDTO;
 import com.SCX.ControleDeExame.service.AdminSystemService;
 import jakarta.validation.Valid;
@@ -92,6 +93,20 @@ public class AdminSystemController {
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
 
+    }
+
+    //Rota para desativar um laboratorio do sistema
+    @PatchMapping("/disableLabSyst")
+    public ResponseEntity disableLabCli (@RequestBody @Valid LaboratoryVerificDTO data){
+        adminSystemService.disableLab(data);
+        return ResponseEntity.ok().build();
+    }
+
+    //Rota para desativar um laboratorio do sistema
+    @PatchMapping("/enableLabSyst")
+    public ResponseEntity enableLabCli (@RequestBody @Valid LaboratoryVerificDTO data){
+        adminSystemService.enableLab(data);
+        return ResponseEntity.ok().build();
     }
 
 

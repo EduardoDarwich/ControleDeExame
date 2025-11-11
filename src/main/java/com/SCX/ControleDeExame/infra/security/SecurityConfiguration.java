@@ -59,6 +59,8 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.PATCH, "/adminSystem/enableAdmCli").hasRole("AdminSystem")
                         .requestMatchers(HttpMethod.PATCH, "/adminSystem/disableAdmCli").hasRole("AdminSystem")
                         .requestMatchers(HttpMethod.PATCH, "/adminSystem/registerUser").hasRole("AdminSystem")
+                        .requestMatchers(HttpMethod.PATCH, "/adminSystem/disableLabSyst").hasRole("AdminSystem")
+                        .requestMatchers(HttpMethod.PATCH, "/adminSystem/enableLabSyst").hasRole("AdminSystem")
 
 
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
