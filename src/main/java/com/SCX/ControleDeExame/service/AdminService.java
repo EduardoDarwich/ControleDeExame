@@ -6,6 +6,7 @@ import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseLabCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseSecretaryCliDTO;
+import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorVerificDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryVerificDTO;
 import com.SCX.ControleDeExame.dataTransferObject.logDTO.LogDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.RequestSecretaryCpfDTO;
@@ -14,6 +15,7 @@ import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.SecretaryDTO;
 import com.SCX.ControleDeExame.domain.admin.Admin;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
+import com.SCX.ControleDeExame.domain.doctor.Doctor;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.domain.role.Role;
 import com.SCX.ControleDeExame.domain.secretary.Secretary;
@@ -65,6 +67,9 @@ public class AdminService {
 
     @Autowired
     LogService logService;
+
+    @Autowired
+    DoctorRepository doctorRepository;
 
 
     //Metodo para criar um usuário de adiministrador
@@ -284,21 +289,32 @@ public class AdminService {
     }
 
     //Metodo para desativar um laboratorio(testar)
-    public void disableLaboratory(LaboratoryVerificDTO data) {
+    public void disableLaboratory(RequestTokenDTO dataT, LaboratoryVerificDTO data) {
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        var admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
+        Clinic clinic = clinicRepository.findById(admin.getClinicId().getId()).orElseThrow(() -> new RuntimeException("Clinica não encontrada"));
+
         String cnpj = data.cnpj();
         Laboratory laboratory = laboratoryRepository.findByCnpj(cnpj);
-        laboratory.setActive(false);
-        laboratoryRepository.save(laboratory);
 
+        clinic.getLaboratories().remove(laboratory);
+        clinicRepository.save(clinic);
 
     }
 
     //Metodo para ativar um laboratorio(testar)
-    public void enableLaboratory(LaboratoryVerificDTO data) {
+    public void enableLaboratory(RequestTokenDTO dataT, LaboratoryVerificDTO data) {
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        var admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
+        Clinic clinic = clinicRepository.findById(admin.getClinicId().getId()).orElseThrow(() -> new RuntimeException("Clinica não encontrada"));
+
         String cnpj = data.cnpj();
         Laboratory laboratory = laboratoryRepository.findByCnpj(cnpj);
-        laboratory.setActive(true);
-        laboratoryRepository.save(laboratory);
+
+        clinic.getLaboratories().add(laboratory);
+        clinicRepository.save(clinic);
 
     }
 
@@ -318,7 +334,20 @@ public class AdminService {
     }
 
 
+    //Metodo para desvincular um laboratorio (testar)
+    public void disableDocCli(RequestTokenDTO dataT, DoctorVerificDTO data) {
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        var admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
+        Clinic clinic = clinicRepository.findById(admin.getClinicId().getId()).orElseThrow(() -> new RuntimeException("Clinica não encontrada"));
 
+        String crm = data.crm();
+        Doctor doctor = doctorRepository.findByCrm(crm);
+
+        clinic.getDoctors().remove(doctor);
+        clinicRepository.save(clinic);
+
+    }
     
 
 

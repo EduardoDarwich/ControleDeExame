@@ -6,6 +6,7 @@ import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseLabCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseSecretaryCliDTO;
+import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorVerificDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryVerificDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.RequestSecretaryCpfDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.RequestSecretaryEmailDTO;
@@ -105,17 +106,17 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
-    //Rota para desativar um laboratorio
+    //Rota para desvincular um laboratorio
     @PatchMapping("/disableLaboratory")
-    public ResponseEntity disableLaboratory ( @RequestBody @Valid LaboratoryVerificDTO data){
-        adminService.disableLaboratory(data);
+    public ResponseEntity disableLaboratory ( @RequestHeader("Authorization") RequestTokenDTO dataT ,@RequestBody @Valid LaboratoryVerificDTO data){
+        adminService.disableLaboratory(dataT,data);
         return ResponseEntity.ok().build();
     }
 
     //Rota para ativar um laboratorio
     @PatchMapping("/enableLaboratory")
-    public ResponseEntity enableLaboratory ( @RequestBody @Valid LaboratoryVerificDTO data){
-        adminService.enableLaboratory(data);
+    public ResponseEntity enableLaboratory ( @RequestHeader("Authorization") RequestTokenDTO dataT ,@RequestBody @Valid LaboratoryVerificDTO data){
+        adminService.enableLaboratory(dataT ,data);
         return ResponseEntity.ok().build();
     }
 
@@ -133,6 +134,12 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
+    //Rota para desvincular um medico
+    @PatchMapping("/disableDoctor")
+    public ResponseEntity disableDoctor ( @RequestHeader("Authorization") RequestTokenDTO dataT ,@RequestBody @Valid DoctorVerificDTO data){
+        adminService.disableDocCli(dataT, data);
+        return ResponseEntity.ok().build();
+    }
 
 
 }
