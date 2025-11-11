@@ -3,6 +3,7 @@ package com.SCX.ControleDeExame.service;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.FirstLoginTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.FistLoginPasswordDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
+import com.SCX.ControleDeExame.dataTransferObject.getEmailDTO.GetEmailDTO;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.repository.AuthRepository;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -28,14 +30,13 @@ public class ResetPasswordService {
 
 
     //Metodo para gerar o token de reset de senha (testar)
-    public void generateResetToken (RequestTokenDTO dataT){
-        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
-        var id = tokenService.registerUser(idC);
+    public void generateResetToken (GetEmailDTO data){
         String token = UUID.randomUUID().toString();
         Timestamp expirationToken = Timestamp.valueOf(LocalDateTime.now().plusMinutes(6));
-        var auth = authRepository.findById(UUID.fromString(id));
+        Optional<Auth> auth = authRepository.findAuthByUsernameKey(data.email());
+        Auth auth1 = auth.get();
 
-        Auth auth1 = new Auth();
+
         auth1.setToken(token);
         auth1.setToken_status(true);
         auth1.setData_expiration_token(expirationToken);

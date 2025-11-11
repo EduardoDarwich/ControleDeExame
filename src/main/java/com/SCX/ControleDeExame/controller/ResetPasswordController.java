@@ -3,6 +3,7 @@ package com.SCX.ControleDeExame.controller;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.FirstLoginTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.FistLoginPasswordDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
+import com.SCX.ControleDeExame.dataTransferObject.getEmailDTO.GetEmailDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryVerificDTO;
 import com.SCX.ControleDeExame.service.ResetPasswordService;
 import jakarta.validation.Valid;
@@ -19,8 +20,8 @@ public class ResetPasswordController {
 
     //Rota gerar o token de resetPassword
     @PatchMapping("/generateToken")
-    public ResponseEntity generateTokenReset (RequestTokenDTO dataT){
-        resetPasswordService.generateResetToken(dataT);
+    public ResponseEntity generateTokenReset (GetEmailDTO data){
+        resetPasswordService.generateResetToken(data);
         return ResponseEntity.ok().build();
     }
 

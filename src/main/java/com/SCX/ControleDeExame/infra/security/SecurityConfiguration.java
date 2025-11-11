@@ -79,7 +79,7 @@ public class SecurityConfiguration {
 
                         .requestMatchers(HttpMethod.POST, "/clinic/create").hasRole("AdminSystem")
                         .requestMatchers(HttpMethod.POST, "/clinic/firstAdm").hasRole("AdminSystem")
-                        .requestMatchers(HttpMethod.GET, "/clinic/getCliActive").hasRole("AdminSystem")
+                        .requestMatchers(HttpMethod.GET, "/clinic/getCliActive").permitAll()
 
 
                         .requestMatchers(HttpMethod.POST, "/consult/getCep").permitAll()
