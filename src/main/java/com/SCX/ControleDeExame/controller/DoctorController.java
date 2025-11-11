@@ -203,4 +203,11 @@ public class DoctorController {
         return ResponseEntity.ok().build();
     }
 
+    //Rota para desativar o medico
+    @PatchMapping("/disableDoc")
+    public ResponseEntity disableDoc( @RequestHeader("Authorization") RequestTokenDTO dataT){
+        doctorService.disableDoc(dataT);
+        return ResponseEntity.ok().build();
+    }
+
 }

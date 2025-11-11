@@ -624,6 +624,30 @@ public class DoctorService {
         return new ReturnExamsResultsDTO(ExamsFile);
     }
 
+    //Metodo para desativar um medico e anonimizar os dados (testar)
+    public void disableDoc (RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Optional<Auth> authOPT = authRepository.findById(UUID.fromString(id));
+        Auth auth = authOPT.get();
+        Doctor doctor = doctorRepository.findByAuthId_Id(auth.getId());
+
+
+        auth.setActive(false);
+        auth.setName("Nome totalmente anonimo");
+        auth.setUsernameKey("Email totalmente anonimo");
+        auth.setPassword_key("5std4efr");
+        authRepository.save(auth);
+
+
+        doctor.setTelephone("xxxxxxx");
+        doctor.setCrm("xxxxxx");
+        doctor.setIdClinic(null);
+        doctorRepository.save(doctor);
+
+
+    }
+
 
 
 

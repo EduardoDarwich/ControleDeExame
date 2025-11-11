@@ -20,7 +20,7 @@ public class ResetPasswordController {
 
     //Rota gerar o token de resetPassword
     @PatchMapping("/generateToken")
-    public ResponseEntity generateTokenReset (GetEmailDTO data){
+    public ResponseEntity generateTokenReset (@RequestBody @Valid GetEmailDTO data){
         resetPasswordService.generateResetToken(data);
         return ResponseEntity.ok().build();
     }

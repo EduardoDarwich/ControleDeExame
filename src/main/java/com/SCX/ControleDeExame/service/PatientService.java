@@ -88,18 +88,19 @@ public class PatientService {
         Auth auth = authOPT.get();
         Patient patient = patientRepository.findByAuthId_Id(auth.getId());
 
-        Auth authDisable = new Auth();
-        authDisable.setActive(false);
-        authDisable.setName("Nome totalmente anonimo");
-        authDisable.setUsernameKey("Email totalmente anonimo");
-        authRepository.save(authDisable);
 
-        Patient patientDisable = new Patient();
+        auth.setActive(false);
+        auth.setName("Nome totalmente anonimo");
+        auth.setUsernameKey("Email totalmente anonimo");
+        auth.setPassword_key("6ugibfhj7");
+        authRepository.save(auth);
 
-        patientDisable.setDateBirth(LocalDate.now());
-        patientDisable.setTelephone("xxxxxxxxx");
-        patientDisable.setCpf("xxxxxxxxx");
-        patientRepository.save(patientDisable);
+
+
+        patient.setDateBirth(LocalDate.now());
+        patient.setTelephone("xxxxxxxxx");
+        patient.setCpf("xxxxxxxxx");
+        patientRepository.save(patient);
 
     }
 
