@@ -631,12 +631,13 @@ public class DoctorService {
         Optional<Auth> authOPT = authRepository.findById(UUID.fromString(id));
         Auth auth = authOPT.get();
         Doctor doctor = doctorRepository.findByAuthId_Id(auth.getId());
+        String encryptedPassword = new BCryptPasswordEncoder().encode("mntvy4-q389");
 
 
         auth.setActive(false);
         auth.setName("Nome totalmente anonimo");
         auth.setUsernameKey("Email totalmente anonimo");
-        auth.setPassword_key("5std4efr");
+        auth.setPassword_key(encryptedPassword);
         authRepository.save(auth);
 
 

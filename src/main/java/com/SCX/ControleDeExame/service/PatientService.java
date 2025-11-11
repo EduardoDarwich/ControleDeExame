@@ -87,12 +87,13 @@ public class PatientService {
         Optional<Auth> authOPT = authRepository.findById(UUID.fromString(id));
         Auth auth = authOPT.get();
         Patient patient = patientRepository.findByAuthId_Id(auth.getId());
+        String encryptedPassword = new BCryptPasswordEncoder().encode("mntvy4-q389");
 
 
         auth.setActive(false);
         auth.setName("Nome totalmente anonimo");
         auth.setUsernameKey("Email totalmente anonimo");
-        auth.setPassword_key("6ugibfhj7");
+        auth.setPassword_key(encryptedPassword);
         authRepository.save(auth);
 
 
