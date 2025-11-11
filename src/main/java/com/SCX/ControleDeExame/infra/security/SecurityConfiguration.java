@@ -107,6 +107,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/doctor/getAppointmentsPat").hasRole("Doctor")
                         .requestMatchers(HttpMethod.GET, "/doctor/verifyDocIsConsult").hasRole("Doctor")
                         .requestMatchers(HttpMethod.POST, "/doctor/createExams").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.PATCH, "/doctor/disableDoc").hasRole("Doctor")
 
 
                         .requestMatchers(HttpMethod.POST, "/files/upload").hasRole("LaboratoryUser")
