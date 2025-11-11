@@ -134,28 +134,28 @@ public class AuthController {
 
     //Rota para atualizar os dados do paciente
     @PatchMapping("/updatePat")
-    public ResponseEntity updatePat (@RequestHeader("Authorization") RequestTokenDTO dataT, UpdatePatDTO data){
+    public ResponseEntity updatePat (@RequestHeader("Authorization") RequestTokenDTO dataT, @RequestBody @Valid UpdatePatDTO data){
         authService.updatePaciente(dataT, data);
         return ResponseEntity.ok().build();
     }
 
     //Rota para atualizar os dados do medico
     @PatchMapping("/updateDoc")
-    public ResponseEntity updateDoc (@RequestHeader("Authorization") RequestTokenDTO dataT, UpdateDocDTO data){
+    public ResponseEntity updateDoc (@RequestHeader("Authorization") RequestTokenDTO dataT, @RequestBody @Valid UpdateDocDTO data){
         authService.updateDoctor(dataT, data);
         return ResponseEntity.ok().build();
     }
 
     //Rota para atualizar os dados do secretary
     @PatchMapping("/updateSecretary")
-    public ResponseEntity updateSecretary (@RequestHeader("Authorization") RequestTokenDTO dataT, UpdateSecretaryDTO data){
+    public ResponseEntity updateSecretary (@RequestHeader("Authorization") RequestTokenDTO dataT, @RequestBody @Valid UpdateSecretaryDTO data){
         authService.updateSecretary(dataT, data);
         return ResponseEntity.ok().build();
     }
 
     //Rota para atualizar os dados do admin
     @PatchMapping("/updateAdmin")
-    public ResponseEntity updateAdmin (@RequestHeader("Authorization") RequestTokenDTO dataT, UpdateAdminDTO data){
+    public ResponseEntity updateAdmin (@RequestHeader("Authorization") RequestTokenDTO dataT,@RequestBody @Valid UpdateAdminDTO data){
         authService.updateAdmin(dataT, data);
         return ResponseEntity.ok().build();
     }

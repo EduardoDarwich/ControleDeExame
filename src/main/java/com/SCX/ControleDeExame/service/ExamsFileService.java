@@ -126,10 +126,9 @@ public class ExamsFileService {
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
 
-        if(count == examsRequest.get().getCountExm()){
+
         examsRequest.get().setStatus("Entregue");
-        requestExamsRepository.save(examsRequest.get());
-        }
+
 
         // Salva os dados no banco
         ExamsFile entity = new ExamsFile();

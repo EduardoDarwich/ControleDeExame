@@ -34,7 +34,7 @@ public class ClinicController {
 
     //Rota para verificar se uma clinica do usuario está ativo ou não
     @GetMapping("/getCliActive")
-    public ResponseEntity<Boolean> getCliActive (RequestTokenDTO dataT){
+    public ResponseEntity<Boolean> getCliActive (@RequestHeader("Authorization") RequestTokenDTO dataT){
 
         return ResponseEntity.ok(clinicService.verificCliActive(dataT));
     }

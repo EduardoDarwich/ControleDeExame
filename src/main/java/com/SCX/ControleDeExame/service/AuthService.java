@@ -187,7 +187,7 @@ public class AuthService implements UserDetailsService {
         Secretary secretary = secretaryRepository.findByAuthId_Id(UUID.fromString(id));
 
         secretary.setTelephone(data.telephone());
-
+        secretary.setCpf(data.cpf());
         secretaryRepository.save(secretary);
 
     }
@@ -199,7 +199,7 @@ public class AuthService implements UserDetailsService {
         Admin admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
 
         admin.setTelephone(data.telephone());
-
+        admin.setCpf(data.cpf());
         adminRepository.save(admin);
 
     }

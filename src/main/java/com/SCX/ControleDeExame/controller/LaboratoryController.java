@@ -73,7 +73,7 @@ public class LaboratoryController {
 
     //Rota para verificar se um laboratorio do usuario está ativo ou não
     @GetMapping("/getLabActive")
-    public ResponseEntity<Boolean> getLabActive (RequestTokenDTO dataT){
+    public ResponseEntity<Boolean> getLabActive (@RequestHeader("Authorization") RequestTokenDTO dataT ){
 
         return ResponseEntity.ok(laboratoryService.verificLabActive(dataT));
     }

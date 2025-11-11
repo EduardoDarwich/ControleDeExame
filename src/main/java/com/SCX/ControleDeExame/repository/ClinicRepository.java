@@ -76,7 +76,7 @@ public interface ClinicRepository extends JpaRepository<Clinic, UUID> {
     List<ResponseLabCliDTO> findLabByClinic(@Param("clinicId") UUID clinicId);
 
     @Query("""
-            select new com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliConsultDTO(a.name, d.available, a.usernameKey)
+            select new com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseDocCliConsultDTO(a.name, d.available, a.usernameKey, d.specialty)
             from Doctor d
             join d.clinics c
             join d.authId a
