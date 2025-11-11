@@ -65,7 +65,7 @@ public class PatientController {
 
     //Rota para anonmizar os dados de um paciente
     @PatchMapping("/anonimizePat")
-    public ResponseEntity anonimizePat (RequestTokenDTO dataT){
+    public ResponseEntity anonimizePat (@RequestHeader("Authorization") RequestTokenDTO dataT){
         patientService.disablePat(dataT);
         return ResponseEntity.ok().build();
     }
