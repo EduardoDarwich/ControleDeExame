@@ -1,6 +1,7 @@
 package com.SCX.ControleDeExame.repository;
 
 import com.SCX.ControleDeExame.dataTransferObject.adminSystemDTO.ResponsePatSystDTO;
+import com.SCX.ControleDeExame.dataTransferObject.patientDTO.CliPatDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientRequestExamDTO;
 import com.SCX.ControleDeExame.domain.patient.Patient;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -41,6 +42,17 @@ public interface PatientRepository extends JpaRepository <Patient, UUID> {
             join p.authId a
             """)
     List<ResponsePatSystDTO> findPatBySyst();
+
+    @Query("""
+            select new com.SCX.ControleDeExame.dataTransferObject.patientDTO.CliPatDTO(
+            c.name,
+            c.cnpj
+            )
+            from Patient p
+            p.clinics
+            where p.id = :patientId
+            """)
+    List<CliPatDTO> findCliPat(@Param("patientId") UUID patientId);
 
 
 

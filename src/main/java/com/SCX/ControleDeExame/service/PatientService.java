@@ -105,6 +105,16 @@ public class PatientService {
 
     }
 
+    public List<CliPatDTO> getCliPat (RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Optional<Auth> authOPT = authRepository.findById(UUID.fromString(id));
+        Auth auth = authOPT.get();
+        Patient patient = patientRepository.findByAuthId_Id(auth.getId());
+
+        return patientRepository.findCliPat(patient.getId());
+    }
+
 
 
     public Patient getPatientById(RequestTokenDTO data) {

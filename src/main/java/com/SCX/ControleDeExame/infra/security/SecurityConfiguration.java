@@ -129,6 +129,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/patient/getRequestExamPendent").hasRole("Patient")
                         .requestMatchers(HttpMethod.GET, "/patient/getExamsResult").hasRole("Patient")
                         .requestMatchers(HttpMethod.PATCH, "/patient/anonimizePat").hasRole("Patient")
+                        .requestMatchers(HttpMethod.PATCH, "/patient/getCliPat").hasRole("Patient")
 
                         .requestMatchers(HttpMethod.POST, "/prontuario/getAnamneseConsult").hasRole("Doctor")
                         .requestMatchers(HttpMethod.POST, "/prontuario/getDiagnostic").hasRole("Doctor")
