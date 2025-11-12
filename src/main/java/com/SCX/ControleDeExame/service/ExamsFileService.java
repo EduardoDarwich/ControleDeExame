@@ -419,14 +419,13 @@ public class ExamsFileService {
         table.addCell(cidCell);
     }
 
-    private void addLabRow(Paragraph table, String name, String telephone) {
-        PdfPCell examCell = new PdfPCell(new Phrase(name));
-        examCell.setPadding(5);
+    private void addLabRow(Paragraph paragraph, String name, String telephone) {
+        Chunk nameChunk = new Chunk(name + " — ");
+        Chunk telChunk = new Chunk(telephone);
 
-        PdfPCell justCell = new PdfPCell(new Phrase(telephone));
-        justCell.setPadding(5);
-
-
+        paragraph.add(nameChunk);
+        paragraph.add(telChunk);
+        paragraph.add(Chunk.NEWLINE); // quebra de linha
     }
 
 
