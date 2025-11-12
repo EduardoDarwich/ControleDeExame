@@ -17,7 +17,6 @@
 
 - **Sistema Gerenciador:** PostgreSQL  
 - **ORM:** Hibernate (implementação JPA)
-- **Criação automática das tabelas:** `spring.jpa.hibernate.ddl-auto=update`
 - **Banco de testes:** H2 (memória)
 
 ---
