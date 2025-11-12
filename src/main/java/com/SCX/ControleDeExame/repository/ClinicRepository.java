@@ -68,7 +68,7 @@ public interface ClinicRepository extends JpaRepository<Clinic, UUID> {
     List<ResponseSecretaryCliDTO> findSecretaryByClinic(@Param("clinicId") UUID clinicId);
 
     @Query("""
-            select new com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseLabCliDTO(l.cnpj, l.name, l.active)
+            select new com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseLabCliDTO(l.cnpj, l.name, l.active, l.telephone)
             from Laboratory l
             join l.clinics c
             where c.id = :clinicId

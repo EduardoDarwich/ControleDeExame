@@ -1,6 +1,7 @@
 package com.SCX.ControleDeExame.service;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
+import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseLabCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.GetExamsRequestIdDTO;
 import com.SCX.ControleDeExame.dataTransferObject.fileDTO.UploadDTO;
 import com.SCX.ControleDeExame.domain.appointment.Appointment;
@@ -201,7 +202,7 @@ public class ExamsFileService {
         Consultation consultation = examsRequest.getConsultation();
         Clinic clinic = consultation.getAppointment().getClinic();
 
-
+        List<ResponseLabCliDTO> labs = clinicRepository.findLabByClinic(clinic.getId());
 
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
@@ -325,6 +326,36 @@ public class ExamsFileService {
 
             document.add(examsTable);
 
+
+            // === NOVA SEÇÃO: LABORATÓRIOS DISPONÍVEIS ===
+            Paragraph labSection = new Paragraph("LABORATÓRIOS DISPONÍVEIS", headerFont);
+            labSection.setSpacingBefore(15);
+            labSection.setSpacingAfter(5);
+            document.add(labSection);
+
+            PdfPTable labTable = new PdfPTable(2);
+            labTable.setWidthPercentage(100);
+            labTable.setWidths(new float[]{3, 2});
+
+            // Cabeçalhos
+            PdfPCell lab1 = new PdfPCell(new Phrase("NOME DO LABORATÓRIO", headerFont));
+            lab1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            lab1.setBackgroundColor(new BaseColor(200, 200, 200));
+            labTable.addCell(lab1);
+
+            PdfPCell lab2 = new PdfPCell(new Phrase("CONTATO", headerFont));
+            lab2.setHorizontalAlignment(Element.ALIGN_CENTER);
+            lab2.setBackgroundColor(new BaseColor(200, 200, 200));
+            labTable.addCell(lab2);
+
+            for(ResponseLabCliDTO dataLab : labs){
+                addLabRow(labSection, dataLab.getName(), dataLab.getTelephone());
+
+            }
+
+            document.add(labTable);
+
+
             // === ASSINATURA DO MÉDICO ===
             document.add(new Paragraph("\n\n\n")); // espaço antes da linha
 
@@ -386,6 +417,16 @@ public class ExamsFileService {
         PdfPCell cidCell = new PdfPCell(new Phrase(cid));
         cidCell.setPadding(5);
         table.addCell(cidCell);
+    }
+
+    private void addLabRow(Paragraph table, String name, String telephone) {
+        PdfPCell examCell = new PdfPCell(new Phrase(name));
+        examCell.setPadding(5);
+
+        PdfPCell justCell = new PdfPCell(new Phrase(telephone));
+        justCell.setPadding(5);
+
+
     }
 
 

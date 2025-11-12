@@ -49,7 +49,7 @@ public interface PatientRepository extends JpaRepository <Patient, UUID> {
             c.cnpj
             )
             from Patient p
-            p.clinics
+            join p.clinics c
             where p.id = :patientId
             """)
     List<CliPatDTO> findCliPat(@Param("patientId") UUID patientId);
