@@ -1,6 +1,6 @@
 create table address (
 id uuid primary key,
-cep text unique,
+cep text,
 logradouro text,
 complemento text,
 bairro text,
