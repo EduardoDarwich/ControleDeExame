@@ -48,7 +48,7 @@ public class ClinicService {
     EmailService emailService;
 
     @Autowired
-    LogService logService;
+    AuthService logService;
 
     @Autowired
     AddressRepository addressRepository;
@@ -156,7 +156,6 @@ public class ClinicService {
         clinic.getLaboratories().add(newLaboratory);
         clinicRepository.save(clinic);
 
-        logService.logAction(auth.get(), "Registrou um novo laboratório na clinica");
 
     }
 

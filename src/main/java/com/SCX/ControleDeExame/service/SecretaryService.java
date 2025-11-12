@@ -56,7 +56,7 @@ public class SecretaryService {
     DoctorRepository doctorRepository;
 
     @Autowired
-    LogService logService;
+    AuthService logService;
 
     @Autowired
     NotificationService notificationService;
@@ -115,7 +115,6 @@ public class SecretaryService {
             clinic.getPatients().add(newPatient);
             clinicRepository.save(clinic);
 
-            logService.logAction(auth.get(), "Registrou um novo paciente na clínica");
 
         } catch (Exception e) {
             authRepository.delete(newAuth);
@@ -170,7 +169,6 @@ public class SecretaryService {
             clinic.getPatients().add(patient);
             clinicRepository.save(clinic);
 
-            logService.logAction(auth.get(), "Registrou um novo paciente na clínica");
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
@@ -249,7 +247,6 @@ public class SecretaryService {
             doctor.setAvailable(false);
             doctorRepository.save(doctor);
 
-            logService.logAction(auth.get(), msg);
 
             notificationService.send(authP.get(), "registro", "foi registrado em uma consulta");
             notificationService.send(authD.get(), "registro", "foi registrado em uma consulta");
