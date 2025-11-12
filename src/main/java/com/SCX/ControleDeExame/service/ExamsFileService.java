@@ -110,44 +110,39 @@ public class ExamsFileService {
         int count = exams.size();
 
 
-
         List<MultipartFile> files = data.file();
 
-        for ( MultipartFile file: files){
+        for (MultipartFile file : files) {
 
             int contador = examsRequest.get().getCountExm();
 
 
-        // Cria nome único com Ids
-        String uniqueFilename = patient.get().getId() + "_" + doctor.get().getId() + "_" + laboratory.get().getId() + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
-        Path filePath = Paths.get(uploadDir, uniqueFilename);
+            // Cria nome único com Ids
+            String uniqueFilename = patient.get().getId() + "_" + doctor.get().getId() + "_" + laboratory.get().getId() + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
+            Path filePath = Paths.get(uploadDir, uniqueFilename);
 
 
-        // Salva o arquivo
-        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            // Salva o arquivo
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
 
-
-        examsRequest.get().setStatus("Entregue");
-
-
-        // Salva os dados no banco
-        ExamsFile entity = new ExamsFile();
-        entity.setExamsRequest(examsRequest.get());
-        entity.setPatient(patient.get());
-        entity.setDoctor(doctor.get());
-        entity.setLaboratory(laboratory.get());
-        entity.setFileName(uniqueFilename);
-        entity.setFilePath(filePath.toString());
-        entity.setUploadDate(LocalDateTime.now());
-
-        examsFileRepository.save(entity);
-
-        examsRequest.get().setCountExm(contador + 1);
-        requestExamsRepository.save(examsRequest.get());
+            examsRequest.get().setStatus("Entregue");
 
 
+            // Salva os dados no banco
+            ExamsFile entity = new ExamsFile();
+            entity.setExamsRequest(examsRequest.get());
+            entity.setPatient(patient.get());
+            entity.setDoctor(doctor.get());
+            entity.setLaboratory(laboratory.get());
+            entity.setFileName(uniqueFilename);
+            entity.setFilePath(filePath.toString());
+            entity.setUploadDate(LocalDateTime.now());
 
+            examsFileRepository.save(entity);
+
+            examsRequest.get().setCountExm(contador + 1);
+            requestExamsRepository.save(examsRequest.get());
 
 
         }
@@ -290,7 +285,7 @@ public class ExamsFileService {
             solicitTable.setWidthPercentage(100);
             solicitTable.setWidths(new float[]{3, 2});
 
-            addCell(solicitTable,"Estabelecimento solicitante:  " + clinic.getName().toUpperCase(), normalFont);
+            addCell(solicitTable, "Estabelecimento solicitante:  " + clinic.getName().toUpperCase(), normalFont);
             addCell(solicitTable, "Profissional Solicitante:   " + consultation.getAppointment().getDoctor().getAuthId().getName().toUpperCase(), normalFont);
 
             document.add(solicitTable);
@@ -320,7 +315,7 @@ public class ExamsFileService {
             c3.setBackgroundColor(new BaseColor(200, 200, 200));
             examsTable.addCell(c3);
 
-            for(Exams exams1: exams){
+            for (Exams exams1 : exams) {
                 addExamRow(examsTable, exams1.getCid(), exams1.getExamsType(), exams1.getJustify());
             }
 
@@ -333,27 +328,13 @@ public class ExamsFileService {
             labSection.setSpacingAfter(5);
             document.add(labSection);
 
-            PdfPTable labTable = new PdfPTable(2);
-            labTable.setWidthPercentage(100);
-            labTable.setWidths(new float[]{3, 2});
-
-            // Cabeçalhos
-            PdfPCell lab1 = new PdfPCell(new Phrase("NOME DO LABORATÓRIO", headerFont));
-            lab1.setHorizontalAlignment(Element.ALIGN_CENTER);
-            lab1.setBackgroundColor(new BaseColor(200, 200, 200));
-            labTable.addCell(lab1);
-
-            PdfPCell lab2 = new PdfPCell(new Phrase("CONTATO", headerFont));
-            lab2.setHorizontalAlignment(Element.ALIGN_CENTER);
-            lab2.setBackgroundColor(new BaseColor(200, 200, 200));
-            labTable.addCell(lab2);
-
-            for(ResponseLabCliDTO dataLab : labs){
-                addLabRow(labSection, dataLab.getName(), dataLab.getTelephone());
-
+            // Novo parágrafo para as linhas
+            Paragraph labsList = new Paragraph();
+            for (ResponseLabCliDTO dataLab : labs) {
+                addLabRow(labsList, dataLab.getName(), dataLab.getTelephone());
             }
 
-            document.add(labTable);
+            document.add(labsList);
 
 
             // === ASSINATURA DO MÉDICO ===
