@@ -46,10 +46,11 @@ public interface PatientRepository extends JpaRepository <Patient, UUID> {
     @Query("""
             select new com.SCX.ControleDeExame.dataTransferObject.patientDTO.CliPatDTO(
             c.name,
-            c.cnpj
+            ac.cep
             )
             from Patient p
             join p.clinics c
+            join c.address ac
             where p.id = :patientId
             """)
     List<CliPatDTO> findCliPat(@Param("patientId") UUID patientId);
