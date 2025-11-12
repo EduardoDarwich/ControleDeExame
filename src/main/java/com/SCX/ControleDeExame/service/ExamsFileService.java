@@ -402,7 +402,7 @@ public class ExamsFileService {
 
     private void addLabRow(Paragraph paragraph, String name, String telephone) {
         Chunk nameChunk = new Chunk(name + " — ");
-        Chunk telChunk = new Chunk("Contato" + telephone);
+        Chunk telChunk = new Chunk("Contato: " + telephone);
 
         paragraph.add(nameChunk);
         paragraph.add(telChunk);
