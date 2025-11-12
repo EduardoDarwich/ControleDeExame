@@ -401,6 +401,24 @@ public class ExamsFileService {
     }
 
     private void addLabRow(Paragraph paragraph, String name, String telephone) {
+        if (telephone == null || telephone.isBlank()) {
+            telephone = "Não informado";
+        } else {
+            // Remove tudo que não é número
+            telephone = telephone.replaceAll("\\D", "");
+
+            // Formata automaticamente
+            if (telephone.length() == 11) {
+                telephone = "(" + telephone.substring(0, 2) + ") " +
+                        telephone.substring(2, 7) + "-" +
+                        telephone.substring(7);
+            } else if (telephone.length() == 10) {
+                telephone = "(" + telephone.substring(0, 2) + ") " +
+                        telephone.substring(2, 6) + "-" +
+                        telephone.substring(6);
+            }
+        }
+
         Chunk nameChunk = new Chunk(name + " — ");
         Chunk telChunk = new Chunk("Contato: " + telephone);
 
