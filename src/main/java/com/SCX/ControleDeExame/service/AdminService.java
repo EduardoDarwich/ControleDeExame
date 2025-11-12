@@ -66,7 +66,7 @@ public class AdminService {
     ClinicRepository clinicRepository;
 
     @Autowired
-    AuthService logService;
+    LogService logService;
 
     @Autowired
     DoctorRepository doctorRepository;
@@ -116,6 +116,7 @@ public class AdminService {
             clinic.getAdmins().add(newAdmin);
             clinicRepository.save(clinic);
 
+            logService.logAction(auth.get(), "Registrou um novo administrador na clinica");
 
             return adminRepository.save(newAdmin);
 
@@ -190,6 +191,7 @@ public class AdminService {
             newSecretary.setClinicId(clinic);
             newSecretary.setTelephone(data.telephone());
             secretaryRepository.save(newSecretary);
+            logService.logAction(auth.get(), "Registrou um novo usuario da secretaria");
 
         } catch (Exception e) {
             authRepository.delete(newAuth);
@@ -240,6 +242,7 @@ public class AdminService {
         try {
             clinic.getLaboratories().add(laboratory);
             clinicRepository.save(clinic);
+            logService.logAction(auth.get(), "Registrou um novo laboratório na clinica");
         } catch (Exception e){
 
             e.printStackTrace();

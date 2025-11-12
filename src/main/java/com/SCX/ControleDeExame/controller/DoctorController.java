@@ -54,7 +54,12 @@ public class DoctorController {
         return ResponseEntity.ok().build();
     }
 
-
+    //Rota para atualizar um médico
+    @PostMapping("/update/{id}")
+    public ResponseEntity update (@PathVariable UUID id, @RequestBody @Valid CreateDoctorDTO data){
+        doctorService.updateDoctor(data, id);
+        return ResponseEntity.ok().build();
+    }
 
     //Rota para Devolver os exames vinculados a um médico
     /*@GetMapping("/get/{id}")

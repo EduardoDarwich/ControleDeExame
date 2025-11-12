@@ -9,14 +9,17 @@ import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.UpdateSecretaryDT
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.service.AuthService;
+import com.SCX.ControleDeExame.service.LogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/auth")
@@ -30,6 +33,9 @@ public class AuthController {
 
     @Autowired
     AuthService authService;
+
+    @Autowired
+    LogService logService;
 
     //Rota de login
     @PostMapping("/login")
@@ -99,7 +105,7 @@ public class AuthController {
     //Rota para retornar o historico do usuario
     @GetMapping("/getHistory")
     public ResponseEntity<List<HistoryDTO>> getHistory(@RequestHeader("Authorization") RequestTokenDTO dataT){
-        return ResponseEntity.ok(authService.getHistory(dataT));
+        return ResponseEntity.ok(logService.getHistory(dataT));
     }
 
     //Rota para retornar os dados do Medico

@@ -4,7 +4,6 @@ import com.SCX.ControleDeExame.dataTransferObject.adminSystemDTO.UpdateAdminDTO;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.*;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.UpdateDocDTO;
 import com.SCX.ControleDeExame.dataTransferObject.fileDTO.UploadDTO;
-import com.SCX.ControleDeExame.dataTransferObject.logDTO.HistoryDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.UpdatePatDTO;
 import com.SCX.ControleDeExame.dataTransferObject.profileDTO.ProfileAdminDTO;
 import com.SCX.ControleDeExame.dataTransferObject.profileDTO.ProfileDoctorDTO;
@@ -63,9 +62,6 @@ public class AuthService implements UserDetailsService {
 
     @Autowired
     SecretaryRepository secretaryRepository;
-
-    @Autowired
-    LogRepository logRepository;
 
     //Metodo do Spring security para realizar a consulta do usuario
     @Override
@@ -206,16 +202,6 @@ public class AuthService implements UserDetailsService {
         admin.setCpf(data.cpf());
         adminRepository.save(admin);
 
-    }
-
-    //Metodo para o usuario ver seu histórico
-    public List<HistoryDTO> getHistory(RequestTokenDTO dataT) {
-
-        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
-        var id = tokenService.registerUser(idC);
-        var auth = authRepository.findById(UUID.fromString(id));
-
-        return logRepository.findAllByAuth(auth.get().getId());
     }
 
 

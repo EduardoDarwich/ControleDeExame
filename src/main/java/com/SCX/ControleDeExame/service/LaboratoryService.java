@@ -55,7 +55,7 @@ public class LaboratoryService {
     EmailService emailService;
 
     @Autowired
-    AuthService logService;
+    LogService logService;
 
     @Autowired
     NotificationService notificationService;
@@ -152,7 +152,7 @@ public class LaboratoryService {
             newUserLab.setEmail(data.email());
             userLabRepository.save(newUserLab);
 
-
+            logService.logAction(auth.get(), "Registrou um novo usuario para o laboratório");
 
             emailService.firtLoginEmail(newAuth);
 

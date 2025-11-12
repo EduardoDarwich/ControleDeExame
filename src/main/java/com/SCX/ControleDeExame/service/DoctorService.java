@@ -95,7 +95,7 @@ public class DoctorService {
     ExamsTypeRepository examsTypeRepository;
 
     @Autowired
-    AuthService logService;
+    LogService logService;
 
     @Autowired
     ConsultationRepository consultationRepository;
@@ -152,6 +152,7 @@ public class DoctorService {
             //Adicionadno o médico criado a clinica na qual ele está sendo cadastrado
             clinic.getDoctors().add(newDoctor);
             clinicRepository.save(clinic);
+            logService.logAction(auth.get(), "Registrou um novo médico na clinica");
         } catch (Exception e) {
             clinic.getDoctors().remove(newDoctor);
             clinicRepository.save(clinic);
@@ -178,6 +179,7 @@ public class DoctorService {
         try {
             clinic.getDoctors().add(docUser);
             clinicRepository.save(clinic);
+            logService.logAction(auth.get(), "Registrou um novo médico na clinica");
 
         } catch (Exception e) {
 
@@ -227,6 +229,7 @@ public class DoctorService {
 
         doctor.setIdClinic(clinic.getId());
         doctorRepository.save(doctor);
+        logService.logAction(auth.get(), msg);
     }
 
     //Metodo para retornar a clinica ativa do medico
@@ -426,7 +429,12 @@ public class DoctorService {
 
     }
 
+    public Doctor updateDoctor(CreateDoctorDTO data, UUID uuid) {
+        Doctor doctorUpdate = doctorRepository.findById(uuid).orElseThrow(() -> new EntityNotFoundException("paciente não encontrado"));
+        doctorUpdate.setTelephone(data.telephone());
+        return doctorRepository.save(doctorUpdate);
 
+    }
 
     /*public List<GetByDoctorDTO> getExamsByDoctor(RequestTokenDTO data) {
         var idC = data.toString().replace("RequestTokenDTO[Token=", "").replace("]", "");
@@ -466,6 +474,7 @@ public class DoctorService {
             requestExamsRepository.save(newExamRequest);
 
 
+            logService.logAction(auth.get(), msg);
 
             return new GetExamsRequestIdDTO(newExamRequest.getId().toString());
 
