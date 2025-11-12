@@ -2,6 +2,7 @@ package com.SCX.ControleDeExame.controller;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.doctorDTO.DoctorResultExamDTO;
+import com.SCX.ControleDeExame.dataTransferObject.patientDTO.CliPatDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.ExamsFileDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientRequestExamDTO;
@@ -68,6 +69,12 @@ public class PatientController {
     public ResponseEntity anonimizePat (@RequestHeader("Authorization") RequestTokenDTO dataT){
         patientService.disablePat(dataT);
         return ResponseEntity.ok().build();
+    }
+
+    //Rota para devolver todas as clinicas do paciente
+    @GetMapping("/getClinicPat")
+    public ResponseEntity<List<CliPatDTO>> getCli (@RequestHeader("Authorization") RequestTokenDTO dataT){
+        return ResponseEntity.ok(patientService.getCliPat(dataT));
     }
 
 }
