@@ -25,7 +25,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     @Autowired
     AuthRepository authRepository;
-
+    //teste
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var token = this.recoverToken(request);
