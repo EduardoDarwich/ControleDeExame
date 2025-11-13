@@ -22,11 +22,10 @@ public class EmailService {
     @Autowired
     private JavaMailSender javaMailSender;
     //Definindo remetente do email através da variável de ambiente
-    @Value("${spring.mail.username}")
-    private String remetente;
+
     //Metodo para enviar email
     public void sendEmail (String destinatario, String assunto, String mensagem){
-        Email from = new Email(remetente);
+        Email from = new Email("eduardo.darwich23@gmail.com");
         Email to = new Email(destinatario);
         Content content = new Content("text/plain",  mensagem);
         Mail mail = new Mail(from, assunto, to, content);
