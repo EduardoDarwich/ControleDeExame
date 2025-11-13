@@ -1,6 +1,13 @@
 package com.SCX.ControleDeExame.service;
 
 import com.SCX.ControleDeExame.domain.auth.Auth;
+import com.sendgrid.Method;
+import com.sendgrid.Request;
+import com.sendgrid.Response;
+import com.sendgrid.SendGrid;
+import com.sendgrid.helpers.mail.Mail;
+import com.sendgrid.helpers.mail.objects.Content;
+import com.sendgrid.helpers.mail.objects.Email;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,23 +25,26 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String remetente;
     //Metodo para enviar email
-    public String sendEmail (String destinatario, String assunto, String mensagem){
-        //Try catch
+    public void sendEmail (String destinatario, String assunto, String mensagem){
+        Email from = new Email(remetente);
+        Email to = new Email(destinatario);
+        Content content = new Content("text/plain",  mensagem);
+        Mail mail = new Mail(from, assunto, to, content);
+
+        SendGrid sg = new SendGrid(System.getenv("API_KEY"));
+        // sg.setDataResidency("eu");
+        // uncomment the above line if you are sending mail using a regional EU subuser
+        Request request = new Request();
         try {
+            request.setMethod(Method.POST);
+            request.setEndpoint("mail/send");
+            request.setBody(mail.build());
+            Response response = sg.api(request);
+            System.out.println(response.getStatusCode());
+            System.out.println(response.getBody());
+            System.out.println(response.getHeaders());
+        } catch (Exception ex) {
 
-            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-
-            helper.setFrom(remetente);
-            helper.setTo(destinatario);
-            helper.setSubject(assunto);
-            helper.setText(mensagem, true);
-            javaMailSender.send(mimeMessage);
-            return "Email enviado";
-
-        } catch (Exception e) {
-            return "Erro ao enviar o email " + e;
         }
     }
 
