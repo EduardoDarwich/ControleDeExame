@@ -6,7 +6,7 @@ WHERE NOT EXISTS (SELECT 1 FROM role WHERE name = 'AdminSystem');
 
 -- Criar usuário admin se não existir
 INSERT INTO auth (id, name, username_key, password_key)
-SELECT gen_random_uuid(), 'Administrador do Sistema', 'adminsystem@gmail.com', '12345'  -- senha já criptografada com BCrypt
+SELECT gen_random_uuid(), 'Administrador do Sistema', 'adminsystem@gmail.com', 'Basket123@@'  -- senha já criptografada com BCrypt
 WHERE NOT EXISTS (SELECT 1 FROM auth WHERE username_key = 'adminsystem@gmail.com');
 
 -- Vincular admin à role ADMIN
