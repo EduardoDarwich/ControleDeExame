@@ -649,7 +649,4 @@ public class DoctorService {
 
     }
 
-
-
-
 }
