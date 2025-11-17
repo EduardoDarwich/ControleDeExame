@@ -15,6 +15,7 @@ public interface PatientRepository extends JpaRepository <Patient, UUID> {
     Patient findByCpf(String cpf);
     Patient findByAuthId_Id(UUID id);
     boolean existsByCpf(String cpf);
+    boolean existsByTelephone(String telephone);
 
     @Query("""
             select new com.SCX.ControleDeExame.dataTransferObject.patientDTO.PatientRequestExamDTO(

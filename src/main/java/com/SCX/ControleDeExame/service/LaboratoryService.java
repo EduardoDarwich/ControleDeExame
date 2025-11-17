@@ -14,6 +14,9 @@ import com.SCX.ControleDeExame.domain.role.Role;
 import com.SCX.ControleDeExame.domain.secretary.Secretary;
 import com.SCX.ControleDeExame.domain.user_lab.UserLab;
 import com.SCX.ControleDeExame.domain.user_lab.UserLabId;
+import com.SCX.ControleDeExame.exception.CpfExistException;
+import com.SCX.ControleDeExame.exception.EmailExistException;
+import com.SCX.ControleDeExame.exception.TelephoneExistException;
 import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.repository.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -66,6 +69,9 @@ public class LaboratoryService {
     @Autowired
     PatientRepository patientRepository;
 
+    @Autowired
+    VerifyDataService verifyDataService;
+
 
     //Metodo para registrar um usuario administrador para o laboratorio
     public void registerUserAdminLab(CreateLabUserAdmDTO data) {
@@ -90,7 +96,9 @@ public class LaboratoryService {
         authRepository.save(newAuth);
 
 
-
+        if (verifyDataService.verifyEmail(data.email())) {
+            throw new EmailExistException();
+        }
 
         try {
             UserLabId userLabId = new UserLabId(newAuth.getId(), laboratory.getId());
@@ -128,9 +136,13 @@ public class LaboratoryService {
         Timestamp expirationToken = Timestamp.valueOf(LocalDateTime.now().plusDays(1));
         String encryptedPassword = new BCryptPasswordEncoder().encode(senhaTemp);
 
+        if (verifyDataService.verifyEmail(data.email())) {
+            throw new EmailExistException();
+        }
+
         Auth newAuth = new Auth();
-        newAuth.setUsernameKey(data.email());
-        newAuth.setName(data.name());
+        newAuth.setUsernameKey(data.email().trim().toLowerCase());
+        newAuth.setName(data.name().trim().toLowerCase());
         newAuth.setPassword_key(encryptedPassword);
         newAuth.setActive(false);
         newAuth.setToken(token);
@@ -177,7 +189,7 @@ public class LaboratoryService {
     }
 
     //Metodo para retornar se o laboratorio de um usuario está ativo ou não (testar)
-    public boolean verificLabActive (RequestTokenDTO dataT){
+    public boolean verificLabActive(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         UserLab userLab = userLabRepository.findByAuthId_Id(UUID.fromString(id));
@@ -186,7 +198,6 @@ public class LaboratoryService {
 
 
     }
-
 
 
     //Metodo para registrar os resultados do exame no sistema

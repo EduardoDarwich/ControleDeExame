@@ -12,6 +12,9 @@ import com.SCX.ControleDeExame.domain.clinic.Clinic;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.domain.role.Role;
 import com.SCX.ControleDeExame.domain.secretary.Secretary;
+import com.SCX.ControleDeExame.exception.CpfExistException;
+import com.SCX.ControleDeExame.exception.EmailExistException;
+import com.SCX.ControleDeExame.exception.TelephoneExistException;
 import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.repository.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -56,6 +59,9 @@ public class ClinicService {
     @Autowired
     SecretaryRepository secretaryRepository;
 
+    @Autowired
+    VerifyDataService verifyDataService;
+
     //Metodo para registrar uma clinica
     public void registerClinic(CreateClinicDTO data) {
         Address address = new Address();
@@ -88,9 +94,13 @@ public class ClinicService {
         Timestamp expirationToken = Timestamp.valueOf(LocalDateTime.now().plusDays(1));
         String encryptedPassword = new BCryptPasswordEncoder().encode(senhaTemp);
 
+        if (verifyDataService.verifyEmail(data.email())) {
+            throw new EmailExistException();
+        }
+
         Auth newAuth = new Auth();
-        newAuth.setUsernameKey(data.email());
-        newAuth.setName(data.name());
+        newAuth.setUsernameKey(data.email().trim().toLowerCase());
+        newAuth.setName(data.name().trim().toLowerCase());
         newAuth.setPassword_key(encryptedPassword);
         newAuth.setActive(false);
         newAuth.setToken(token);
@@ -161,10 +171,10 @@ public class ClinicService {
     }
 
     //Metodo para retornar se a clinica de um usuario está ativa ou não (testar)
-    public boolean verificCliActive (RequestTokenDTO dataT){
+    public boolean verificCliActive(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
-        if (adminRepository.findByAuthId_Id(UUID.fromString(id)) != null){
+        if (adminRepository.findByAuthId_Id(UUID.fromString(id)) != null) {
             Admin admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
             return admin.getClinicId().isActive();
         } else {
@@ -173,7 +183,6 @@ public class ClinicService {
         }
 
     }
-
 
 
 }

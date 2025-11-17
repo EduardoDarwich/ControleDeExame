@@ -20,6 +20,9 @@ import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.domain.role.Role;
 import com.SCX.ControleDeExame.domain.secretary.Secretary;
 import com.SCX.ControleDeExame.domain.user_lab.UserLab;
+import com.SCX.ControleDeExame.exception.CpfExistException;
+import com.SCX.ControleDeExame.exception.EmailExistException;
+import com.SCX.ControleDeExame.exception.TelephoneExistException;
 import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.repository.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -27,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.Console;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -71,6 +75,9 @@ public class AdminService {
     @Autowired
     DoctorRepository doctorRepository;
 
+    @Autowired
+    VerifyDataService verifyDataService;
+
 
     //Metodo para criar um usuário de adiministrador
     public Admin registerAdm(CreateAdminDTO data, RequestTokenDTO dataT) {
@@ -88,9 +95,17 @@ public class AdminService {
         Timestamp expirationToken = Timestamp.valueOf(LocalDateTime.now().plusDays(1));
         String encryptedPassword = new BCryptPasswordEncoder().encode(senhaTemp);
 
+        if(verifyDataService.verifyCpf(data.cpf())){
+            throw new CpfExistException();
+        } else if (verifyDataService.verifyEmail(data.email().trim().toLowerCase())) {
+            throw new EmailExistException();
+        } else if (verifyDataService.verifyTelephone(data.telephone())){
+            throw new TelephoneExistException();
+        }
+
         Auth newAuth = new Auth();
-        newAuth.setName(data.name());
-        newAuth.setUsernameKey(data.email());
+        newAuth.setName(data.name().trim().toLowerCase());
+        newAuth.setUsernameKey(data.email().trim().toLowerCase());
         newAuth.setPassword_key(encryptedPassword);
         newAuth.setActive(false);
         newAuth.setToken(token);
@@ -116,13 +131,12 @@ public class AdminService {
             clinic.getAdmins().add(newAdmin);
             clinicRepository.save(clinic);
 
-            logService.logAction(auth.get(), "Registrou um novo administrador na clinica");
+            logService.logAction(auth.get(), "Efetuou o registro de um novo administrador na clínica.");
 
             return adminRepository.save(newAdmin);
 
         } catch (Exception e) {
             authRepository.delete(newAuth);
-            e.printStackTrace();
             throw e;
         }
 
@@ -172,9 +186,17 @@ public class AdminService {
         Timestamp expirationToken = Timestamp.valueOf(LocalDateTime.now().plusDays(1));
         String encryptedPassword = new BCryptPasswordEncoder().encode(senhaTemp);
 
+        if(verifyDataService.verifyCpf(data.cpf())){
+            throw new CpfExistException();
+        } else if (verifyDataService.verifyEmail(data.email().trim().toLowerCase())) {
+            throw new EmailExistException();
+        } else if (verifyDataService.verifyTelephone(data.telephone())){
+            throw new TelephoneExistException();
+        }
+
         newAuth.setPassword_key(encryptedPassword);
-        newAuth.setUsernameKey(data.email());
-        newAuth.setName(data.name());
+        newAuth.setUsernameKey(data.email().trim().toLowerCase());
+        newAuth.setName(data.name().trim().toLowerCase());
         newAuth.setActive(false);
         newAuth.setToken(token);
         newAuth.setData_expiration_token(expirationToken);
@@ -182,6 +204,7 @@ public class AdminService {
         newAuth.setLocked(false);
         newAuth.getRoles().add(secretary);
         authRepository.save(newAuth);
+
 
         emailService.firtLoginEmail(newAuth);
 
@@ -191,7 +214,7 @@ public class AdminService {
             newSecretary.setClinicId(clinic);
             newSecretary.setTelephone(data.telephone());
             secretaryRepository.save(newSecretary);
-            logService.logAction(auth.get(), "Registrou um novo usuario da secretaria");
+            logService.logAction(auth.get(), "Efetuou o registro de um novo usuário da secretaria na clínica.");
 
         } catch (Exception e) {
             authRepository.delete(newAuth);
@@ -242,7 +265,7 @@ public class AdminService {
         try {
             clinic.getLaboratories().add(laboratory);
             clinicRepository.save(clinic);
-            logService.logAction(auth.get(), "Registrou um novo laboratório na clinica");
+            logService.logAction(auth.get(), "Efetuou o registro de um novo laboratório na clínica.");
         } catch (Exception e){
 
             e.printStackTrace();
@@ -351,7 +374,6 @@ public class AdminService {
 
     }
     
-
 
 
 }

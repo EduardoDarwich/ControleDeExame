@@ -21,6 +21,10 @@ public class EmailService {
     //Criando instâncias utilizadas na classe
     @Autowired
     private JavaMailSender javaMailSender;
+
+    @Value("${api.key.mailGrid}")
+    private String sendGridKey;
+
     //Definindo remetente do email através da variável de ambiente
 
     //Metodo para enviar email
@@ -30,7 +34,7 @@ public class EmailService {
         Content content = new Content("text/plain",  mensagem);
         Mail mail = new Mail(from, assunto, to, content);
 
-        SendGrid sg = new SendGrid(System.getenv("API_KEY"));
+        SendGrid sg = new SendGrid(sendGridKey);
         // sg.setDataResidency("eu");
         // uncomment the above line if you are sending mail using a regional EU subuser
         Request request = new Request();

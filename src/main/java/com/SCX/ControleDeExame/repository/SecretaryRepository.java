@@ -12,6 +12,6 @@ public interface SecretaryRepository extends JpaRepository <Secretary, UUID> {
 
     boolean existsByCpf(String cpf);
 
-
+    boolean existsByTelephone(String telephone);
 
 }

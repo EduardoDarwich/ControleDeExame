@@ -18,6 +18,7 @@ public interface AuthRepository extends JpaRepository <Auth, UUID> {
 
     Auth findByToken(String token);
     Optional<Auth> findAuthByUsernameKey(String usernameKey);
+    boolean existsByUsernameKey(String usernameKey);
 
     @Query("""
             select new com.SCX.ControleDeExame.dataTransferObject.profileDTO.ProfileDoctorDTO(
