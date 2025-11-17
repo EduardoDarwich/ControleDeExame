@@ -21,6 +21,7 @@ import java.util.UUID;
 @RequestMapping("/laboratory")
 public class LaboratoryController {
 
+    //Criando instancias utilizadas
     @Autowired
     LaboratoryService laboratoryService;
     @Autowired

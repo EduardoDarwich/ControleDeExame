@@ -51,7 +51,7 @@ public class EmailService {
         }
     }
 
-    //Metodo para enviar o email de first login (testar)
+    //Metodo para enviar o email de first login
     public void firtLoginEmail (Auth auth){
         String tokenE = auth.getToken();
         String url = "http://localhost:5173/firstLogin/" + tokenE;
@@ -59,7 +59,7 @@ public class EmailService {
         sendEmail(auth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
     }
 
-    //Metodo para enviar o email de reset de senha (testar)
+    //Metodo para enviar o email de reset de senha
     public void resetSenhaEmail (Auth auth){
         String tokenE = auth.getToken();
         String url = "http://localhost:5173/firstLogin/" + tokenE;

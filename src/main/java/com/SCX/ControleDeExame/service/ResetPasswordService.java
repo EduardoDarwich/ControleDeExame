@@ -29,7 +29,7 @@ public class ResetPasswordService {
     EmailService emailService;
 
 
-    //Metodo para gerar o token de reset de senha (testar)
+    //Metodo para gerar o token de reset de senha
     public void generateResetToken (GetEmailDTO data){
         String token = UUID.randomUUID().toString();
         Timestamp expirationToken = Timestamp.valueOf(LocalDateTime.now().plusMinutes(6));
@@ -44,7 +44,7 @@ public class ResetPasswordService {
         //emailService.resetSenhaEmail(auth1);
     }
 
-    //Metodo responsavel pelo reset de senha (testar)
+    //Metodo responsavel pelo reset de senha
     public void resetPassword (FistLoginPasswordDTO data, FirstLoginTokenDTO dataT){
         Auth auth = authRepository.findByToken(dataT.token());
 

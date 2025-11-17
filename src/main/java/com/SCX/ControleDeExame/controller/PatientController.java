@@ -21,6 +21,7 @@ import java.util.UUID;
 @RequestMapping("/patient")
 public class PatientController {
 
+    //Criando instancias utilizadas
     @Autowired
     PatientService patientService;
 
@@ -71,7 +72,7 @@ public class PatientController {
         return ResponseEntity.ok().build();
     }
 
-    //Rota para devolver todas as clinicas do paciente
+    //Rota para devolver todas as clínicas do paciente
     @GetMapping("/getClinicPat")
     public ResponseEntity<List<CliPatDTO>> getCli (@RequestHeader("Authorization") RequestTokenDTO dataT){
         return ResponseEntity.ok(patientService.getCliPat(dataT));

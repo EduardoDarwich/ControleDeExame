@@ -497,7 +497,7 @@ public class DoctorService {
         }
     }
 
-    //Metodo para criar um exame para a requisição de exames (testar)
+    //Metodo para criar um exame para a requisição de exames
     public void createExam(RequestTokenDTO dataT, List<CreateExamDTO> data) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
@@ -598,7 +598,7 @@ public class DoctorService {
         return new ReturnDiagnosticDTO(consultation.get().getDiagnosis(), consultation.get().getPrescription());
     }
 
-    //Metodo para retornar os exames pedidos relacinados a consulta se houver
+    //Metodo para retornar os exames pedidos relacionados a consulta se houver
     public ReturnExamsRequestsDTO returnExamsRequests(GetAppointmentIdDTO data) {
         Optional<Appointment> appointment = appointmentRepository.findById(UUID.fromString(data.id()));
         Optional<Consultation> consultation = consultationRepository.findById(appointment.get().getConsultation().getId());
@@ -615,7 +615,7 @@ public class DoctorService {
 
     }
 
-    //Metodo para retornar os resutados dos exames relacionados a consulta se houver (testar)
+    //Metodo para retornar os resultados dos exames relacionados a consulta se houver (testar)
     public ReturnExamsResultsDTO returnExamsResults(GetAppointmentIdDTO data) {
         Optional<Appointment> appointment = appointmentRepository.findById(UUID.fromString(data.id()));
         Optional<Consultation> consultation = consultationRepository.findById(appointment.get().getConsultation().getId());
@@ -632,7 +632,7 @@ public class DoctorService {
         return new ReturnExamsResultsDTO(ExamsFile);
     }
 
-    //Metodo para desativar um medico e anonimizar os dados (testar)
+    //Metodo para desativar um medico e anonimizar os dados
     public void disableDoc(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);

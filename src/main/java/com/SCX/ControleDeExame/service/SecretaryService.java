@@ -170,7 +170,7 @@ public class SecretaryService {
         return patientRepository.existsByCpf(data.cpf());
     }
 
-    //Metodo para cadastrar um paciente ja cadastrado no sistema em uma nova clinica
+    //Metodo para cadastrar um paciente já cadastrado no sistema numa nova clínica
     public void registerPatExistsCli(GetPatientByCPFDTO data, RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
@@ -192,7 +192,7 @@ public class SecretaryService {
         }
     }
 
-    //Metodo para consultar os pacientes de uma clinica pelo Id da secretaria logado
+    //Metodo para consultar os pacientes de uma clínica pelo ‘Id’ da secretaria logado
     public List<ResponsePatCliDTO> patCli(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);

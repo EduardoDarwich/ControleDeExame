@@ -31,7 +31,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         var token = this.recoverToken(request);
         if(token != null){
             var id = tokenService.registerUser(token);
-            UserDetails auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("paciente não encontrado"));
+            UserDetails auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("usuário não encontrado"));
 
             var authentication = new UsernamePasswordAuthenticationToken(auth, null, auth.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -41,6 +41,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     }
 
+    //Metodo para recuperar o token
     private String recoverToken(HttpServletRequest request){
         var authHeader = request.getHeader("authorization");
         if(authHeader == null) return null;

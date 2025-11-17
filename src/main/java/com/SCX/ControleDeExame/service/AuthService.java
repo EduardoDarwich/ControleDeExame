@@ -164,7 +164,7 @@ public class AuthService implements UserDetailsService {
         return user.getActive();
     }
 
-    //Metodo para atualizar os dados do paciente (testar)
+    //Metodo para atualizar os dados do paciente
     public void updatePaciente(RequestTokenDTO dataT, UpdatePatDTO data) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
@@ -178,7 +178,7 @@ public class AuthService implements UserDetailsService {
         patientRepository.save(patient);
     }
 
-    //Metodo para atualizar os dados do medico (testar)
+    //Metodo para atualizar os dados do médico
     public void updateDoctor(RequestTokenDTO dataT, UpdateDocDTO data) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
@@ -193,7 +193,7 @@ public class AuthService implements UserDetailsService {
 
     }
 
-    //Metodo para atualizar os dados do secretaria (testar)
+    //Metodo para atualizar os dados da secretaria
     public void updateSecretary(RequestTokenDTO dataT, UpdateSecretaryDTO data) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
@@ -211,7 +211,7 @@ public class AuthService implements UserDetailsService {
 
     }
 
-    //Metodo para atualizar os dados do admin (testar)
+    //Metodo para atualizar os dados do admin
     public void updateAdmin(RequestTokenDTO dataT, UpdateAdminDTO data) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);

@@ -25,6 +25,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain (HttpSecurity httpSecurity) throws Exception {
 
         return httpSecurity.csrf(csrf -> csrf.disable())
+                //habilitando a configuração do cors e não especificando nada para utilizar a configuração feita na classe específica
                 .cors(cors -> {})
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize

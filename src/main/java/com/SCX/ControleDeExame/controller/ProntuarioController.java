@@ -24,7 +24,7 @@ public class ProntuarioController {
         return ResponseEntity.ok(doctorService.getAnamneseByConsult(data));
     }
 
-    //Rota para retornar o diagnostico de uma consulta
+    //Rota para retornar o diagnóstico de uma consulta
     @GetMapping("/getDiagnostic")
     public ResponseEntity<ReturnDiagnosticDTO> getDiagnostic (@RequestParam("id") GetAppointmentIdDTO data){
         return ResponseEntity.ok(doctorService.returnDiagnostic(data));

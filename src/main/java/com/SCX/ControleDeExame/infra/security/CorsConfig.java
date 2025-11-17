@@ -11,13 +11,21 @@ import java.util.List;
 @Configuration
 public class CorsConfig {
 
+    //configuração do cors do sistema
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
+        //domínios permitidos para fazer uma requisição
         configuration.setAllowedOrigins(List.of("https://frontscx.onrender.com"));
+
+        //requisições HHTP permitidas
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+
+        //headers permitidos (no caso ele permite todos)
         configuration.setAllowedHeaders(List.of("*"));
+
+        //permite o envio de credenciais junto a requisição
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

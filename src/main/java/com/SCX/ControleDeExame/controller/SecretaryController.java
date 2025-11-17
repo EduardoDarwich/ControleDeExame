@@ -44,7 +44,7 @@ public class SecretaryController {
         return ResponseEntity.ok(secretaryService.patientExists(data));
     }
 
-    //Rota para cadastrar um paciente que ja existe no sistema
+    //Rota para cadastrar um paciente que já existe no sistema
     @PostMapping("/transferPat")
     public ResponseEntity transferPat(@RequestBody @Valid GetPatientByCPFDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT) {
         secretaryService.registerPatExistsCli(data, dataT);
@@ -72,19 +72,19 @@ public class SecretaryController {
         return ResponseEntity.ok().build();
     }
 
-    //Rota para devolver os pacientes cadastrados na clinica (mostrando o nome e o status de usuario)
+    //Rota para devolver os pacientes cadastrados na clínica (mostrando o nome e o status de usuario)
     @GetMapping("/getPatientsCli")
     public ResponseEntity<List<ResponsePatCliDTO>> getPatients(@RequestHeader("Authorization") RequestTokenDTO dataT) {
         return ResponseEntity.ok(secretaryService.patCli(dataT));
     }
 
-    //Rota para devolver os medicos disponiveis pra consulta
+    //Rota para devolver os médicos disponíveis para consulta
     @GetMapping("/getDocsAvailable")
     public ResponseEntity<List<ResponseDocCliConsultDTO>> getDocsAvailable(@RequestHeader("Authorization") RequestTokenDTO dataT) {
         return ResponseEntity.ok(secretaryService.docCLiConsult(dataT));
     }
 
-    //Rota para abrir uma consulta
+    //Rota para abrir um atendimento
     @PostMapping("/openAppointment")
     public ResponseEntity openAppointment(@RequestHeader("Authorization") RequestTokenDTO dataT, @RequestBody @Valid RegisterAppointmentDTO data) {
         secretaryService.registerAppointment(data, dataT);

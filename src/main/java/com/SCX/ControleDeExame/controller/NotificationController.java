@@ -18,15 +18,18 @@ import java.util.UUID;
 @RequestMapping("/notification")
 public class NotificationController {
 
+    //Criando instancias utilizadas
     @Autowired
     NotificationService notificationService;
 
+    //Rota para devolver as notificações não lidas
     @GetMapping("/getNoRead")
     public ResponseEntity<List<GetNotificationUnreadDTO>> getNoRead(@RequestHeader("Authorization") RequestTokenDTO dataT) {
 
         return ResponseEntity.ok(notificationService.getUnread(dataT));
     }
 
+    //Rota para marcar a notificação como lida
     @PatchMapping("/markRead")
     public ResponseEntity markRead(@RequestBody @Valid GetIdNotDTO data){
         notificationService.markAsRead(data);

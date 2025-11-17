@@ -12,6 +12,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+    //Handler para exceções customizadas
 
     @ExceptionHandler(EmailExistException.class)
     private ResponseEntity<String> emailExistHandler(EmailExistException e){

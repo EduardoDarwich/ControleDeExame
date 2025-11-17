@@ -11,14 +11,12 @@ import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.LaboratoryVerifi
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.RequestSecretaryCpfDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.RequestSecretaryEmailDTO;
 import com.SCX.ControleDeExame.dataTransferObject.secretaryDTO.SecretaryDTO;
-import com.SCX.ControleDeExame.domain.secretary.Secretary;
-import com.SCX.ControleDeExame.exception.CpfExistException;
+
 import com.SCX.ControleDeExame.service.AdminService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +25,7 @@ import java.util.List;
 @RestController
 public class AdminController {
 
+    //Criando instancias utilizadas
     @Autowired
     AdminService adminService;
 
@@ -39,20 +38,20 @@ public class AdminController {
 
     }
 
-    //Rota para registrar uma secretaria
+    //Rota para registrar um usuário da secretaria
     @PostMapping("/registerSecretary")
     public ResponseEntity registerSecretary(@RequestBody @Valid SecretaryDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT) {
         adminService.registerSecretary(data, dataT);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    //Rota para verificar se o usuario da secretaria ja está cadastrado no sistema
+    //Rota para verificar se o usuário da secretaria já está cadastrado no sistema
     @PostMapping("/verificSecretaryExists")
     public ResponseEntity verificSecretary(@RequestBody @Valid RequestSecretaryCpfDTO data) {
         return ResponseEntity.ok(adminService.secretaryExists(data));
     }
 
-    //Rota para devolver a clinica do administrador logado
+    //Rota para devolver a clínica do administrador logado
     @GetMapping("/clinicAdm")
     public ResponseEntity<ResponseAdminClinicDTO> clinicAdm(@RequestHeader("Authorization") RequestTokenDTO dataT) {
         ResponseAdminClinicDTO response = adminService.clinicAdm(dataT);
@@ -65,7 +64,7 @@ public class AdminController {
         return ResponseEntity.ok(adminService.docCli(dataT));
     }
 
-    //Rota para verificar se o laboratorio ja está na clinica do administrador
+    //Rota para verificar se o laboratório já está na clínica do administrador
     @PostMapping("/verificLabCli")
     public ResponseEntity verificLabCli(@RequestHeader("Authorization") RequestTokenDTO dataT, @RequestBody @Valid LaboratoryVerificDTO data) {
         return ResponseEntity.ok(adminService.verificLabCLi(dataT, data));
@@ -103,35 +102,35 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
-    //Rota para ativar um usuario da secretaria
+    //Rota para ativar um usuário da secretaria
     @PatchMapping("/enableSecretary")
     public ResponseEntity enableSecretary(@RequestBody @Valid RequestSecretaryEmailDTO data) {
         adminService.enableSecretary(data);
         return ResponseEntity.ok().build();
     }
 
-    //Rota para desvincular um laboratorio
+    //Rota para desvincular um laboratório
     @PatchMapping("/disableLaboratory")
     public ResponseEntity disableLaboratory(@RequestHeader("Authorization") RequestTokenDTO dataT, @RequestBody @Valid LaboratoryVerificDTO data) {
         adminService.disableLaboratory(dataT, data);
         return ResponseEntity.ok().build();
     }
 
-    //Rota para ativar um laboratorio
+    //Rota para ativar um laboratório
     @PatchMapping("/enableLaboratory")
     public ResponseEntity enableLaboratory(@RequestHeader("Authorization") RequestTokenDTO dataT, @RequestBody @Valid LaboratoryVerificDTO data) {
         adminService.enableLaboratory(dataT, data);
         return ResponseEntity.ok().build();
     }
 
-    //Rota para desativar um usuario do laboratorio
+    //Rota para desativar um usuário do laboratório
     @PatchMapping("/disableUserLab")
     public ResponseEntity disableuserLab(@RequestBody @Valid RequestSecretaryEmailDTO data) {
         adminService.disableLabUser(data);
         return ResponseEntity.ok().build();
     }
 
-    //Rota para ativar um usuario do laboratorio
+    //Rota para ativar um usuário do laboratório
     @PatchMapping("/enableUserLab")
     public ResponseEntity enableuserLab(@RequestBody @Valid RequestSecretaryEmailDTO data) {
         adminService.enableLabUser(data);

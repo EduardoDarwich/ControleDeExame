@@ -200,41 +200,6 @@ public class LaboratoryService {
     }
 
 
-    //Metodo para registrar os resultados do exame no sistema
-   /* public void registerResultExames(ExamsDTO data, RequestTokenDTO dataT) {
-        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
-        var id = tokenService.registerUser(idC);
-        var auth = authRepository.findById(UUID.fromString(id));
-        Exams exams = examsRepository.findByRequestId_Id(UUID.fromString(data.id()));
-        Optional<ExamsRequest> examsRequest = requestExamsRepository.findById(exams.getRequestId().getId());
-        Optional<Doctor> doctor = doctorRepository.findById(examsRequest.get().getDoctorId().getId());
-        Optional<Patient> patient = patientRepository.findById(examsRequest.get().getPatientId().getId());
-        Optional<Auth> authD = authRepository.findById(doctor.get().getAuthId().getId());
-        Optional<Auth> authP = authRepository.findById(patient.get().getAuthId().getId());
-
-
-        String msg = "Enviou o resultado do exame " + exams.getId() + " para o sistema";
-        String msgD = "O exame " + exams.getId() + " do paciente " + authP.get().getName() + " foi devolvido";
-        String msgP = "O exame " + exams.getId() + " foi devolvido";
-
-        exams.setCid(data.cid());
-        exams.setObservation(data.observation());
-        exams.setResult_value(data.result_value());
-        exams.setResult_file_url(data.result_file_url());
-        examsRepository.save(exams);
-
-        examsRequest.get().setStatus("Finalizado");
-        examsRequest.get().setExecutedDate(LocalDateTime.now());
-        requestExamsRepository.save(examsRequest.get());
-
-        logService.logAction(auth.get(), msg);
-
-        notificationService.send(authD.get(), "Exame devolvido", msgD);
-        notificationService.send(authP.get(), "Exame devolvido", msgP);
-
-    }*/
-
-
     public void deleteLaboratory(UUID uuid) {
 
         Laboratory laboratory = laboratoryRepository.findById(uuid).orElseThrow(() -> new EntityNotFoundException("Registro não encontrado"));

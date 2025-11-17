@@ -19,30 +19,32 @@ import java.util.List;
 @RestController
 @RequestMapping("/adminSystem")
 public class AdminSystemController {
+
+    //Criando instancias utilizadas
     @Autowired
     AdminSystemService adminSystemService;
 
-    //Rota para ativar uma clinica
+    //Rota para desativar uma clínica
     @PatchMapping("/disableClinic")
     public ResponseEntity disableClinic (@RequestBody @Valid RequestCnpjClinicaDTO data){
         adminSystemService.disableClinic(data);
         return ResponseEntity.ok().build();
     }
 
-    //Rota para desativar uma clinica
+    //Rota para ativar uma clínica
     @PatchMapping("/enableClinic")
     public ResponseEntity enableClinic (@RequestBody @Valid RequestCnpjClinicaDTO data){
         adminSystemService.enableClinic(data);
         return ResponseEntity.ok().build();
     }
 
-    //Rota para listar todas as clinicas do sistema
+    //Rota para listar todas as clínicas do sistema
     @GetMapping("/getAllCli")
     public ResponseEntity<List<ResponseCliSystDTO>> getAllCli (){
         return ResponseEntity.ok(adminSystemService.listAllClinics());
     }
 
-    //Rota para listar todos os laboratorios do sistema
+    //Rota para listar todos os laboratórios do sistema
     @GetMapping("/getAllLab")
     public ResponseEntity<List<ResponseLabSystDTO>> getAllLab (){
         return ResponseEntity.ok(adminSystemService.listAllLaboratory());
@@ -54,32 +56,32 @@ public class AdminSystemController {
         return ResponseEntity.ok(adminSystemService.listAllPat());
     }
 
-    //Rota para retornar quantos laboratorios tem cadastrado no sistema
+    //Rota para retornar quantos laboratórios estão cadastrados no sistema
     @GetMapping("/getCountLab")
     public ResponseEntity LabCount (){
         return ResponseEntity.ok(adminSystemService.countLabs());
     }
 
-    //Rota para retornar quantos laboratorios tem cadastrado no sistema
+    //Rota para retornar quantas clínicas estão cadastradas no sistema
     @GetMapping("/getCountCli")
     public ResponseEntity CliCount (){
         return ResponseEntity.ok(adminSystemService.countClinic());
     }
 
-    //Rota para retornar quantos laboratorios tem cadastrado no sistema
+    //Rota para retornar quantos pacientes estão cadastrados no sistema
     @GetMapping("/getCountPat")
     public ResponseEntity PatCount (){
         return ResponseEntity.ok(adminSystemService.countPats());
     }
 
-    //Rota para ativar um usuario adm de clinica
+    //Rota para ativar um usuário administrador de clínica
     @PatchMapping("/enableAdmCli")
     public ResponseEntity enableAcmCli (@RequestBody @Valid RequestSecretaryEmailDTO data){
         adminSystemService.enableAdmClinic(data);
         return ResponseEntity.ok().build();
     }
 
-    //Rota para ativar um usuario adm de clinica
+    //Rota para desativar um usuário adm de clínica
     @PatchMapping("/disableAdmCli")
     public ResponseEntity disableAcmCli (@RequestBody @Valid RequestSecretaryEmailDTO data){
         adminSystemService.disableAdmClinic(data);
@@ -95,14 +97,14 @@ public class AdminSystemController {
 
     }
 
-    //Rota para desativar um laboratorio do sistema
+    //Rota para desativar um laboratório do sistema
     @PatchMapping("/disableLabSyst")
     public ResponseEntity disableLabCli (@RequestBody @Valid LaboratoryVerificDTO data){
         adminSystemService.disableLab(data);
         return ResponseEntity.ok().build();
     }
 
-    //Rota para desativar um laboratorio do sistema
+    //Rota para ativar um laboratório do sistema
     @PatchMapping("/enableLabSyst")
     public ResponseEntity enableLabCli (@RequestBody @Valid LaboratoryVerificDTO data){
         adminSystemService.enableLab(data);
