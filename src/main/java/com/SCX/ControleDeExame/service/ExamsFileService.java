@@ -107,7 +107,7 @@ public class ExamsFileService {
         Optional<Patient> patient = patientRepository.findById(appointment.get().getPatient().getId());
         Optional<Doctor> doctor = doctorRepository.findById(appointment.get().getDoctor().getId());
         List<Exams> exams = examsRequest.get().getExams();
-        int count = exams.size();
+
 
 
         List<MultipartFile> files = data.file();
@@ -117,8 +117,9 @@ public class ExamsFileService {
             int contador = examsRequest.get().getCountExm();
 
 
+
             // Cria nome único com Ids
-            String uniqueFilename = patient.get().getId() + "_" + doctor.get().getId() + "_" + laboratory.get().getId() + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
+            String uniqueFilename = patient.get().getId() + "_" + doctor.get().getId() + "_" + laboratory.get().getId() + "_" + UUID.randomUUID() ;
             Path filePath = Paths.get(uploadDir, uniqueFilename);
 
 
