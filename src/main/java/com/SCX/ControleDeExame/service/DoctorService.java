@@ -159,7 +159,7 @@ public class DoctorService {
             newDoctor.setIdClinic(clinic.getId());
             doctorRepository.save(newDoctor);
 
-            emailService.firtLoginEmail(newAuth);
+            //emailService.firtLoginEmail(newAuth);
 
             //Adicionadno o médico criado a clinica na qual ele está sendo cadastrado
             clinic.getDoctors().add(newDoctor);

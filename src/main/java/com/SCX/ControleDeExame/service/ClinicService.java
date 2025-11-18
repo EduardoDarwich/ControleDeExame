@@ -126,7 +126,7 @@ public class ClinicService {
                 clinic.getAdmins().add(newAdmin);
                 clinicRepository.save(clinic);
 
-                emailService.firtLoginEmail(newAuth);
+                //emailService.firtLoginEmail(newAuth);
 
             } catch (Exception e) {
                 authRepository.delete(newAuth);

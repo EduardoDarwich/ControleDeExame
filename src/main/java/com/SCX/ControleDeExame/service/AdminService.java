@@ -126,7 +126,7 @@ public class AdminService {
             newAdmin.setAuthId(newAuth);
             newAdmin.setClinicId(clinic);
 
-            emailService.firtLoginEmail(newAuth);
+            //emailService.firtLoginEmail(newAuth);
 
             clinic.getAdmins().add(newAdmin);
             clinicRepository.save(clinic);
@@ -206,7 +206,7 @@ public class AdminService {
         authRepository.save(newAuth);
 
 
-        emailService.firtLoginEmail(newAuth);
+        //emailService.firtLoginEmail(newAuth);
 
         try {
             newSecretary.setCpf(data.cpf());

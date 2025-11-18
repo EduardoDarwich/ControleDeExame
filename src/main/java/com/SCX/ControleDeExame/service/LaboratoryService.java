@@ -83,6 +83,10 @@ public class LaboratoryService {
         Timestamp expirationToken = Timestamp.valueOf(LocalDateTime.now().plusDays(1));
         String encryptedPassword = new BCryptPasswordEncoder().encode(senhaTemp);
 
+        if (verifyDataService.verifyEmail(data.email())) {
+            throw new EmailExistException();
+        }
+
         Auth newAuth = new Auth();
         newAuth.setUsernameKey(data.email());
         newAuth.setName(data.name());
@@ -96,9 +100,7 @@ public class LaboratoryService {
         authRepository.save(newAuth);
 
 
-        if (verifyDataService.verifyEmail(data.email())) {
-            throw new EmailExistException();
-        }
+
 
         try {
             UserLabId userLabId = new UserLabId(newAuth.getId(), laboratory.getId());
@@ -109,7 +111,7 @@ public class LaboratoryService {
             userLab.setEmail(data.email());
             userLabRepository.save(userLab);
 
-            emailService.firtLoginEmail(newAuth);
+            //emailService.firtLoginEmail(newAuth);
 
         } catch (Exception e) {
 
@@ -152,7 +154,7 @@ public class LaboratoryService {
         newAuth.getRoles().add(laboratoryUser);
         authRepository.save(newAuth);
 
-        emailService.firtLoginEmail(newAuth);
+        //emailService.firtLoginEmail(newAuth);
 
         UserLabId userLabId = new UserLabId(newAuth.getId(), laboratory.getId());
 
@@ -166,7 +168,7 @@ public class LaboratoryService {
 
             logService.logAction(auth.get(), "Registrou um novo usuario para o laboratório");
 
-            emailService.firtLoginEmail(newAuth);
+           //emailService.firtLoginEmail(newAuth);
 
         } catch (Exception e) {
             authRepository.delete(newAuth);
