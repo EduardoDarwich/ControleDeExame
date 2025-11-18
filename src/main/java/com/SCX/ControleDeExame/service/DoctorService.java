@@ -612,7 +612,6 @@ public class DoctorService {
                 )).toList();
         return new ReturnExamsRequestsDTO(exams);
 
-
     }
 
     //Metodo para retornar os resultados dos exames relacionados a consulta se houver (testar)
@@ -654,6 +653,16 @@ public class DoctorService {
         doctor.setIdClinic(null);
         doctorRepository.save(doctor);
 
+
+    }
+
+    //Metodo para setar a clínica do médico como null quando ele deslogar
+    public void setCliZero (RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
+
+        doctor.setIdClinic(null);
 
     }
 

@@ -197,4 +197,10 @@ public class DoctorController {
         return ResponseEntity.ok().build();
     }
 
+    //Rota para tirar o medico de qualquer clinica ativa
+    @PatchMapping("/setDocCliZero")
+    public ResponseEntity setDocCliZero( @RequestHeader("Authorization") RequestTokenDTO dataT){
+        doctorService.setCliZero(dataT);
+        return ResponseEntity.ok().build();
+    }
 }
