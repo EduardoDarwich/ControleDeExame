@@ -3,7 +3,10 @@ package com.SCX.ControleDeExame.service;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseLabCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.GetExamsRequestIdDTO;
+import com.SCX.ControleDeExame.dataTransferObject.examsTypeDTO.ExamsTypeDTO;
+import com.SCX.ControleDeExame.dataTransferObject.fileDTO.ExamTypeDTO;
 import com.SCX.ControleDeExame.dataTransferObject.fileDTO.UploadDTO;
+import com.SCX.ControleDeExame.dataTransferObject.patientDTO.ExamsFileDTO;
 import com.SCX.ControleDeExame.domain.appointment.Appointment;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
@@ -106,25 +109,25 @@ public class ExamsFileService {
         Optional<Appointment> appointment = appointmentRepository.findById(consultation.get().getAppointment().getId());
         Optional<Patient> patient = patientRepository.findById(appointment.get().getPatient().getId());
         Optional<Doctor> doctor = doctorRepository.findById(appointment.get().getDoctor().getId());
-        List<Exams> exams = examsRequest.get().getExams();
 
 
 
-        List<MultipartFile> files = data.file();
 
-        for (MultipartFile file : files) {
+        List<ExamTypeDTO> exams = data.file();
 
-            int contador = examsRequest.get().getCountExm();
+        for (ExamTypeDTO dataE : exams) {
+
+
 
 
 
             // Cria nome único com Ids
-            String uniqueFilename = patient.get().getId() + "_" + doctor.get().getId() + "_" + laboratory.get().getId() + "_" + UUID.randomUUID() ;
+            String uniqueFilename = dataE.examType() + "_" + patient.get().getId() + "_" + doctor.get().getId() + "_" + laboratory.get().getId() + "_" + UUID.randomUUID() ;
             Path filePath = Paths.get(uploadDir, uniqueFilename);
 
 
             // Salva o arquivo
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(dataE.file().getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
 
             examsRequest.get().setStatus("Entregue");
@@ -141,9 +144,6 @@ public class ExamsFileService {
             entity.setUploadDate(LocalDateTime.now());
 
             examsFileRepository.save(entity);
-
-            examsRequest.get().setCountExm(contador + 1);
-            requestExamsRepository.save(examsRequest.get());
 
 
         }

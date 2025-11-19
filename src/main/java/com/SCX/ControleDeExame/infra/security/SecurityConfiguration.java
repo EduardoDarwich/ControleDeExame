@@ -109,6 +109,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/doctor/verifyDocIsConsult").hasRole("Doctor")
                         .requestMatchers(HttpMethod.POST, "/doctor/createExams").hasRole("Doctor")
                         .requestMatchers(HttpMethod.PATCH, "/doctor/disableDoc").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.PATCH,"/doctor/setDocCliZero").hasRole("Doctor")
 
 
                         .requestMatchers(HttpMethod.POST, "/files/upload").hasRole("LaboratoryUser")
@@ -122,6 +123,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/laboratory/register/User").hasRole("LaboratoryAdmin")
                         .requestMatchers(HttpMethod.GET, "/laboratory/clinicsLab").hasRole("LaboratoryAdmin")
                         .requestMatchers(HttpMethod.POST, "/laboratory/uploadExam").hasRole("LaboratoryUser")
+                        .requestMatchers(HttpMethod.GET, "/laboratory/getExamsLab").hasRole("LaboratoryAdmin")
                         .requestMatchers(HttpMethod.GET, "/laboratory/getLabActive").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/notification/getNoRead").permitAll()

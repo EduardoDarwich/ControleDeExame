@@ -4,6 +4,7 @@ package com.SCX.ControleDeExame.controller;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.fileDTO.UploadDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.*;
+import com.SCX.ControleDeExame.dataTransferObject.patientDTO.ExamsFileDTO;
 import com.SCX.ControleDeExame.service.ClinicService;
 import com.SCX.ControleDeExame.service.ExamsFileService;
 import com.SCX.ControleDeExame.service.LaboratoryService;
@@ -77,5 +78,11 @@ public class LaboratoryController {
     public ResponseEntity<Boolean> getLabActive (@RequestHeader("Authorization") RequestTokenDTO dataT ){
 
         return ResponseEntity.ok(laboratoryService.verificLabActive(dataT));
+    }
+
+    //Rota para listar todos os exames devolvidos pelo laboratório
+    @GetMapping("/getExamsLab")
+    public ResponseEntity<List<ExamsFileDTO>> getExamsLab(@RequestHeader("Authorization") RequestTokenDTO dataT){
+        return ResponseEntity.ok(laboratoryService.getExamsLab(dataT));
     }
 }

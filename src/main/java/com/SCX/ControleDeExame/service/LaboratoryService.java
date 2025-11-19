@@ -3,6 +3,7 @@ package com.SCX.ControleDeExame.service;
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsDTO.ExamsDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.*;
+import com.SCX.ControleDeExame.dataTransferObject.patientDTO.ExamsFileDTO;
 import com.SCX.ControleDeExame.domain.admin.Admin;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.doctor.Doctor;
@@ -20,6 +21,7 @@ import com.SCX.ControleDeExame.exception.TelephoneExistException;
 import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.repository.*;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class LaboratoryService {
 
@@ -71,6 +74,9 @@ public class LaboratoryService {
 
     @Autowired
     VerifyDataService verifyDataService;
+
+    @Autowired
+    ExamsFileRepository examsFileRepository;
 
 
     //Metodo para registrar um usuario administrador para o laboratorio
@@ -208,6 +214,20 @@ public class LaboratoryService {
         laboratoryRepository.delete(laboratory);
 
     }
+
+    public List<ExamsFileDTO> getExamsLab(RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
+        UserLab userLab = userLabRepository.findByAuthId_Id(UUID.fromString(id));
+        var idLab = userLab.getLaboratoryId().getId();
+        Laboratory laboratory = laboratoryRepository.findById(idLab).orElseThrow(() -> new RuntimeException("Laboratorio nao encontrado"));
+
+        return examsFileRepository.findByLaboratory_Id(laboratory.getId());
+
+    }
+
+
 
 
 }
