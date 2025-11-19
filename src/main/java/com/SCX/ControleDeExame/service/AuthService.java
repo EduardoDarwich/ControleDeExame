@@ -199,9 +199,7 @@ public class AuthService implements UserDetailsService {
         var id = tokenService.registerUser(idC);
         Secretary secretary = secretaryRepository.findByAuthId_Id(UUID.fromString(id));
 
-        if (verifyDataService.verifyCpf(data.cpf())) {
-            throw new CpfExistException();
-        } else if (verifyDataService.verifyTelephone(data.telephone())) {
+        if (verifyDataService.verifyTelephone(data.telephone())) {
             throw new TelephoneExistException();
         }
 
@@ -217,9 +215,7 @@ public class AuthService implements UserDetailsService {
         var id = tokenService.registerUser(idC);
         Admin admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
 
-        if (verifyDataService.verifyCpf(data.cpf())) {
-            throw new CpfExistException();
-        } else if (verifyDataService.verifyTelephone(data.telephone())) {
+         if (verifyDataService.verifyTelephone(data.telephone())) {
             throw new TelephoneExistException();
         }
 
