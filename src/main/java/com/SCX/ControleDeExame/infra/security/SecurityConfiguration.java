@@ -99,7 +99,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.PATCH, "/doctor/updateClinicDocPresent").hasRole("Doctor")
                         .requestMatchers(HttpMethod.GET, "/doctor/getClinicActive").hasRole("Doctor")
                         .requestMatchers(HttpMethod.GET, "/doctor/getLabDocCli").hasRole("Doctor")
-                        .requestMatchers(HttpMethod.GET, "/doctor/getExamsType").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.GET, "/doctor/getExamsType").permitAll()
                         .requestMatchers(HttpMethod.POST, "/doctor/openConsultation").hasRole("Doctor")
                         .requestMatchers(HttpMethod.PATCH, "/doctor/closeConsultation").hasRole("Doctor")
                         .requestMatchers(HttpMethod.POST, "/doctor/registerAnamnese").hasRole("Doctor")
