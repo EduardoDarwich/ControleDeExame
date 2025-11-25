@@ -53,7 +53,7 @@ public class FileController {
     //Rota para ter uma preview antes de baixar ao clicar
     @GetMapping("/preview/{filename}")
     public ResponseEntity<Resource> previewFile(@PathVariable String filename) throws IOException {
-        final String uploadDir = "/app/uploads";
+        final String uploadDir = "/opt/uploads";
         Path filePath = Path.of(uploadDir, filename);
 
         if (!Files.exists(filePath)) {

@@ -11,6 +11,6 @@ FROM eclipse-temurin:23-jdk-alpine
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 RUN mkdir -p /app/uploads
-COPY uploads/ /app/uploads/
+COPY uploads/ /opt/uploads/
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
