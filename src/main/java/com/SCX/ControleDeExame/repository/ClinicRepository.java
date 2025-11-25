@@ -50,7 +50,7 @@ public interface ClinicRepository extends JpaRepository<Clinic, UUID> {
     List<ResponseDocCliDTO> findDocByClinic(@Param("clinicId") UUID clinicId);
 
     @Query("""
-            select new com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponsePatCliDTO(a.name, p.telephone a.active)
+            select new com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponsePatCliDTO(a.name, p.telephone, a.active)
             from Patient p
             join p.clinics c
             join p.authId a
