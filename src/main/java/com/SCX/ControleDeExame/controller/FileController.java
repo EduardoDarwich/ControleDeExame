@@ -54,7 +54,7 @@ public class FileController {
     @GetMapping("/preview/{filename}")
     public ResponseEntity<Resource> previewFile(@PathVariable String filename) throws IOException {
         final String uploadDir = "/opt/uploads";
-        Path filePath = Path.of(uploadDir, filename);
+        Path filePath = Path.of(uploadDir, filename + ".pdf");
 
         if (!Files.exists(filePath)) {
             return ResponseEntity.notFound().build();
