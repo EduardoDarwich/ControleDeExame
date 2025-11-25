@@ -22,11 +22,12 @@ public class SecurityConfiguration {
     SecurityFilter securityFilter;
 
     @Bean
-    public SecurityFilterChain securityFilterChain (HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         return httpSecurity.csrf(csrf -> csrf.disable())
                 //habilitando a configuração do cors e não especificando nada para utilizar a configuração feita na classe específica
-                .cors(cors -> {})
+                .cors(cors -> {
+                })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
 
@@ -109,7 +110,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/doctor/verifyDocIsConsult").hasRole("Doctor")
                         .requestMatchers(HttpMethod.POST, "/doctor/createExams").hasRole("Doctor")
                         .requestMatchers(HttpMethod.PATCH, "/doctor/disableDoc").hasRole("Doctor")
-                        .requestMatchers(HttpMethod.PATCH,"/doctor/setDocCliZero").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.PATCH, "/doctor/setDocCliZero").hasRole("Doctor")
 
 
                         .requestMatchers(HttpMethod.POST, "/files/upload").hasRole("LaboratoryUser")
@@ -159,12 +160,12 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager (AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
 
         return new BCryptPasswordEncoder();
     }

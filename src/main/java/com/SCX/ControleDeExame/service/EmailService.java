@@ -54,7 +54,7 @@ public class EmailService {
     //Metodo para enviar o email de first login
     public void firtLoginEmail (Auth auth){
         String tokenE = auth.getToken();
-        String url = "http://localhost:5173/firstLogin/" + tokenE;
+        String url = "https://scx-sistema-de-controle-de-exames.onrender.com/resetPassword/" + tokenE;
 
         sendEmail(auth.getUsernameKey(), "Para ativar sua conta acesse esse link", url);
     }
@@ -62,7 +62,7 @@ public class EmailService {
     //Metodo para enviar o email de reset de senha
     public void resetSenhaEmail (Auth auth){
         String tokenE = auth.getToken();
-        String url = "http://localhost:5173/firstLogin/" + tokenE;
+        String url = "https://scx-sistema-de-controle-de-exames.onrender.com/resetPassword/" + tokenE;
 
         sendEmail(auth.getUsernameKey(), "Para redefinir sua senha acesse esse link", url);
 

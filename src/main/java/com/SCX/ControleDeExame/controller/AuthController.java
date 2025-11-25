@@ -43,7 +43,7 @@ public class AuthController {
     public ResponseEntity login(@RequestBody @Valid AuthenticationDTO data) {
 
         try {
-            var passUser = new UsernamePasswordAuthenticationToken(data.usernameKey(), data.password_key());
+            var passUser = new UsernamePasswordAuthenticationToken(data.usernameKey().trim().toLowerCase(), data.password_key());
             var auth = this.authenticationManager.authenticate(passUser);
             Auth auth1 = (Auth) auth.getPrincipal();
 
