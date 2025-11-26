@@ -91,7 +91,7 @@ public class ExamsFileService {
     @Autowired
     ConsultationRepository consultationRepository;
 
-    private final String uploadDir = "uploads";
+    private final String uploadDir = "/opt/uploads";
 
     //Metodo para enviar o pdf de um exame para o sistema
     public void uploadFile(UploadDTO data, RequestTokenDTO dataT) throws IOException {
@@ -122,7 +122,7 @@ public class ExamsFileService {
 
 
             // Cria nome único com Ids
-            String uniqueFilename = dataE.examType() + "_" + patient.get().getId() + "_" + doctor.get().getId() + "_" + laboratory.get().getId() + "_" + UUID.randomUUID() ;
+            String uniqueFilename = dataE.examType() + "_" + patient.get().getId() + "_" + doctor.get().getId() + "_" + laboratory.get().getId() + "_" + UUID.randomUUID() + ".pdf";
             Path filePath = Paths.get(uploadDir, uniqueFilename);
 
 
