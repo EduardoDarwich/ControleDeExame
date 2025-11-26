@@ -122,7 +122,7 @@ public class ExamsFileService {
 
 
             // Cria nome único com Ids
-            String uniqueFilename = dataE.examType() + "_" + patient.get().getId() + "_" + doctor.get().getId() + "_" + laboratory.get().getId() + "_" + UUID.randomUUID();
+            String uniqueFilename = dataE.examType() + "_" + patient.get().getId() + "_" + doctor.get().getId() + "_" + laboratory.get().getId() + "_" + UUID.randomUUID() + ".pdf";
             Path filePath = Paths.get(uploadDir, uniqueFilename);
 
 
