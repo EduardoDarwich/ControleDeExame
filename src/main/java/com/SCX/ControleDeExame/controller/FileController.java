@@ -52,12 +52,12 @@ public class FileController {
 
     //Rota para ter uma preview antes de baixar ao clicar
     @GetMapping("/preview/{filename}")
-    public ResponseEntity previewFile(@PathVariable String filename) throws IOException {
+    public ResponseEntity<Resource> previewFile(@PathVariable String filename) throws IOException {
         final String uploadDir = "/opt/uploads";
         Path filePath = Path.of(uploadDir, filename + ".pdf");
 
         if (!Files.exists(filePath)) {
-            return ResponseEntity.ok(filename);
+            return ResponseEntity.notFound().build();
         }
 
         Resource resource = new UrlResource(filePath.toUri());
@@ -73,7 +73,7 @@ public class FileController {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + ".pdf" + "\"")
                 .body(resource);
     }
 
