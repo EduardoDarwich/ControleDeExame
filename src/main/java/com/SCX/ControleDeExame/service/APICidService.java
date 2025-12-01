@@ -6,6 +6,7 @@ import com.SCX.ControleDeExame.repository.ApiRepository;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -31,8 +32,10 @@ public class APICidService {
 
     //Definindo os dados para conexão e autenticação da api
     private final String tokenEndpoint = "https://icdaccessmanagement.who.int/connect/token";
-    private final String clientId = "d14f97ff-d5e6-48c2-adac-bfeb118553dc_8c404184-7c58-4e6e-95b5-83389cd8f6a8";
-    private final String clientSecret = "jmDclKBAKJr9eZzeeUNOV4iUxOvLEkXb1Ub16iEzzQ8=";
+    @Value("${api.id.cid}")
+    private String clientId;
+    @Value("${api.secret.cid}")
+    private String clientSecret ;
     private final String scope = "icdapi_access";
     private final String GRANT_TYPE = "client_credentials";
 
