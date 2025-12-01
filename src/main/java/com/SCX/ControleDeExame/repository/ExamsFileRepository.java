@@ -11,4 +11,5 @@ import java.util.UUID;
 public interface ExamsFileRepository extends JpaRepository<ExamsFile, UUID> {
     List<ExamsFileDTO> findByPatient_Id(UUID id);
     List<ExamsFileDTO> findByLaboratory_Id(UUID id);
+    ExamsFile findByFileName(String fileName);
 }

@@ -41,7 +41,7 @@ public class ResetPasswordService {
         auth1.setToken_status(true);
         auth1.setData_expiration_token(expirationToken);
         authRepository.save(auth1);
-        //emailService.resetSenhaEmail(auth1);
+        emailService.resetSenhaEmail(auth1);
     }
 
     //Metodo responsavel pelo reset de senha

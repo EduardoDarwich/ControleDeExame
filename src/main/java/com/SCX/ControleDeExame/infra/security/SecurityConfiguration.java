@@ -122,6 +122,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/laboratory/register").hasRole("Admin")
                         .requestMatchers(HttpMethod.POST, "/laboratory/register/Adm").hasRole("Admin")
                         .requestMatchers(HttpMethod.POST, "/laboratory/register/User").hasRole("LaboratoryAdmin")
+                        .requestMatchers(HttpMethod.POST, "/laboratory/updateExam").hasRole("LaboratoryAdmin")
                         .requestMatchers(HttpMethod.GET, "/laboratory/clinicsLab").hasRole("LaboratoryAdmin")
                         .requestMatchers(HttpMethod.POST, "/laboratory/uploadExam").hasRole("LaboratoryUser")
                         .requestMatchers(HttpMethod.GET, "/laboratory/getExamsLab").hasRole("LaboratoryAdmin")

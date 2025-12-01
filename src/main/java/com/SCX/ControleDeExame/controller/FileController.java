@@ -77,6 +77,7 @@ public class FileController {
                 .body(resource);
     }
 
+
     //Rota para transformar a requisição de exames em pdf
     @PostMapping(value = "/examsRequestPDF", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> gerarPdf(@RequestBody GetExamsRequestIdDTO data) {

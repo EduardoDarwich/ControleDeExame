@@ -6,6 +6,7 @@ import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.GetExamsReques
 import com.SCX.ControleDeExame.dataTransferObject.examsTypeDTO.ExamsTypeDTO;
 import com.SCX.ControleDeExame.dataTransferObject.fileDTO.ExamTypeDTO;
 import com.SCX.ControleDeExame.dataTransferObject.fileDTO.UploadDTO;
+import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.UpdateExamDTO;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.ExamsFileDTO;
 import com.SCX.ControleDeExame.domain.appointment.Appointment;
 import com.SCX.ControleDeExame.domain.auth.Auth;
@@ -126,6 +127,7 @@ public class ExamsFileService {
             Path filePath = Paths.get(uploadDir, uniqueFilename);
 
 
+
             // Salva o arquivo
             Files.copy(dataE.file().getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
@@ -147,6 +149,62 @@ public class ExamsFileService {
 
 
         }
+    }
+
+    //Metodo para enviar o pdf de um exame para o sistema
+    public void updateFile(UpdateExamDTO data, RequestTokenDTO dataT, ExamsFile examsFile) throws IOException {
+        // Garante que a pasta exista
+        File dir = new File(uploadDir);
+        if (!dir.exists()) dir.mkdirs();
+
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        UserLab userLab = userLabRepository.findByAuthId_Id(UUID.fromString(id));
+        var auth = authRepository.findById(userLab.getAuthId().getId());
+        Optional<Laboratory> laboratory = laboratoryRepository.findById(userLab.getLaboratoryId().getId());
+        Optional<ExamsRequest> examsRequest = requestExamsRepository.findById(examsFile.getExamsRequest().getId());
+        Optional<Consultation> consultation = consultationRepository.findById(examsRequest.get().getConsultation().getId());
+        Optional<Appointment> appointment = appointmentRepository.findById(consultation.get().getAppointment().getId());
+        Optional<Patient> patient = patientRepository.findById(appointment.get().getPatient().getId());
+        Optional<Doctor> doctor = doctorRepository.findById(appointment.get().getDoctor().getId());
+
+
+
+
+            // Cria nome único com IDS
+            String uniqueFilename = data.examType() + "_" + patient.get().getId() + "_" + doctor.get().getId() + "_" + laboratory.get().getId() + "_" + UUID.randomUUID() + ".pdf";
+            Path filePath = Paths.get(uploadDir, uniqueFilename);
+
+
+
+            // Salva o arquivo
+            Files.copy(data.file().getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+
+            examsRequest.get().setStatus("Entregue");
+
+
+            // Salva os dados no banco
+            ExamsFile entity = examsFileRepository.findByFileName(data.fileName());
+            entity.setExamsRequest(examsRequest.get());
+            entity.setPatient(patient.get());
+            entity.setDoctor(doctor.get());
+            entity.setLaboratory(laboratory.get());
+            entity.setFileName(uniqueFilename);
+            entity.setFilePath(filePath.toString());
+            entity.setUploadDate(LocalDateTime.now());
+
+            examsFileRepository.save(entity);
+
+
+
+    }
+
+    public void deleteFile(String fileName) throws IOException {
+
+        Path filePath = Paths.get(uploadDir, fileName);
+        Files.deleteIfExists(filePath);
+
     }
 
     //Metodo para Baixar o pdf ao clicar

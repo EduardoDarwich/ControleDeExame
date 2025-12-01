@@ -2,12 +2,14 @@ package com.SCX.ControleDeExame.service;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsDTO.ExamsDTO;
+import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.GetExamRequestCodeDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.*;
 import com.SCX.ControleDeExame.dataTransferObject.patientDTO.ExamsFileDTO;
 import com.SCX.ControleDeExame.domain.admin.Admin;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.doctor.Doctor;
 import com.SCX.ControleDeExame.domain.exams.Exams;
+import com.SCX.ControleDeExame.domain.examsFile.ExamsFile;
 import com.SCX.ControleDeExame.domain.examsRequest.ExamsRequest;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.domain.patient.Patient;
@@ -26,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -78,6 +81,9 @@ public class LaboratoryService {
     @Autowired
     ExamsFileRepository examsFileRepository;
 
+    @Autowired
+    ExamsFileService examsFileService;
+
 
     //Metodo para registrar um usuario administrador para o laboratorio
     public void registerUserAdminLab(CreateLabUserAdmDTO data) {
@@ -117,7 +123,7 @@ public class LaboratoryService {
             userLab.setEmail(data.email());
             userLabRepository.save(userLab);
 
-            //emailService.firtLoginEmail(newAuth);
+            emailService.firtLoginEmail(newAuth);
 
         } catch (Exception e) {
 
@@ -160,7 +166,7 @@ public class LaboratoryService {
         newAuth.getRoles().add(laboratoryUser);
         authRepository.save(newAuth);
 
-        //emailService.firtLoginEmail(newAuth);
+        emailService.firtLoginEmail(newAuth);
 
         UserLabId userLabId = new UserLabId(newAuth.getId(), laboratory.getId());
 
@@ -174,7 +180,7 @@ public class LaboratoryService {
 
             logService.logAction(auth.get(), "Registrou um novo usuario para o laboratório");
 
-           //emailService.firtLoginEmail(newAuth);
+           emailService.firtLoginEmail(newAuth);
 
         } catch (Exception e) {
             authRepository.delete(newAuth);
@@ -226,6 +232,32 @@ public class LaboratoryService {
         return examsFileRepository.findByLaboratory_Id(laboratory.getId());
 
     }
+
+    public List<getExamDTO> getExmByRequest (/*RequestTokenDTO dataT,*/ GetExamRequestCodeDTO data) {
+        ExamsRequest examsRequest = requestExamsRepository.findByCodVerific(data.code());
+
+        return examsRequest.getExamsFile()
+                .stream()
+                .map(er -> new getExamDTO(er.getFileName())).toList();
+
+    }
+
+        public void updateExam(RequestTokenDTO dataT, UpdateExamDTO data) throws IOException {
+            ExamsFile examsFile = examsFileRepository.findByFileName(data.fileName());
+            examsFileService.deleteFile(data.fileName());
+            examsFileService.updateFile(data,dataT,examsFile);
+
+            var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+            var id = tokenService.registerUser(idC);
+            Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
+            UserLab userLab = userLabRepository.findByAuthId_Id(UUID.fromString(id));
+            var idLab = userLab.getLaboratoryId().getId();
+            Laboratory laboratory = laboratoryRepository.findById(idLab).orElseThrow(() -> new RuntimeException("Laboratorio nao encontrado"));
+
+            logService.logAction(auth, "Alterou o exame " + data.fileName());
+
+
+        }
 
 
 
