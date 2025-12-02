@@ -17,7 +17,7 @@ public class CorsConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         //domínios permitidos para fazer uma requisição
-        configuration.setAllowedOrigins(List.of("https://scx-sistema-de-controle-de-exames.onrender.com"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
 
         //requisições HHTP permitidas
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
