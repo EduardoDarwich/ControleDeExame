@@ -43,10 +43,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -300,7 +297,7 @@ public class DoctorService {
         doctor.setAvailable(true);
         doctorRepository.save(doctor);
         Appointment appointment = appointmentRepository.findByDoctorAvaiable(doctor.getId());
-        appointment.setDateEnd(LocalDateTime.now());
+        appointment.setDateEnd(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
         appointment.setOpenAppointment(false);
         appointmentRepository.save(appointment);
 
@@ -323,7 +320,7 @@ public class DoctorService {
 
         Consultation newConsultation = new Consultation();
         newConsultation.setAppointment(appointment);
-        newConsultation.setInit(LocalTime.now());
+        newConsultation.setInit(LocalTime.now(ZoneId.of("America/Sao_Paulo")));
         consultationRepository.save(newConsultation);
 
     }
@@ -339,11 +336,11 @@ public class DoctorService {
         Consultation consultation = consultationOPT.get();
 
         LocalTime init = consultation.getInit();
-        LocalTime close = LocalTime.now();
+        LocalTime close = LocalTime.now(ZoneId.of("America/Sao_Paulo"));
         long duracaoMinutos = Duration.between(init, close).toMinutes();
 
 
-        consultation.setClosed(LocalTime.now());
+        consultation.setClosed(LocalTime.now(ZoneId.of("America/Sao_Paulo")));
         consultation.setReturns(data.returns());
         consultation.setDuration((int) duracaoMinutos);
         consultation.setFinished(true);
@@ -479,7 +476,7 @@ public class DoctorService {
             newExamRequest.setConsultation(appointment.getConsultation());
             newExamRequest.setStatus("Pendente");
             newExamRequest.setComplement(data.complement());
-            newExamRequest.setRequestDate(LocalDateTime.now());
+            newExamRequest.setRequestDate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
             newExamRequest.setCodVerific(cod);
             newExamRequest.setCountExm(0);
             requestExamsRepository.save(newExamRequest);

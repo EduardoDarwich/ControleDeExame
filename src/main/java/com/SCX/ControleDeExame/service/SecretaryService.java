@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -257,7 +258,7 @@ public class SecretaryService {
         newAppointment.setClinic(clinic);
         newAppointment.setPatient(patient);
         newAppointment.setDoctor(doctor);
-        newAppointment.setDateCreate(LocalDateTime.now());
+        newAppointment.setDateCreate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
         newAppointment.setOpenAppointment(true);
         appointmentRepository.save(newAppointment);
 

@@ -51,6 +51,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -143,7 +144,7 @@ public class ExamsFileService {
             entity.setLaboratory(laboratory.get());
             entity.setFileName(uniqueFilename);
             entity.setFilePath(filePath.toString());
-            entity.setUploadDate(LocalDateTime.now());
+            entity.setUploadDate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
 
             examsFileRepository.save(entity);
 
@@ -192,7 +193,7 @@ public class ExamsFileService {
             entity.setLaboratory(laboratory.get());
             entity.setFileName(uniqueFilename);
             entity.setFilePath(filePath.toString());
-            entity.setUploadDate(LocalDateTime.now());
+            entity.setUploadDate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
 
             examsFileRepository.save(entity);
 
@@ -264,13 +265,13 @@ public class ExamsFileService {
             PdfWriter.getInstance(document, out);
             document.open();
 
-            // === FONTES ===
+            // Fontes
             Font headerFont = new Font(Font.FontFamily.HELVETICA, 11, Font.BOLD);
             Font normalFont = new Font(Font.FontFamily.HELVETICA, 10);
             Font smallFont = new Font(Font.FontFamily.HELVETICA, 9);
             Font titleFont = new Font(Font.FontFamily.HELVETICA, 14, Font.BOLD);
 
-            // === CABEÇALHO ===
+            // Cabeçalho
             PdfPTable header = new PdfPTable(2);
             header.setWidthPercentage(100);
             header.setWidths(new float[]{3, 2});
@@ -285,10 +286,7 @@ public class ExamsFileService {
             PdfPCell logoCell = new PdfPCell();
             logoCell.setBorder(Rectangle.NO_BORDER);
             logoCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-            // Se quiser adicionar um logotipo:
-            // Image logo = Image.getInstance("caminho/para/logo.png");
-            // logo.scaleToFit(70, 70);
-            // logoCell.addElement(logo);
+
             logoCell.addElement(new Paragraph(" ", normalFont)); // espaço reservado
 
             header.addCell(prefeitura);
@@ -301,20 +299,20 @@ public class ExamsFileService {
             line.setLineColor(BaseColor.GRAY);
             document.add(new Chunk(line));
 
-            // === TÍTULO ===
+            // Titulo
             Paragraph title = new Paragraph("FICHA DE REQUISIÇÃO DE SERVIÇOS AUXILIARES E EXAMES", titleFont);
             title.setAlignment(Element.ALIGN_CENTER);
             title.setSpacingBefore(10);
             title.setSpacingAfter(10);
             document.add(title);
 
-            // === INFORMAÇÕES GERAIS ===
+            // Informações gerais
             PdfPTable infoTable = new PdfPTable(2);
             infoTable.setWidthPercentage(100);
             infoTable.setSpacingAfter(8f);
             infoTable.setWidths(new float[]{2, 2});
 
-            addCell(infoTable, "Data/Hora: " + LocalDateTime.now().format(fmt), normalFont);
+            addCell(infoTable, "Data/Hora: " + LocalDateTime.now(ZoneId.of("America/Sao_Paulo")).format(fmt), normalFont);
             addCell(infoTable, "Nº do Atendimento: " + consultation.getAppointment().getConsultation().getExamsRequests().getCodVerific(), normalFont);
 
             document.add(infoTable);
@@ -421,7 +419,7 @@ public class ExamsFileService {
             document.add(new Paragraph("\n"));
             document.add(new Chunk(line));
             Paragraph footer = new Paragraph(
-                    "Gerado automaticamente pelo Sistema de Exames - " + LocalDateTime.now().format(fmt),
+                    "Gerado automaticamente pelo Sistema de Exames - " + LocalDateTime.now(ZoneId.of("America/Sao_Paulo")).format(fmt),
                     smallFont
             );
             footer.setAlignment(Element.ALIGN_CENTER);

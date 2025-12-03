@@ -316,6 +316,8 @@ public class AdminService {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         var admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
+        var auth = admin.getAuthId();
+
         Clinic clinic = clinicRepository.findById(admin.getClinicId().getId()).orElseThrow(() -> new RuntimeException("Clinica não encontrada"));
 
         String cnpj = data.cnpj();
@@ -323,6 +325,8 @@ public class AdminService {
 
         clinic.getLaboratories().remove(laboratory);
         clinicRepository.save(clinic);
+
+        logService.logAction(auth, "Desvinculou o laboratório " + laboratory.getName());
 
     }
 
@@ -359,7 +363,7 @@ public class AdminService {
     }
 
 
-    //Metodo para desvincular um laboratorio (testar)
+    //Metodo para desvincular um médico (testar)
     public void disableDocCli(RequestTokenDTO dataT, DoctorVerificDTO data) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
@@ -371,6 +375,7 @@ public class AdminService {
 
         clinic.getDoctors().remove(doctor);
         clinicRepository.save(clinic);
+
 
     }
     
