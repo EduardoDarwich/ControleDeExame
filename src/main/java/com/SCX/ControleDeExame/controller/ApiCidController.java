@@ -20,10 +20,10 @@ public class ApiCidController {
     @Autowired
     APICidService apiCidService;
 
-    /*@PostMapping("/getToken")
+    @PostMapping("/getToken")
     public ResponseEntity getToken() throws Exception {
         return ResponseEntity.ok(apiCidService.getToken());
-    }*/
+    }
 
     @PostMapping("/requestAPI")
     public ResponseEntity<LinkedList<ReturnCidAPIDTO>> requestAPI(@RequestBody ApiCidDTO data) throws Exception {

@@ -39,7 +39,7 @@ public class APICidService {
     private final String scope = "icdapi_access";
     private final String GRANT_TYPE = "client_credentials";
 
-    private String getToken() throws Exception {
+    public String getToken() throws Exception {
 
         //Criando conexão
         URL url = new URL(tokenEndpoint);
@@ -75,8 +75,14 @@ public class APICidService {
 
         in.close();
 
+
         JSONObject jsonObj = new JSONObject(response.toString());
+
+
         return jsonObj.getString("access_token");
+
+
+
     }
 
     public LinkedList<ReturnCidAPIDTO> search ( String url) throws Exception {
@@ -90,7 +96,7 @@ public class APICidService {
         HttpURLConnection con = (HttpURLConnection) url1.openConnection();
         con.setRequestMethod("GET");
 
-        Optional<Api> token = apiRepository.findById(UUID.fromString("548e1240-e5c3-4068-bf85-1f0a938a29ac"));
+        Optional<Api> token = apiRepository.findById(UUID.fromString("9b02efbf-c51b-4217-9ed8-2200c2540f21"));
 
 
 
