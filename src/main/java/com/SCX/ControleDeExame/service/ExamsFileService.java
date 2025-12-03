@@ -317,7 +317,7 @@ public class ExamsFileService {
 
             document.add(infoTable);
 
-            // === DADOS DO PACIENTE ===
+            //Dados do paciente
             Paragraph patientSection = new Paragraph("Dados do Paciente", headerFont);
             patientSection.setSpacingBefore(5);
             document.add(patientSection);
@@ -333,7 +333,7 @@ public class ExamsFileService {
 
             document.add(patientTable);
 
-            // === SEÇÃO DE SOLICITAÇÃO ===
+            //Seção de solicitação
             Paragraph sectionSolic = new Paragraph("Informações do Pedido", headerFont);
             sectionSolic.setSpacingBefore(10);
             document.add(sectionSolic);
@@ -347,7 +347,7 @@ public class ExamsFileService {
 
             document.add(solicitTable);
 
-            // === LISTA DE EXAMES ===
+            //Lista de exames
             Paragraph examsSection = new Paragraph("EXAMES / PROCEDIMENTOS SOLICITADOS", headerFont);
             examsSection.setSpacingBefore(10);
             examsSection.setSpacingAfter(5);
@@ -379,7 +379,7 @@ public class ExamsFileService {
             document.add(examsTable);
 
 
-            // === NOVA SEÇÃO: LABORATÓRIOS DISPONÍVEIS ===
+            //Lista de laboratorios disponiveis
             Paragraph labSection = new Paragraph("LABORATÓRIOS DISPONÍVEIS", headerFont);
             labSection.setSpacingBefore(15);
             labSection.setSpacingAfter(5);
@@ -394,7 +394,7 @@ public class ExamsFileService {
             document.add(labsList);
 
 
-            // === ASSINATURA DO MÉDICO ===
+            //Assinatura do médico
             document.add(new Paragraph("\n\n\n")); // espaço antes da linha
 
             // Cria uma linha para assinatura
@@ -415,7 +415,7 @@ public class ExamsFileService {
             doctorInfo.setSpacingBefore(5);
             document.add(doctorInfo);
 
-            // === RODAPÉ ===
+
             document.add(new Paragraph("\n"));
             document.add(new Chunk(line));
             Paragraph footer = new Paragraph(
