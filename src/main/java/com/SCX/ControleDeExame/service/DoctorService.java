@@ -32,6 +32,9 @@ import com.SCX.ControleDeExame.domain.examsType.ExamsType;
 import com.SCX.ControleDeExame.domain.laboratory.Laboratory;
 import com.SCX.ControleDeExame.domain.patient.Patient;
 import com.SCX.ControleDeExame.domain.role.Role;
+import com.SCX.ControleDeExame.exception.CpfExistException;
+import com.SCX.ControleDeExame.exception.EmailExistException;
+import com.SCX.ControleDeExame.exception.TelephoneExistException;
 import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.repository.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -40,10 +43,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -106,6 +106,9 @@ public class DoctorService {
     @Autowired
     AnamnesisCustomRepository anamnesisCustomRepository;
 
+    @Autowired
+    VerifyDataService verifyDataService;
+
     //Metodo para registrar um médico
     public void registerDoctor(CreateDoctorDTO data, RequestTokenDTO dataT) {
 
@@ -127,9 +130,15 @@ public class DoctorService {
         Timestamp expirationToken = Timestamp.valueOf(LocalDateTime.now().plusDays(1));
         String encryptedPassword = new BCryptPasswordEncoder().encode(senhaTemp);
 
+        if (verifyDataService.verifyEmail(data.email().trim().toLowerCase())) {
+            throw new EmailExistException();
+        } else if (verifyDataService.verifyTelephone(data.telephone())) {
+            throw new TelephoneExistException();
+        }
+
         newAuth.setPassword_key(encryptedPassword);
-        newAuth.setUsernameKey(data.email());
-        newAuth.setName(data.name());
+        newAuth.setUsernameKey(data.email().trim().toLowerCase());
+        newAuth.setName(data.name().trim().toLowerCase());
         newAuth.setActive(false);
         newAuth.setToken(token);
         newAuth.setData_expiration_token(expirationToken);
@@ -152,7 +161,7 @@ public class DoctorService {
             //Adicionadno o médico criado a clinica na qual ele está sendo cadastrado
             clinic.getDoctors().add(newDoctor);
             clinicRepository.save(clinic);
-            logService.logAction(auth.get(), "Registrou um novo médico na clinica");
+            logService.logAction(auth.get(), "Efetuou o registro de um novo médico na clínica.");
         } catch (Exception e) {
             clinic.getDoctors().remove(newDoctor);
             clinicRepository.save(clinic);
@@ -179,7 +188,7 @@ public class DoctorService {
         try {
             clinic.getDoctors().add(docUser);
             clinicRepository.save(clinic);
-            logService.logAction(auth.get(), "Registrou um novo médico na clinica");
+            logService.logAction(auth.get(), "Efetuou o registro de um novo médico na clínica.");
 
         } catch (Exception e) {
 
@@ -287,11 +296,11 @@ public class DoctorService {
 
         doctor.setAvailable(true);
         doctorRepository.save(doctor);
-
         Appointment appointment = appointmentRepository.findByDoctorAvaiable(doctor.getId());
-        appointment.setDateEnd(LocalDateTime.now());
+        appointment.setDateEnd(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
         appointment.setOpenAppointment(false);
         appointmentRepository.save(appointment);
+
 
     }
 
@@ -301,7 +310,7 @@ public class DoctorService {
     }
 
     //Metodo para abrir uma consulta
-    public void openConsultation (RequestTokenDTO dataT){
+    public void openConsultation(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
@@ -311,13 +320,13 @@ public class DoctorService {
 
         Consultation newConsultation = new Consultation();
         newConsultation.setAppointment(appointment);
-        newConsultation.setInit(LocalTime.now());
+        newConsultation.setInit(LocalTime.now(ZoneId.of("America/Sao_Paulo")));
         consultationRepository.save(newConsultation);
 
     }
 
     //Metodo para fechar uma consulta
-    public void closeConsultation (RequestTokenDTO dataT, CloseConsultationDTO data){
+    public void closeConsultation(RequestTokenDTO dataT, CloseConsultationDTO data) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
@@ -327,23 +336,25 @@ public class DoctorService {
         Consultation consultation = consultationOPT.get();
 
         LocalTime init = consultation.getInit();
-        LocalTime close = LocalTime.now();
-        long duracaoMinutos = Duration.between(init,close).toMinutes();
+        LocalTime close = LocalTime.now(ZoneId.of("America/Sao_Paulo"));
+        long duracaoMinutos = Duration.between(init, close).toMinutes();
 
 
-        consultation.setClosed(LocalTime.now());
+        consultation.setClosed(LocalTime.now(ZoneId.of("America/Sao_Paulo")));
         consultation.setReturns(data.returns());
-        consultation.setDuration((int)duracaoMinutos);
+        consultation.setDuration((int) duracaoMinutos);
         consultation.setFinished(true);
         consultation.setDiagnosis(data.diagnosis());
         consultation.setPrescription(data.prescription());
         consultationRepository.save(consultation);
 
         closeAppointment(doctor);
+
+        logService.logAction(auth, "Encerrou a consulta com o paciente " + consultation.getAppointment().getPatient().getAuthId().getName());
     }
 
     //Metodo para registrar uma anamnese
-    public void registerNewAnamnese (RequestTokenDTO dataT, CreateAnamnesisDTO data){
+    public void registerNewAnamnese(RequestTokenDTO dataT, CreateAnamnesisDTO data) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
@@ -381,15 +392,15 @@ public class DoctorService {
     }
 
     //Metodo para calcular o imc
-    public ResultBmiDTO calculatorBmi (CalculatorBmiDTO data){
+    public ResultBmiDTO calculatorBmi(CalculatorBmiDTO data) {
         double weight = data.weight();
         double height = data.height();
 
-        return new ResultBmiDTO(weight / Math.pow(height,2));
+        return new ResultBmiDTO(weight / Math.pow(height, 2));
     }
 
     //Metodo para retornar todos os atendimentos do paciente
-    public List<ReturnAppointmentsPatDTO> getAppointmentPat (RequestTokenDTO dataT){
+    public List<ReturnAppointmentsPatDTO> getAppointmentPat(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
@@ -401,7 +412,7 @@ public class DoctorService {
 
 
     //Metodo para criar campos personalizados
-    public void createCustomField (RequestTokenDTO dataT, List< CreateCustomFieldDTO> data){
+    public void createCustomField(RequestTokenDTO dataT, List<CreateCustomFieldDTO> data) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
@@ -457,9 +468,6 @@ public class DoctorService {
             String uuid = UUID.randomUUID().toString().replace("-", "");
             String cod = "REQ-" + uuid.substring(0, 6).toUpperCase();
 
-            String msg = "Fez um novo pedido de exame ";
-
-
 
             ExamsRequest newExamRequest = new ExamsRequest();
             newExamRequest.setDoctorId(doctor);
@@ -468,16 +476,15 @@ public class DoctorService {
             newExamRequest.setConsultation(appointment.getConsultation());
             newExamRequest.setStatus("Pendente");
             newExamRequest.setComplement(data.complement());
-            newExamRequest.setRequestDate(LocalDateTime.now());
+            newExamRequest.setRequestDate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
             newExamRequest.setCodVerific(cod);
             newExamRequest.setCountExm(0);
             requestExamsRepository.save(newExamRequest);
 
 
-            logService.logAction(auth.get(), msg);
+            logService.logAction(auth.get(), "Fez uma nova requisição de exame para o sistema");
 
             return new GetExamsRequestIdDTO(newExamRequest.getId().toString());
-
 
 
         } catch (Exception e) {
@@ -487,8 +494,8 @@ public class DoctorService {
         }
     }
 
-    //Metodo para criar um exame para a requisição de exames (testar)
-    public void createExam ( RequestTokenDTO dataT, List<CreateExamDTO> data){
+    //Metodo para criar um exame para a requisição de exames
+    public void createExam(RequestTokenDTO dataT, List<CreateExamDTO> data) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Auth auth = authRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
@@ -531,7 +538,7 @@ public class DoctorService {
     }
 
     //Metodo para verificar se o medico está em consulta ou não
-    public boolean verifyDocIsConsult (RequestTokenDTO dataT){
+    public boolean verifyDocIsConsult(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
@@ -540,7 +547,7 @@ public class DoctorService {
     }
 
     //Metodo para retornar a anamnese da consulta
-    public ResponseAnamnesisDTO getAnamneseByConsult (GetAppointmentIdDTO data){
+    public ResponseAnamnesisDTO getAnamneseByConsult(GetAppointmentIdDTO data) {
         Optional<Appointment> appointment = appointmentRepository.findById(UUID.fromString(data.id()));
         Optional<Consultation> consultation = consultationRepository.findById(appointment.get().getConsultation().getId());
         Optional<Anamnesis> anamnesisOPT = anamnesisRepository.findByIdWithCustomFields(consultation.get().getAnamnesis().getId());
@@ -581,15 +588,15 @@ public class DoctorService {
     }
 
     //Metodo para retornar o diagnostico relacionado a consulta se houver
-    public ReturnDiagnosticDTO returnDiagnostic (GetAppointmentIdDTO data){
+    public ReturnDiagnosticDTO returnDiagnostic(GetAppointmentIdDTO data) {
         Optional<Appointment> appointment = appointmentRepository.findById(UUID.fromString(data.id()));
         Optional<Consultation> consultation = consultationRepository.findById(appointment.get().getConsultation().getId());
 
         return new ReturnDiagnosticDTO(consultation.get().getDiagnosis(), consultation.get().getPrescription());
     }
 
-    //Metodo para retornar os exames pedidos relacinados a consulta se houver
-    public ReturnExamsRequestsDTO returnExamsRequests (GetAppointmentIdDTO data){
+    //Metodo para retornar os exames pedidos relacionados a consulta se houver
+    public ReturnExamsRequestsDTO returnExamsRequests(GetAppointmentIdDTO data) {
         Optional<Appointment> appointment = appointmentRepository.findById(UUID.fromString(data.id()));
         Optional<Consultation> consultation = consultationRepository.findById(appointment.get().getConsultation().getId());
 
@@ -600,13 +607,12 @@ public class DoctorService {
                         er.getCid(),
                         er.getExamsType()
                 )).toList();
-        return new ReturnExamsRequestsDTO (exams);
-
+        return new ReturnExamsRequestsDTO(exams);
 
     }
 
-    //Metodo para retornar os resutados dos exames relacionados a consulta se houver (testar)
-    public ReturnExamsResultsDTO returnExamsResults (GetAppointmentIdDTO data){
+    //Metodo para retornar os resultados dos exames relacionados a consulta se houver (testar)
+    public ReturnExamsResultsDTO returnExamsResults(GetAppointmentIdDTO data) {
         Optional<Appointment> appointment = appointmentRepository.findById(UUID.fromString(data.id()));
         Optional<Consultation> consultation = consultationRepository.findById(appointment.get().getConsultation().getId());
         ExamsRequest examsRequest = consultation.get().getExamsRequests();
@@ -619,13 +625,11 @@ public class DoctorService {
                 )).toList();
 
 
-
-
         return new ReturnExamsResultsDTO(ExamsFile);
     }
 
-    //Metodo para desativar um medico e anonimizar os dados (testar)
-    public void disableDoc (RequestTokenDTO dataT){
+    //Metodo para desativar um medico e anonimizar os dados
+    public void disableDoc(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Optional<Auth> authOPT = authRepository.findById(UUID.fromString(id));
@@ -649,7 +653,14 @@ public class DoctorService {
 
     }
 
+    //Metodo para setar a clínica do médico como null quando ele deslogar
+    public void setCliZero (RequestTokenDTO dataT){
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
 
+        doctor.setIdClinic(null);
 
+    }
 
 }

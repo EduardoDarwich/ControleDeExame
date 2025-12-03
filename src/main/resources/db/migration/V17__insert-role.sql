@@ -8,5 +8,4 @@ values
 ('Doctor'),
 ('Patient'),
 ('Secretary'),
-('Support'),
-('AdminSystem')
+('Support')

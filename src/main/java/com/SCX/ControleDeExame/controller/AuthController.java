@@ -25,6 +25,7 @@ import java.util.UUID;
 @RequestMapping("/auth")
 public class AuthController {
 
+    //Criando instancias utilizadas
     @Autowired
     AuthenticationManager authenticationManager;
 
@@ -42,7 +43,7 @@ public class AuthController {
     public ResponseEntity login(@RequestBody @Valid AuthenticationDTO data) {
 
         try {
-            var passUser = new UsernamePasswordAuthenticationToken(data.usernameKey(), data.password_key());
+            var passUser = new UsernamePasswordAuthenticationToken(data.usernameKey().trim().toLowerCase(), data.password_key());
             var auth = this.authenticationManager.authenticate(passUser);
             Auth auth1 = (Auth) auth.getPrincipal();
 
@@ -75,7 +76,7 @@ public class AuthController {
         }
     }
 
-    //Rota para devolver o perfil do usuario
+    //Rota para devolver o perfil do usuário
     @GetMapping("/perfil")
     public ResponseEntity perfil(@RequestHeader("Authorization") RequestTokenDTO dataT) {
         try {
@@ -88,21 +89,21 @@ public class AuthController {
         }
     }
 
-    //Rota para verificar se o usuario existe no sistema
+    //Rota para verificar se o usuário existe no sistema
     @PostMapping("/verificUserExists")
     public ResponseEntity verificUserExists(@RequestBody @Valid AuthVerificDTO data) {
         boolean result = authService.authVerific(data);
         return ResponseEntity.ok(result);
     }
 
-    //Rota para verificar se o usuario está ativo
+    //Rota para verificar se o usuário está ativo
     @PostMapping("/verificUserActive")
     public ResponseEntity verificUserActive(@RequestBody @Valid AuthVerificDTO data){
         boolean result = authService.verificUserActive(data);
         return ResponseEntity.ok(result);
     }
 
-    //Rota para retornar o historico do usuario
+    //Rota para retornar o histórico do usuário
     @GetMapping("/getHistory")
     public ResponseEntity<List<HistoryDTO>> getHistory(@RequestHeader("Authorization") RequestTokenDTO dataT){
         return ResponseEntity.ok(logService.getHistory(dataT));
@@ -146,14 +147,14 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    //Rota para atualizar os dados do secretary
+    //Rota para atualizar os dados do usuário da secretaria
     @PatchMapping("/updateSecretary")
     public ResponseEntity updateSecretary (@RequestHeader("Authorization") RequestTokenDTO dataT, @RequestBody @Valid UpdateSecretaryDTO data){
         authService.updateSecretary(dataT, data);
         return ResponseEntity.ok().build();
     }
 
-    //Rota para atualizar os dados do admin
+    //Rota para atualizar os dados do administrador
     @PatchMapping("/updateAdmin")
     public ResponseEntity updateAdmin (@RequestHeader("Authorization") RequestTokenDTO dataT,@RequestBody @Valid UpdateAdminDTO data){
         authService.updateAdmin(dataT, data);

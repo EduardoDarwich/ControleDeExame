@@ -31,13 +31,14 @@ import java.util.UUID;
 @RequestMapping("/doctor")
 public class DoctorController {
 
+    //Criando instancias utilizadas
     @Autowired
     DoctorService doctorService;
 
     @Autowired
     AuthRepository authRepository;
 
-    //Rota para registrar um medico
+    //Rota para registrar um médico
     @PostMapping("/register")
     public ResponseEntity register (@RequestBody @Valid CreateDoctorDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT){
         UserDetails user =  authRepository.findByUsernameKey(data.email());
@@ -61,13 +62,6 @@ public class DoctorController {
         return ResponseEntity.ok().build();
     }
 
-    //Rota para Devolver os exames vinculados a um médico
-    /*@GetMapping("/get/{id}")
-    public ResponseEntity<List<GetByDoctorDTO>> listById (@PathVariable("id") RequestTokenDTO data) {
-        List<GetByDoctorDTO> exams = doctorService.getExamsByDoctor(data);
-        return ResponseEntity.ok(exams);
-    }*/
-
     //Rota para fazer uma requisição de exames
     @PostMapping("/requestExm")
     public ResponseEntity<GetExamsRequestIdDTO> requestExam (@RequestBody @Valid ExamsRequestDTO data, @RequestHeader("Authorization")RequestTokenDTO dataT){
@@ -75,14 +69,14 @@ public class DoctorController {
         return ResponseEntity.ok(doctorService.requestExams(data, dataT));
     }
 
-    //Rota para verificar se o médico ja está cadastrado na clinica
+    //Rota para verificar se o médico já está cadastrado na clínica
     @PostMapping("/searchDoc")
     public ResponseEntity searchDoc (@RequestBody @Valid DoctorVerificDTO data, @RequestHeader("Authorization")RequestTokenDTO dataT){
         boolean response = doctorService.verificDocCli(data, dataT);
         return ResponseEntity.ok(response);
     }
 
-    //Rota para devolver as requisições de exame pendente do medico da clinica especifica
+    //Rota para devolver as requisições de exame pendente do médico na clínica específica
     @GetMapping("/getRequestExamPendent")
     public ResponseEntity<List<DoctorRequestExamDTO>> requestExamLab (@RequestHeader("Authorization") RequestTokenDTO dataT){
         return ResponseEntity.ok(doctorService.doctorRequestExam(dataT));
@@ -102,14 +96,14 @@ public class DoctorController {
         return ResponseEntity.ok(doctorService.returnOpenAppointment(dataT));
     }
 
-    //Rota para cadastrar um medico que ja está cadastrado no sistema a uma clinica
+    //Rota para cadastrar um médico já cadastrado no sistema a uma clínica
     @PostMapping("/transferDoctor")
     public ResponseEntity transferDoctor(@RequestBody @Valid DoctorVerificDTO data, @RequestHeader("Authorization")RequestTokenDTO dataT){
         doctorService.registerDocUserExists(data, dataT);
         return ResponseEntity.ok().build();
     }
 
-    //Rota para devolver as clinicas que o medico está cadastrado
+    //Rota para devolver as clínicas que o medico está cadastrado
     @GetMapping("/clinicsDoctor")
     public ResponseEntity<List<ResponseClinicDocDTO>> verifyClinicByDoctor(@RequestHeader("Authorization") RequestTokenDTO dataT){
         List<ResponseClinicDocDTO> clinics = doctorService.clinicsDoctor(dataT);
@@ -129,14 +123,7 @@ public class DoctorController {
         return ResponseEntity.ok(doctorService.clinicDocActive(dataT));
     }
 
-    //Rota para fechar uma consulta
-    /*@PatchMapping("/closeAppointment")
-    public ResponseEntity closeAppointment(@RequestHeader("Authorization") RequestTokenDTO dataT){
-        doctorService.closeAppointment(dataT);
-        return ResponseEntity.ok().build();
-    }*/
-
-    //Rota para retornar os laboratórios disponiveis na clinica que o medico está ativo
+    //Rota para retornar os laboratórios disponiveis na clínica que o médico está ativo
     @GetMapping("/getLabDocCli")
     public ResponseEntity<List<ResponseDocCliLabDTO>> findLabByDocCli(@RequestHeader("Authorization") RequestTokenDTO dataT){
         return ResponseEntity.ok(doctorService.LabByclinicDoc( dataT));
@@ -189,7 +176,7 @@ public class DoctorController {
         return ResponseEntity.ok(doctorService.getAppointmentPat(dataT));
     }
 
-    //Rota para verificar se o medico está em consulta
+    //Rota para verificar se o médico está em consulta
     @GetMapping("/verifyDocIsConsult")
     public ResponseEntity verifyDocIsConsult( @RequestHeader("Authorization") RequestTokenDTO dataT){
 
@@ -210,4 +197,10 @@ public class DoctorController {
         return ResponseEntity.ok().build();
     }
 
+    //Rota para tirar o medico de qualquer clinica ativa
+    @PatchMapping("/setDocCliZero")
+    public ResponseEntity setDocCliZero( @RequestHeader("Authorization") RequestTokenDTO dataT){
+        doctorService.setCliZero(dataT);
+        return ResponseEntity.ok().build();
+    }
 }

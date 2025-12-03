@@ -5,5 +5,5 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-public record UploadDTO(List<MultipartFile> file, String examsReqId) {
+public record UploadDTO(List<ExamTypeDTO> file, String examsReqId) {
 }

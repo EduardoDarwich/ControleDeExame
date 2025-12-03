@@ -22,30 +22,32 @@ public class SecurityConfiguration {
     SecurityFilter securityFilter;
 
     @Bean
-    public SecurityFilterChain securityFilterChain (HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         return httpSecurity.csrf(csrf -> csrf.disable())
-                .cors(cors -> {})
+                //habilitando a configuração do cors e não especificando nada para utilizar a configuração feita na classe específica
+                .cors(cors -> {
+                })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
 
 
-                        .requestMatchers(HttpMethod.POST, "admin/registerAdmin").hasRole("Admin")
-                        .requestMatchers(HttpMethod.POST, "admin/registerSecretary").hasRole("Admin")
-                        .requestMatchers(HttpMethod.POST, "admin/verificSecretaryExists").hasRole("Admin")
-                        .requestMatchers(HttpMethod.POST, "admin/doctorClinic").hasRole("Admin")
-                        .requestMatchers(HttpMethod.POST, "admin/verificLabCli").hasRole("Admin")
-                        .requestMatchers(HttpMethod.POST, "admin/verificLabExists").hasRole("Admin")
-                        .requestMatchers(HttpMethod.POST, "admin/transferLab").hasRole("Admin")
-                        .requestMatchers(HttpMethod.POST, "admin/getLabCli").hasRole("Admin")
-                        .requestMatchers(HttpMethod.POST, "admin/getSecretary").hasRole("Admin")
+                        .requestMatchers(HttpMethod.POST, "/admin/registerAdmin").hasRole("Admin")
+                        .requestMatchers(HttpMethod.POST, "/admin/registerSecretary").hasRole("Admin")
+                        .requestMatchers(HttpMethod.POST, "/admin/verificSecretaryExists").hasRole("Admin")
+                        .requestMatchers(HttpMethod.POST, "/admin/doctorClinic").hasRole("Admin")
+                        .requestMatchers(HttpMethod.POST, "/admin/verificLabCli").hasRole("Admin")
+                        .requestMatchers(HttpMethod.POST, "/admin/verificLabExists").hasRole("Admin")
+                        .requestMatchers(HttpMethod.POST, "/admin/transferLab").hasRole("Admin")
+                        .requestMatchers(HttpMethod.POST, "/admin/getLabCli").hasRole("Admin")
+                        .requestMatchers(HttpMethod.POST, "/admin/getSecretary").hasRole("Admin")
                         .requestMatchers(HttpMethod.POST, "admin/disableSecretary").hasRole("Admin")
-                        .requestMatchers(HttpMethod.POST, "admin/enableSecretary").hasRole("Admin")
-                        .requestMatchers(HttpMethod.POST, "admin/disableLaboratory").hasRole("Admin")
-                        .requestMatchers(HttpMethod.POST, "admin/enableLaboratory").hasRole("Admin")
-                        .requestMatchers(HttpMethod.POST, "admin/disableUserLab").hasRole("Admin")
-                        .requestMatchers(HttpMethod.POST, "admin/enableUserLab").hasRole("Admin")
-                        .requestMatchers(HttpMethod.POST, "admin/clinicAdm").hasRole("Admin")
+                        .requestMatchers(HttpMethod.POST, "/admin/enableSecretary").hasRole("Admin")
+                        .requestMatchers(HttpMethod.POST, "/admin/disableLaboratory").hasRole("Admin")
+                        .requestMatchers(HttpMethod.POST, "/admin/enableLaboratory").hasRole("Admin")
+                        .requestMatchers(HttpMethod.POST, "/admin/disableUserLab").hasRole("Admin")
+                        .requestMatchers(HttpMethod.POST, "/admin/enableUserLab").hasRole("Admin")
+                        .requestMatchers(HttpMethod.POST, "/admin/clinicAdm").hasRole("Admin")
 
 
                         .requestMatchers(HttpMethod.PATCH, "/adminSystem/disableClinic").hasRole("AdminSystem")
@@ -98,7 +100,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.PATCH, "/doctor/updateClinicDocPresent").hasRole("Doctor")
                         .requestMatchers(HttpMethod.GET, "/doctor/getClinicActive").hasRole("Doctor")
                         .requestMatchers(HttpMethod.GET, "/doctor/getLabDocCli").hasRole("Doctor")
-                        .requestMatchers(HttpMethod.GET, "/doctor/getExamsType").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.GET, "/doctor/getExamsType").permitAll()
                         .requestMatchers(HttpMethod.POST, "/doctor/openConsultation").hasRole("Doctor")
                         .requestMatchers(HttpMethod.PATCH, "/doctor/closeConsultation").hasRole("Doctor")
                         .requestMatchers(HttpMethod.POST, "/doctor/registerAnamnese").hasRole("Doctor")
@@ -108,6 +110,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/doctor/verifyDocIsConsult").hasRole("Doctor")
                         .requestMatchers(HttpMethod.POST, "/doctor/createExams").hasRole("Doctor")
                         .requestMatchers(HttpMethod.PATCH, "/doctor/disableDoc").hasRole("Doctor")
+                        .requestMatchers(HttpMethod.PATCH, "/doctor/setDocCliZero").hasRole("Doctor")
 
 
                         .requestMatchers(HttpMethod.POST, "/files/upload").hasRole("LaboratoryUser")
@@ -119,8 +122,10 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/laboratory/register").hasRole("Admin")
                         .requestMatchers(HttpMethod.POST, "/laboratory/register/Adm").hasRole("Admin")
                         .requestMatchers(HttpMethod.POST, "/laboratory/register/User").hasRole("LaboratoryAdmin")
+                        .requestMatchers(HttpMethod.POST, "/laboratory/updateExam").hasRole("LaboratoryAdmin")
                         .requestMatchers(HttpMethod.GET, "/laboratory/clinicsLab").hasRole("LaboratoryAdmin")
                         .requestMatchers(HttpMethod.POST, "/laboratory/uploadExam").hasRole("LaboratoryUser")
+                        .requestMatchers(HttpMethod.GET, "/laboratory/getExamsLab").hasRole("LaboratoryAdmin")
                         .requestMatchers(HttpMethod.GET, "/laboratory/getLabActive").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/notification/getNoRead").permitAll()
@@ -156,12 +161,12 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager (AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
 
         return new BCryptPasswordEncoder();
     }

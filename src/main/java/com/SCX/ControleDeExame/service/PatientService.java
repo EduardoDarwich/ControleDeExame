@@ -80,7 +80,7 @@ public class PatientService {
         return examsFileRepository.findByPatient_Id(patient.getId());
     }
 
-    //Metodo para desativar um paciente e anonimizar os dados (testar)
+    //Metodo para desativar um paciente e anonimizar os dados
     public void disablePat (RequestTokenDTO dataT){
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
@@ -105,6 +105,7 @@ public class PatientService {
 
     }
 
+    //Metodo para pegar todas as clínicas que o paciente está cadastrado
     public List<CliPatDTO> getCliPat (RequestTokenDTO dataT){
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
@@ -116,7 +117,7 @@ public class PatientService {
     }
 
 
-
+    //Metodo para devolver um paciente pelo ID
     public Patient getPatientById(RequestTokenDTO data) {
         return patientRepository.findById(UUID.fromString(data.Token())).orElseThrow(() -> new EntityNotFoundException("paciente não encontrado"));
     }

@@ -15,6 +15,10 @@ import com.SCX.ControleDeExame.domain.doctor.Doctor;
 import com.SCX.ControleDeExame.domain.patient.Patient;
 import com.SCX.ControleDeExame.domain.role.Role;
 import com.SCX.ControleDeExame.domain.secretary.Secretary;
+import com.SCX.ControleDeExame.exception.CpfExistException;
+import com.SCX.ControleDeExame.exception.CpfNotFoundException;
+import com.SCX.ControleDeExame.exception.EmailExistException;
+import com.SCX.ControleDeExame.exception.TelephoneExistException;
 import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.repository.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -64,6 +69,9 @@ public class SecretaryService {
     @Autowired
     EmailService emailService;
 
+    @Autowired
+    VerifyDataService verifyDataService;
+
 
     public void deleteSecretary(UUID uuid) {
 
@@ -92,10 +100,18 @@ public class SecretaryService {
         Timestamp expirationToken = Timestamp.valueOf(LocalDateTime.now().plusDays(1));
         String encryptedPassword = new BCryptPasswordEncoder().encode(senhaTemp);
 
+        if (verifyDataService.verifyCpf(data.cpf())) {
+            throw new CpfExistException();
+        } else if (verifyDataService.verifyEmail(data.email())) {
+            throw new EmailExistException();
+        } else if (verifyDataService.verifyTelephone(data.telephone())) {
+            throw new TelephoneExistException();
+        }
+
 
         newAuth.setPassword_key(encryptedPassword);
-        newAuth.setUsernameKey(data.email());
-        newAuth.setName(data.name());
+        newAuth.setUsernameKey(data.email().trim().toLowerCase());
+        newAuth.setName(data.name().trim().toLowerCase());
         newAuth.setActive(false);
         newAuth.setToken(token);
         newAuth.setData_expiration_token(expirationToken);
@@ -155,7 +171,7 @@ public class SecretaryService {
         return patientRepository.existsByCpf(data.cpf());
     }
 
-    //Metodo para cadastrar um paciente ja cadastrado no sistema em uma nova clinica
+    //Metodo para cadastrar um paciente já cadastrado no sistema numa nova clínica
     public void registerPatExistsCli(GetPatientByCPFDTO data, RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
@@ -177,8 +193,8 @@ public class SecretaryService {
         }
     }
 
-    //Metodo para consultar os pacientes de uma clinica pelo Id da secretaria logado
-    public List<ResponsePatCliDTO> patCli (RequestTokenDTO dataT){
+    //Metodo para consultar os pacientes de uma clínica pelo ‘Id’ da secretaria logado
+    public List<ResponsePatCliDTO> patCli(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         var secretary = secretaryRepository.findByAuthId_Id(UUID.fromString(id));
@@ -199,7 +215,7 @@ public class SecretaryService {
     }
 
     //Metodo para listar os médicos disponiveis para realizar uma consulta
-    public List<ResponseDocCliConsultDTO> docCLiConsult (RequestTokenDTO dataT){
+    public List<ResponseDocCliConsultDTO> docCLiConsult(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         var secretary = secretaryRepository.findByAuthId_Id(UUID.fromString(id));
@@ -210,7 +226,7 @@ public class SecretaryService {
     }
 
     //Metodo para criar as consultas
-    public void registerAppointment (RegisterAppointmentDTO data, RequestTokenDTO dataT){
+    public void registerAppointment(RegisterAppointmentDTO data, RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         var secretary = secretaryRepository.findByAuthId_Id(UUID.fromString(id));
@@ -228,35 +244,33 @@ public class SecretaryService {
 
         Optional<Auth> authD = authRepository.findById(doctor.getAuthId().getId());
 
+        GetPatientByCPFDTO dataC = new GetPatientByCPFDTO(data.cpf());
+
+        if (!patientExists(dataC)) {
+            throw new CpfNotFoundException();
+        }
+
 
         String msg = "Abriu uma consulta com o médico " + auth.get().getName() + " e o paciente " + authP.get().getName();
 
 
+        Appointment newAppointment = new Appointment();
+        newAppointment.setClinic(clinic);
+        newAppointment.setPatient(patient);
+        newAppointment.setDoctor(doctor);
+        newAppointment.setDateCreate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
+        newAppointment.setOpenAppointment(true);
+        appointmentRepository.save(newAppointment);
 
-        if (!doctor.isAvailable()){
-            System.out.println("deu erro");
-        } else {
-            Appointment newAppointment = new Appointment();
-            newAppointment.setClinic(clinic);
-            newAppointment.setPatient(patient);
-            newAppointment.setDoctor(doctor);
-            newAppointment.setDateCreate(LocalDateTime.now());
-            newAppointment.setOpenAppointment(true);
-            appointmentRepository.save(newAppointment);
+        String msgD = "A consulta " + newAppointment.getId() + " foi agendada com o médico " + authD.get().getName();
 
-            String msgD = "A consulta " + newAppointment.getId() + " foi agendada com o médico " + authD.get().getName();
+        doctor.setAvailable(false);
+        doctorRepository.save(doctor);
 
-            doctor.setAvailable(false);
-            doctorRepository.save(doctor);
+        logService.logAction(auth.get(), msg);
 
-            logService.logAction(auth.get(), msg);
-
-            notificationService.send(authP.get(), "registro", "foi registrado em uma consulta");
-            notificationService.send(authD.get(), "registro", "foi registrado em uma consulta");
-
-
-
-        }
+        notificationService.send(authP.get(), "registro", "foi registrado em uma consulta");
+        notificationService.send(authD.get(), "registro", "foi registrado em uma consulta");
 
 
     }

@@ -26,6 +26,7 @@ import java.util.List;
 @RequestMapping("/files")
 public class FileController {
 
+    //Criando instancias utilizadas
     @Autowired
     ExamsFileService examsFileService;
 
@@ -41,7 +42,7 @@ public class FileController {
         }
     }
 
-    //Rota para fazer um dowoad ao clicar
+    //Rota para fazer um download ao clicar
     @GetMapping("/download/{filename:.+}")
     public ResponseEntity<Resource> downloadFile(
             @PathVariable String filename,
@@ -52,8 +53,8 @@ public class FileController {
     //Rota para ter uma preview antes de baixar ao clicar
     @GetMapping("/preview/{filename}")
     public ResponseEntity<Resource> previewFile(@PathVariable String filename) throws IOException {
-        final String uploadDir = "uploads";
-        Path filePath = Path.of(uploadDir, filename);
+        final String uploadDir = "/opt/uploads";
+        Path filePath = Path.of(uploadDir, filename );
 
         if (!Files.exists(filePath)) {
             return ResponseEntity.notFound().build();
@@ -72,10 +73,12 @@ public class FileController {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + ".pdf" + "\"")
                 .body(resource);
     }
 
+
+    //Rota para transformar a requisição de exames em pdf
     @PostMapping(value = "/examsRequestPDF", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> gerarPdf(@RequestBody GetExamsRequestIdDTO data) {
         try {

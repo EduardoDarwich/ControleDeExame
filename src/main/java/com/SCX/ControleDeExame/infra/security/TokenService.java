@@ -19,9 +19,10 @@ import java.time.ZoneOffset;
 public class TokenService {
 
 
-
     @Value("${api.security.token.secret}")
     private String security;
+
+    //Metodo para gerar o token de autenticação
     public String generateToken(Auth auth){
         try {
             Algorithm algorithm = Algorithm.HMAC256(security);
@@ -40,6 +41,7 @@ public class TokenService {
         return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
     }
 
+    //Metodo para retornar o token com o usuário autenticado
     public String registerUser (String token){
         try {
             Algorithm algorithm = Algorithm.HMAC256(security);

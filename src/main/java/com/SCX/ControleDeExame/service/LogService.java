@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,7 +31,7 @@ public class LogService {
         var history = new Log();
         history.setAuthId(user);
         history.setUserAction(action);
-        history.setHour_event(LocalDateTime.now());
+        history.setHour_event(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
         logRepository.save(history);
     }
 

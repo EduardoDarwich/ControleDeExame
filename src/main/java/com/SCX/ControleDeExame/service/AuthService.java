@@ -16,6 +16,9 @@ import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.doctor.Doctor;
 import com.SCX.ControleDeExame.domain.patient.Patient;
 import com.SCX.ControleDeExame.domain.secretary.Secretary;
+import com.SCX.ControleDeExame.exception.CpfExistException;
+import com.SCX.ControleDeExame.exception.EmailExistException;
+import com.SCX.ControleDeExame.exception.TelephoneExistException;
 import com.SCX.ControleDeExame.infra.security.TokenService;
 import com.SCX.ControleDeExame.repository.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -58,10 +61,13 @@ public class AuthService implements UserDetailsService {
     ClinicRepository clinicRepository;
 
     @Autowired
-    PatientRepository  patientRepository;
+    PatientRepository patientRepository;
 
     @Autowired
     SecretaryRepository secretaryRepository;
+
+    @Autowired
+    VerifyDataService verifyDataService;
 
     //Metodo do Spring security para realizar a consulta do usuario
     @Override
@@ -108,7 +114,7 @@ public class AuthService implements UserDetailsService {
     }
 
     //Metodo para devolver os dados do Medico
-    public ProfileDoctorDTO profileDoc (RequestTokenDTO dataT){
+    public ProfileDoctorDTO profileDoc(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
@@ -117,7 +123,7 @@ public class AuthService implements UserDetailsService {
     }
 
     //Metodo para devolver os dados do Admin
-    public ProfileAdminDTO profileAdmin (RequestTokenDTO dataT){
+    public ProfileAdminDTO profileAdmin(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Admin admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
@@ -126,7 +132,7 @@ public class AuthService implements UserDetailsService {
     }
 
     //Metodo para devolver os dados do paciente
-    public ProfilePatientDTO profilePatient(RequestTokenDTO dataT){
+    public ProfilePatientDTO profilePatient(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Patient patient = patientRepository.findByAuthId_Id(UUID.fromString(id));
@@ -135,7 +141,7 @@ public class AuthService implements UserDetailsService {
     }
 
     //Metodo para devolver os dados da secretaria
-    public ProfileSecretaryDTO profileSecretary (RequestTokenDTO dataT){
+    public ProfileSecretaryDTO profileSecretary(RequestTokenDTO dataT) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Secretary secretary = secretaryRepository.findByAuthId_Id(UUID.fromString(id));
@@ -158,33 +164,44 @@ public class AuthService implements UserDetailsService {
         return user.getActive();
     }
 
-    //Metodo para atualizar os dados do paciente (testar)
-    public void updatePaciente (RequestTokenDTO dataT, UpdatePatDTO data){
+    //Metodo para atualizar os dados do paciente
+    public void updatePaciente(RequestTokenDTO dataT, UpdatePatDTO data) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Patient patient = patientRepository.findByAuthId_Id(UUID.fromString(id));
+        if (verifyDataService.verifyTelephone(data.telephone())) {
+            throw new TelephoneExistException();
+        }
 
         patient.setTelephone(data.telephone());
         patient.setDateBirth(data.birth());
         patientRepository.save(patient);
     }
 
-    //Metodo para atualizar os dados do medico (testar)
-    public void updateDoctor (RequestTokenDTO dataT, UpdateDocDTO data){
+    //Metodo para atualizar os dados do médico
+    public void updateDoctor(RequestTokenDTO dataT, UpdateDocDTO data) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Doctor doctor = doctorRepository.findByAuthId_Id(UUID.fromString(id));
+
+        if (verifyDataService.verifyTelephone(data.telephone())) {
+            throw new TelephoneExistException();
+        }
 
         doctor.setTelephone(data.telephone());
         doctorRepository.save(doctor);
 
     }
 
-    //Metodo para atualizar os dados do secretaria (testar)
-    public void updateSecretary (RequestTokenDTO dataT, UpdateSecretaryDTO data){
+    //Metodo para atualizar os dados da secretaria
+    public void updateSecretary(RequestTokenDTO dataT, UpdateSecretaryDTO data) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Secretary secretary = secretaryRepository.findByAuthId_Id(UUID.fromString(id));
+
+        if (verifyDataService.verifyTelephone(data.telephone())) {
+            throw new TelephoneExistException();
+        }
 
         secretary.setTelephone(data.telephone());
         secretary.setCpf(data.cpf());
@@ -192,21 +209,21 @@ public class AuthService implements UserDetailsService {
 
     }
 
-    //Metodo para atualizar os dados do admin (testar)
-    public void updateAdmin (RequestTokenDTO dataT, UpdateAdminDTO data){
+    //Metodo para atualizar os dados do admin
+    public void updateAdmin(RequestTokenDTO dataT, UpdateAdminDTO data) {
         var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
         var id = tokenService.registerUser(idC);
         Admin admin = adminRepository.findByAuthId_Id(UUID.fromString(id));
+
+         if (verifyDataService.verifyTelephone(data.telephone())) {
+            throw new TelephoneExistException();
+        }
 
         admin.setTelephone(data.telephone());
         admin.setCpf(data.cpf());
         adminRepository.save(admin);
 
     }
-
-
-
-
 
 
 }

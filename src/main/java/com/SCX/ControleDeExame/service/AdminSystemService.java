@@ -111,7 +111,7 @@ public class AdminSystemService {
 
         Auth newAuth = new Auth();
         newAuth.setPassword_key(encryptedPassword);
-        newAuth.setUsernameKey("firstAdmin@gmail.com");
+        newAuth.setUsernameKey("firstadmin@gmail.com");
         newAuth.setName("Goku");
         newAuth.setActive(true);
         newAuth.getRoles().add(userSupport);
@@ -132,5 +132,7 @@ public class AdminSystemService {
         laboratory.setActive(true);
         laboratoryRepository.save(laboratory);
     }
+
+
 
 }

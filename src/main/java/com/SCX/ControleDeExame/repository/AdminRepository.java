@@ -7,4 +7,6 @@ import java.util.UUID;
 
 public interface AdminRepository extends JpaRepository <Admin, UUID> {
     Admin findByAuthId_Id(UUID Id);
+    boolean existsByCpf(String cpf);
+    boolean existsByTelephone(String telephone);
 }

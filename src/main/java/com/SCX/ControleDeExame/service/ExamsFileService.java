@@ -1,8 +1,13 @@
 package com.SCX.ControleDeExame.service;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
+import com.SCX.ControleDeExame.dataTransferObject.clinicDTO.ResponseLabCliDTO;
 import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.GetExamsRequestIdDTO;
+import com.SCX.ControleDeExame.dataTransferObject.examsTypeDTO.ExamsTypeDTO;
+import com.SCX.ControleDeExame.dataTransferObject.fileDTO.ExamTypeDTO;
 import com.SCX.ControleDeExame.dataTransferObject.fileDTO.UploadDTO;
+import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.UpdateExamDTO;
+import com.SCX.ControleDeExame.dataTransferObject.patientDTO.ExamsFileDTO;
 import com.SCX.ControleDeExame.domain.appointment.Appointment;
 import com.SCX.ControleDeExame.domain.auth.Auth;
 import com.SCX.ControleDeExame.domain.clinic.Clinic;
@@ -46,6 +51,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -87,7 +93,7 @@ public class ExamsFileService {
     @Autowired
     ConsultationRepository consultationRepository;
 
-    private final String uploadDir = "uploads";
+    private final String uploadDir = "/opt/uploads";
 
     //Metodo para enviar o pdf de um exame para o sistema
     public void uploadFile(UploadDTO data, RequestTokenDTO dataT) throws IOException {
@@ -105,51 +111,101 @@ public class ExamsFileService {
         Optional<Appointment> appointment = appointmentRepository.findById(consultation.get().getAppointment().getId());
         Optional<Patient> patient = patientRepository.findById(appointment.get().getPatient().getId());
         Optional<Doctor> doctor = doctorRepository.findById(appointment.get().getDoctor().getId());
-        List<Exams> exams = examsRequest.get().getExams();
-        int count = exams.size();
 
 
 
-        List<MultipartFile> files = data.file();
 
-        for ( MultipartFile file: files){
+        List<ExamTypeDTO> exams = data.file();
 
-            int contador = examsRequest.get().getCountExm();
-
-
-        // Cria nome único com Ids
-        String uniqueFilename = patient.get().getId() + "_" + doctor.get().getId() + "_" + laboratory.get().getId() + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
-        Path filePath = Paths.get(uploadDir, uniqueFilename);
-
-
-        // Salva o arquivo
-        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        for (ExamTypeDTO dataE : exams) {
 
 
 
-        examsRequest.get().setStatus("Entregue");
 
 
-        // Salva os dados no banco
-        ExamsFile entity = new ExamsFile();
-        entity.setExamsRequest(examsRequest.get());
-        entity.setPatient(patient.get());
-        entity.setDoctor(doctor.get());
-        entity.setLaboratory(laboratory.get());
-        entity.setFileName(uniqueFilename);
-        entity.setFilePath(filePath.toString());
-        entity.setUploadDate(LocalDateTime.now());
-
-        examsFileRepository.save(entity);
-
-        examsRequest.get().setCountExm(contador + 1);
-        requestExamsRepository.save(examsRequest.get());
+            // Cria nome único com IDS
+            String uniqueFilename = dataE.examType() + "_" + patient.get().getId() + "_" + doctor.get().getId() + "_" + laboratory.get().getId() + "_" + UUID.randomUUID() + ".pdf";
+            Path filePath = Paths.get(uploadDir, uniqueFilename);
 
 
 
+            // Salva o arquivo
+            Files.copy(dataE.file().getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+
+            examsRequest.get().setStatus("Entregue");
+
+
+            // Salva os dados no banco
+            ExamsFile entity = new ExamsFile();
+            entity.setExamsRequest(examsRequest.get());
+            entity.setPatient(patient.get());
+            entity.setDoctor(doctor.get());
+            entity.setLaboratory(laboratory.get());
+            entity.setFileName(uniqueFilename);
+            entity.setFilePath(filePath.toString());
+            entity.setUploadDate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
+
+            examsFileRepository.save(entity);
 
 
         }
+    }
+
+    //Metodo para enviar o pdf de um exame para o sistema
+    public void updateFile(UpdateExamDTO data, RequestTokenDTO dataT, ExamsFile examsFile) throws IOException {
+        // Garante que a pasta exista
+        File dir = new File(uploadDir);
+        if (!dir.exists()) dir.mkdirs();
+
+        var idC = dataT.toString().replace("RequestTokenDTO[Token=Bearer ", "").replace("]", "");
+        var id = tokenService.registerUser(idC);
+        UserLab userLab = userLabRepository.findByAuthId_Id(UUID.fromString(id));
+        var auth = authRepository.findById(userLab.getAuthId().getId());
+        Optional<Laboratory> laboratory = laboratoryRepository.findById(userLab.getLaboratoryId().getId());
+        Optional<ExamsRequest> examsRequest = requestExamsRepository.findById(examsFile.getExamsRequest().getId());
+        Optional<Consultation> consultation = consultationRepository.findById(examsRequest.get().getConsultation().getId());
+        Optional<Appointment> appointment = appointmentRepository.findById(consultation.get().getAppointment().getId());
+        Optional<Patient> patient = patientRepository.findById(appointment.get().getPatient().getId());
+        Optional<Doctor> doctor = doctorRepository.findById(appointment.get().getDoctor().getId());
+
+
+
+
+            // Cria nome único com IDS
+            String uniqueFilename = data.examType() + "_" + patient.get().getId() + "_" + doctor.get().getId() + "_" + laboratory.get().getId() + "_" + UUID.randomUUID() + ".pdf";
+            Path filePath = Paths.get(uploadDir, uniqueFilename);
+
+
+
+            // Salva o arquivo
+            Files.copy(data.file().getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+
+            examsRequest.get().setStatus("Entregue");
+
+
+            // Salva os dados no banco
+            ExamsFile entity = examsFileRepository.findByFileName(data.fileName());
+            entity.setExamsRequest(examsRequest.get());
+            entity.setPatient(patient.get());
+            entity.setDoctor(doctor.get());
+            entity.setLaboratory(laboratory.get());
+            entity.setFileName(uniqueFilename);
+            entity.setFilePath(filePath.toString());
+            entity.setUploadDate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
+
+            examsFileRepository.save(entity);
+
+
+
+    }
+
+    public void deleteFile(String fileName) throws IOException {
+
+        Path filePath = Paths.get(uploadDir, fileName);
+        Files.deleteIfExists(filePath);
+
     }
 
     //Metodo para Baixar o pdf ao clicar
@@ -201,7 +257,7 @@ public class ExamsFileService {
         Consultation consultation = examsRequest.getConsultation();
         Clinic clinic = consultation.getAppointment().getClinic();
 
-
+        List<ResponseLabCliDTO> labs = clinicRepository.findLabByClinic(clinic.getId());
 
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
@@ -209,13 +265,13 @@ public class ExamsFileService {
             PdfWriter.getInstance(document, out);
             document.open();
 
-            // === FONTES ===
+            // Fontes
             Font headerFont = new Font(Font.FontFamily.HELVETICA, 11, Font.BOLD);
             Font normalFont = new Font(Font.FontFamily.HELVETICA, 10);
             Font smallFont = new Font(Font.FontFamily.HELVETICA, 9);
             Font titleFont = new Font(Font.FontFamily.HELVETICA, 14, Font.BOLD);
 
-            // === CABEÇALHO ===
+            // Cabeçalho
             PdfPTable header = new PdfPTable(2);
             header.setWidthPercentage(100);
             header.setWidths(new float[]{3, 2});
@@ -230,10 +286,7 @@ public class ExamsFileService {
             PdfPCell logoCell = new PdfPCell();
             logoCell.setBorder(Rectangle.NO_BORDER);
             logoCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-            // Se quiser adicionar um logotipo:
-            // Image logo = Image.getInstance("caminho/para/logo.png");
-            // logo.scaleToFit(70, 70);
-            // logoCell.addElement(logo);
+
             logoCell.addElement(new Paragraph(" ", normalFont)); // espaço reservado
 
             header.addCell(prefeitura);
@@ -246,25 +299,25 @@ public class ExamsFileService {
             line.setLineColor(BaseColor.GRAY);
             document.add(new Chunk(line));
 
-            // === TÍTULO ===
+            // Titulo
             Paragraph title = new Paragraph("FICHA DE REQUISIÇÃO DE SERVIÇOS AUXILIARES E EXAMES", titleFont);
             title.setAlignment(Element.ALIGN_CENTER);
             title.setSpacingBefore(10);
             title.setSpacingAfter(10);
             document.add(title);
 
-            // === INFORMAÇÕES GERAIS ===
+            // Informações gerais
             PdfPTable infoTable = new PdfPTable(2);
             infoTable.setWidthPercentage(100);
             infoTable.setSpacingAfter(8f);
             infoTable.setWidths(new float[]{2, 2});
 
-            addCell(infoTable, "Data/Hora: " + LocalDateTime.now().format(fmt), normalFont);
+            addCell(infoTable, "Data/Hora: " + LocalDateTime.now(ZoneId.of("America/Sao_Paulo")).format(fmt), normalFont);
             addCell(infoTable, "Nº do Atendimento: " + consultation.getAppointment().getConsultation().getExamsRequests().getCodVerific(), normalFont);
 
             document.add(infoTable);
 
-            // === DADOS DO PACIENTE ===
+            //Dados do paciente
             Paragraph patientSection = new Paragraph("Dados do Paciente", headerFont);
             patientSection.setSpacingBefore(5);
             document.add(patientSection);
@@ -280,7 +333,7 @@ public class ExamsFileService {
 
             document.add(patientTable);
 
-            // === SEÇÃO DE SOLICITAÇÃO ===
+            //Seção de solicitação
             Paragraph sectionSolic = new Paragraph("Informações do Pedido", headerFont);
             sectionSolic.setSpacingBefore(10);
             document.add(sectionSolic);
@@ -289,12 +342,12 @@ public class ExamsFileService {
             solicitTable.setWidthPercentage(100);
             solicitTable.setWidths(new float[]{3, 2});
 
-            addCell(solicitTable,"Estabelecimento solicitante:  " + clinic.getName().toUpperCase(), normalFont);
+            addCell(solicitTable, "Estabelecimento solicitante:  " + clinic.getName().toUpperCase(), normalFont);
             addCell(solicitTable, "Profissional Solicitante:   " + consultation.getAppointment().getDoctor().getAuthId().getName().toUpperCase(), normalFont);
 
             document.add(solicitTable);
 
-            // === LISTA DE EXAMES ===
+            //Lista de exames
             Paragraph examsSection = new Paragraph("EXAMES / PROCEDIMENTOS SOLICITADOS", headerFont);
             examsSection.setSpacingBefore(10);
             examsSection.setSpacingAfter(5);
@@ -319,13 +372,29 @@ public class ExamsFileService {
             c3.setBackgroundColor(new BaseColor(200, 200, 200));
             examsTable.addCell(c3);
 
-            for(Exams exams1: exams){
+            for (Exams exams1 : exams) {
                 addExamRow(examsTable, exams1.getCid(), exams1.getExamsType(), exams1.getJustify());
             }
 
             document.add(examsTable);
 
-            // === ASSINATURA DO MÉDICO ===
+
+            //Lista de laboratorios disponiveis
+            Paragraph labSection = new Paragraph("LABORATÓRIOS DISPONÍVEIS", headerFont);
+            labSection.setSpacingBefore(15);
+            labSection.setSpacingAfter(5);
+            document.add(labSection);
+
+            // Novo parágrafo para as linhas
+            Paragraph labsList = new Paragraph();
+            for (ResponseLabCliDTO dataLab : labs) {
+                addLabRow(labsList, dataLab.getName(), dataLab.getTelephone());
+            }
+
+            document.add(labsList);
+
+
+            //Assinatura do médico
             document.add(new Paragraph("\n\n\n")); // espaço antes da linha
 
             // Cria uma linha para assinatura
@@ -346,11 +415,11 @@ public class ExamsFileService {
             doctorInfo.setSpacingBefore(5);
             document.add(doctorInfo);
 
-            // === RODAPÉ ===
+
             document.add(new Paragraph("\n"));
             document.add(new Chunk(line));
             Paragraph footer = new Paragraph(
-                    "Gerado automaticamente pelo Sistema de Exames - " + LocalDateTime.now().format(fmt),
+                    "Gerado automaticamente pelo Sistema de Exames - " + LocalDateTime.now(ZoneId.of("America/Sao_Paulo")).format(fmt),
                     smallFont
             );
             footer.setAlignment(Element.ALIGN_CENTER);
@@ -386,6 +455,33 @@ public class ExamsFileService {
         PdfPCell cidCell = new PdfPCell(new Phrase(cid));
         cidCell.setPadding(5);
         table.addCell(cidCell);
+    }
+
+    private void addLabRow(Paragraph paragraph, String name, String telephone) {
+        if (telephone == null || telephone.isBlank()) {
+            telephone = "Não informado";
+        } else {
+            // Remove tudo que não é número
+            telephone = telephone.replaceAll("\\D", "");
+
+            // Formata automaticamente
+            if (telephone.length() == 11) {
+                telephone = "(" + telephone.substring(0, 2) + ") " +
+                        telephone.substring(2, 7) + "-" +
+                        telephone.substring(7);
+            } else if (telephone.length() == 10) {
+                telephone = "(" + telephone.substring(0, 2) + ") " +
+                        telephone.substring(2, 6) + "-" +
+                        telephone.substring(6);
+            }
+        }
+
+        Chunk nameChunk = new Chunk(name + " — ");
+        Chunk telChunk = new Chunk("Contato: " + telephone);
+
+        paragraph.add(nameChunk);
+        paragraph.add(telChunk);
+        paragraph.add(Chunk.NEWLINE); // quebra de linha
     }
 
 

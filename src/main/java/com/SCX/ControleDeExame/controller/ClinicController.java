@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/clinic")
 public class ClinicController {
+
+    //Criando instancias utilizadas
     @Autowired
     ClinicService clinicService;
 
@@ -23,7 +25,7 @@ public class ClinicController {
         return ResponseEntity.ok().build();
     }
 
-    //Rota para cadastrar o primeiro administrador da clinica
+    //Rota para cadastrar o primeiro administrador da clínica
     @PostMapping("/firstAdm")
     public ResponseEntity createFirstAdm (@RequestBody @Valid CreateFirstAdmDTO data){
 
@@ -32,7 +34,7 @@ public class ClinicController {
         return ResponseEntity.ok().build();
     }
 
-    //Rota para verificar se uma clinica do usuario está ativo ou não
+    //Rota para verificar se uma clínica do usuário está ativa ou não
     @GetMapping("/getCliActive")
     public ResponseEntity<Boolean> getCliActive (@RequestHeader("Authorization") RequestTokenDTO dataT){
 

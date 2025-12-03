@@ -2,8 +2,10 @@
 package com.SCX.ControleDeExame.controller;
 
 import com.SCX.ControleDeExame.dataTransferObject.authDTO.RequestTokenDTO;
+import com.SCX.ControleDeExame.dataTransferObject.examsRequestDTO.GetExamRequestCodeDTO;
 import com.SCX.ControleDeExame.dataTransferObject.fileDTO.UploadDTO;
 import com.SCX.ControleDeExame.dataTransferObject.laboratoryDTO.*;
+import com.SCX.ControleDeExame.dataTransferObject.patientDTO.ExamsFileDTO;
 import com.SCX.ControleDeExame.service.ClinicService;
 import com.SCX.ControleDeExame.service.ExamsFileService;
 import com.SCX.ControleDeExame.service.LaboratoryService;
@@ -21,6 +23,7 @@ import java.util.UUID;
 @RequestMapping("/laboratory")
 public class LaboratoryController {
 
+    //Criando instancias utilizadas
     @Autowired
     LaboratoryService laboratoryService;
     @Autowired
@@ -77,4 +80,31 @@ public class LaboratoryController {
 
         return ResponseEntity.ok(laboratoryService.verificLabActive(dataT));
     }
+
+    //Rota para listar todos os exames devolvidos pelo laboratório
+    @GetMapping("/getExamsLab")
+    public ResponseEntity<List<ExamsFileDTO>> getExamsLab(@RequestHeader("Authorization") RequestTokenDTO dataT){
+        return ResponseEntity.ok(laboratoryService.getExamsLab(dataT));
+    }
+
+    //Rota para listar os exames devolvidos por requisição(testar)
+    @PostMapping("/getExamsByReq")
+    public ResponseEntity<List<getExamDTO>> getExamsByReq(@RequestBody @Valid GetExamRequestCodeDTO data/*, @RequestHeader("Authorization") RequestTokenDTO dataT*/){
+        return ResponseEntity.ok(laboratoryService.getExmByRequest(/*dataT,*/ data));
+    }
+
+    //Rota para Alterar um exame(testar)
+    @PostMapping("/updateExam")
+    public ResponseEntity<String> UpdateExam(@ModelAttribute UpdateExamDTO data, @RequestHeader("Authorization") RequestTokenDTO dataT) {
+        try {
+            laboratoryService.updateExam(dataT, data);
+            return ResponseEntity.ok("Arquivo enviado com sucesso");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao enviar arquivo: " + e.getMessage());
+        }
+    }
+
+
+
 }
