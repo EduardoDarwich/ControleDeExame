@@ -18,9 +18,7 @@ import org.springframework.stereotype.Service;
 //Classe contendo a lógica do envio de email
 @Service
 public class EmailService {
-    //Criando instâncias utilizadas na classe
-    @Autowired
-    private JavaMailSender javaMailSender;
+
 
     @Value("${api.key.mailGrid}")
     private String sendGridKey;
